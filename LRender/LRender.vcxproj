@@ -106,11 +106,11 @@
     <ClCompile Include="About.cpp" />
     <ClCompile Include="BlinnPhongShader.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="src\FrameBuffer.cpp" />
-    <ClCompile Include="src\SRendererDevice.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="SRendererDevice.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <QtRcc Include="LRender.qrc" />
     <QtUic Include="LRender.ui" />
     <QtMoc Include="LRender.h" />
@@ -125,16 +125,16 @@
     <QtMoc Include="About.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicDataStructure.hpp" />
     <ClInclude Include="BlinnPhongShader.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="src\BasicDataStructure.hpp" />
-    <ClInclude Include="src\FrameBuffer.h" />
-    <ClInclude Include="src\Shader.hpp" />
-    <ClInclude Include="src\SRendererCoreExport.h" />
-    <ClInclude Include="src\SRendererDevice.h" />
-    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="SRendererCoreExport.h" />
+    <ClInclude Include="SRendererDevice.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="ui_About.h" />
     <ClInclude Include="ui_LRenderWidget.h" />
   </ItemGroup>

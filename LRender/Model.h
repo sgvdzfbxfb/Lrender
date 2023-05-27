@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <cfloat>
-#include "src/BasicDataStructure.hpp"
+#include "BasicDataStructure.hpp"
 #include "Mesh.h"
 
 class Model

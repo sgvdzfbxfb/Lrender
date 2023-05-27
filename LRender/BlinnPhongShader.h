@@ -1,8 +1,8 @@
 #pragma once
 
-#include "src/Shader.hpp"
-#include "src/Texture.h"
-#include "src/SRendererCoreExport.h"
+#include "Shader.hpp"
+#include "Texture.h"
+#include "SRendererCoreExport.h"
 
 class BlinnPhongShader : public Shader
 {

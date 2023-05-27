@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QMessageBox>
-#include "src/SRendererDevice.h"
+#include "SRendererDevice.h"
 #include "BlinnPhongShader.h"
 #include "Model.h"
 #include "Camera.h"

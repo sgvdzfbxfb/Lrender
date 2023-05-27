@@ -2,9 +2,9 @@
 #define MESH_H
 
 #include <QString>
-#include "src/BasicDataStructure.hpp"
-#include "src/Texture.h"
-#include "src/SRendererDevice.h"
+#include "BasicDataStructure.hpp"
+#include "Texture.h"
+#include "SRendererDevice.h"
 
 struct Mesh
 {
