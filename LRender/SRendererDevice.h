@@ -31,7 +31,7 @@ class SRendererDevice
 public:
     RenderMode renderMode{FACE};
     bool faceCulling{true};
-    bool multiThread{false};
+    bool multiThread{true};
     std::vector<Vertex> vertexList;
     std::vector<unsigned> indices;
     std::vector<Texture> textureList;

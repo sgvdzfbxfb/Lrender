@@ -135,7 +135,7 @@ void LRender::InitUI()
     ui->Setting->setTabText(0, "Light");
     ui->Setting->setTabText(1, "Model");
     SetStyle(LIGHT);
-    SetOption(MUTITHREAD, true);
+    SetOption(MUTITHREAD, false);
     SetOption(FACECULLING, true);
     SetCameraPara(FOV, 60.f);
     SetCameraPara(NEAR, 1.0f);
