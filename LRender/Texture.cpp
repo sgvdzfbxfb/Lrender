@@ -6,7 +6,7 @@ bool Texture::LoadFromImage(QString path)
     this->path = path;
     if(texture.load(path))
     {
-        texture.mirrored();
+        texture = texture.mirrored();
         w = texture.width();
         h = texture.height();
         return true;
