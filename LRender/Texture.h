@@ -3,9 +3,8 @@
 #include <QString>
 #include <QImage>
 #include "BasicDataStructure.hpp"
-#include "SRendererCoreExport.h"
 
-class SRENDERERCORE_EXPORT Texture
+class Texture
 {
     enum
     {

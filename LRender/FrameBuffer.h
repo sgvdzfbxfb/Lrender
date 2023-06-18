@@ -1,8 +1,6 @@
 #pragma once
 
 #include "BasicDataStructure.hpp"
-#include "SRendererCoreExport.h"
-#include <tbb/concurrent_vector.h>
 #include <string>
 #include <cfloat>
 #include <QImage>

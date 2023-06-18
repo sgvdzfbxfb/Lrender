@@ -11,7 +11,6 @@
 #include <iostream>
 #include <array>
 #include "glm/glm.hpp"
-#include "SRendererCoreExport.h"
 
 using Color = glm::vec3;
 using Vector2D = glm::vec2;

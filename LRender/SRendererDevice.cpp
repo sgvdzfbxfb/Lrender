@@ -445,12 +445,12 @@ void SRendererDevice::Render()
     }
     if(multiThread)
     {
-        tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
+        /*tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size()),
         [&](tbb::blocked_range<size_t> r)
         {
             for(size_t i = r.begin(); i < r.end(); i++)
                 ProcessTriangle(triangleList[i]);
-        });
+        });*/
     }
     else
     {

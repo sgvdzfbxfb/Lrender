@@ -5,12 +5,11 @@
 #include <string>
 #include <functional>
 #include "SRendererDevice.h"
-#include "SRendererCoreExport.h"
 #include "BasicDataStructure.hpp"
 
 class SRendererDevice;
 
-class SRENDERERCORE_EXPORT Shader
+class Shader
 {
 public:
     glm::mat4 Model;

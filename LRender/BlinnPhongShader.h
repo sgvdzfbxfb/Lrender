@@ -2,7 +2,6 @@
 
 #include "Shader.hpp"
 #include "Texture.h"
-#include "SRendererCoreExport.h"
 
 class BlinnPhongShader : public Shader
 {

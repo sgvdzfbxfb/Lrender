@@ -6,14 +6,10 @@
 #include <climits>
 #include <bitset>
 #include <immintrin.h>
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_for_each.h>
-#include <tbb/blocked_range2d.h>
 #include "BasicDataStructure.hpp"
 #include "FrameBuffer.h"
 #include "Texture.h"
 #include "Shader.hpp"
-#include "SRendererCoreExport.h"
 
 class Shader;
 
@@ -30,12 +26,12 @@ struct EdgeEquation
     Vector3D GetBarycentric(VectorI3D val);
 };
 
-class SRENDERERCORE_EXPORT SRendererDevice
+class SRendererDevice
 {
 public:
     RenderMode renderMode{FACE};
     bool faceCulling{true};
-    bool multiThread{true};
+    bool multiThread{false};
     std::vector<Vertex> vertexList;
     std::vector<unsigned> indices;
     std::vector<Texture> textureList;
