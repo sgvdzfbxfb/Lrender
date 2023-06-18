@@ -30,7 +30,7 @@ public:
             About->setObjectName(QString::fromUtf8("About"));
         About->resize(400, 220);
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/icon/icon.svg"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8("./icon/icon.svg"), QSize(), QIcon::Normal, QIcon::Off);
         About->setWindowIcon(icon);
         verticalLayout = new QVBoxLayout(About);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
