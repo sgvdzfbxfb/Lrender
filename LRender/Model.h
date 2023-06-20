@@ -32,6 +32,7 @@ class Model
         std::vector<Texture> textureList;
         QString directory;
         void loadModel(QString path);
+        void loadModelOri(QString path);
         void computeNormal();
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);

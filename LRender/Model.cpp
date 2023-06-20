@@ -14,6 +14,21 @@ void Model::Draw()
         meshes[i].Draw();
 }
 
+void Model::loadModelOri(QString path)
+{
+    Assimp::Importer import;
+    const aiScene* scene = import.ReadFile(path.toStdString(), aiProcess_Triangulate | aiProcess_GenNormals);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        loadSuccess = false;
+        return;
+    }
+    QString modelName = path.mid(path.lastIndexOf('/') + 1);
+    directory = path.mid(0, path.lastIndexOf('/'));
+    processNode(scene->mRootNode, scene);
+}
+
 void Model::loadModel(QString path)
 {
     Mesh tempMesh;
