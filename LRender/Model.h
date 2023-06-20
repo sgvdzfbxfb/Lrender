@@ -4,6 +4,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <cfloat>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
 #include "BasicDataStructure.hpp"
 #include "Mesh.h"
 
@@ -28,6 +32,7 @@ class Model
         std::vector<Texture> textureList;
         QString directory;
         void loadModel(QString path);
+        void computeNormal();
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         int loadMaterialTextures(Mesh & mesh,aiMaterial *mat, aiTextureType type);

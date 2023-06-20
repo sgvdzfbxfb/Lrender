@@ -10,6 +10,8 @@ struct Mesh
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
+    std::vector<std::vector<unsigned>> faces;
+    std::map<int, std::vector<int>> verToFace;
     int diffuseTextureIndex{-1};
     int specularTextureIndex{-1};
     Mesh() = default;

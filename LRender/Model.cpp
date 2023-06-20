@@ -16,17 +16,73 @@ void Model::Draw()
 
 void Model::loadModel(QString path)
 {
-    Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path.toStdString(), aiProcess_Triangulate | aiProcess_GenNormals);
+    Mesh tempMesh;
+    std::ifstream in;
+    in.open(path.toStdString(), std::ifstream::in);
+    if (in.fail()) return;
+    std::string line;
+    while (!in.eof()) {
+        std::getline(in, line);
+        std::istringstream iss(line.c_str());
+        char trash;
+        if (!line.compare(0, 2, "v ")) {
+            iss >> trash;
+            Vertex ver;
+            Vector3D v_p;
+            for (int i = 0; i < 3; i++) iss >> v_p[i];
 
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-    {
-        loadSuccess = false;
-        return;
+            minX = std::min(minX, v_p.x);
+            minY = std::min(minY, v_p.y);
+            minZ = std::min(minZ, v_p.z);
+            maxX = std::max(maxX, v_p.x);
+            maxY = std::max(maxY, v_p.y);
+            maxZ = std::max(maxZ, v_p.z);
+            ver.worldSpacePos = v_p;
+            /*if (mesh->mTextureCoords[0])
+                ver.texCoord = Coord2D(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+            else
+                ver.texCoord = Coord2D(0.0f, 0.0f);*/
+            tempMesh.vertices.push_back(ver);
+        }
+        else if (!line.compare(0, 2, "f ")) {
+            std::vector<unsigned> f;
+            int itrash, idx;
+            iss >> trash;
+            while (iss >> idx >> trash >> itrash >> trash >> itrash) {
+                idx--; // in wavefront obj all indices start at 1, not zero
+                tempMesh.indices.push_back(idx);
+                f.push_back(idx);
+                (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+            }
+            tempMesh.faces.push_back(f);
+        }
     }
-    QString modelName = path.mid(path.lastIndexOf('/') + 1);
-    directory = path.mid(0, path.lastIndexOf('/'));
-    processNode(scene->mRootNode, scene);
+    vertexCount += tempMesh.vertices.size();
+    triangleCount += tempMesh.faces.size();
+    meshes.push_back(tempMesh);
+}
+
+void Model::computeNormal()
+{
+    for (int l = 0; l < meshes.size(); ++l) {
+        std::vector<Vector3D> faceNormals;
+        for (int i = 0; i < meshes[l].indices.size(); i += 3) {
+            Vector3D AB = (meshes[l].vertices[(meshes[l].indices[i + 1])]).worldSpacePos - (meshes[l].vertices[(meshes[l].indices[i])]).worldSpacePos;
+            Vector3D AC = (meshes[l].vertices[(meshes[l].indices[i + 2])]).worldSpacePos - (meshes[l].vertices[(meshes[l].indices[i])]).worldSpacePos;
+            Vector3D faceN = glm::normalize(glm::cross(AB, AC));
+            faceNormals.push_back(faceN);
+        }
+        for (int i = 0; i < meshes[l].vertices.size(); ++i) {
+            std::vector<int> tempMs = meshes[l].verToFace[i];
+            Vector3D verNave(0.0, 0.0, 0.0);
+            for (int j = 0; j < tempMs.size(); ++j) {
+                verNave += faceNormals[tempMs[j]];
+            }
+            verNave /= tempMs.size();
+            verNave = glm::normalize(verNave);
+            meshes[l].vertices[i].normal = verNave;
+        }
+    }
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene)
