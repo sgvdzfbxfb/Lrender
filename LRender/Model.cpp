@@ -60,6 +60,7 @@ void Model::loadModel(QString path)
     vertexCount += tempMesh.vertices.size();
     triangleCount += tempMesh.faces.size();
     meshes.push_back(tempMesh);
+    computeNormal();
 }
 
 void Model::computeNormal()

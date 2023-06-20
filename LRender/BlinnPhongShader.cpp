@@ -21,7 +21,7 @@ void BlinnPhongShader::FragmentShader(Fragment &fragment)
         if(light.pos.w != 0.f)
             lightDir = glm::normalize(Coord3D(light.pos) - fragment.worldSpacePos);
         else
-            lightDir = - Vector3D(light.dir);
+            lightDir = -Vector3D(light.dir);
         Color ambient = light.ambient * diffuseColor;
         Color diffuse = light.diffuse * std::max(glm::dot(normal,lightDir), 0.f) * diffuseColor;
         Color specular = light.specular * std::pow(std::max(glm::dot(normal, glm::normalize(viewDir + lightDir)), 0.0f), material.shininess) * specularColor;
