@@ -14,21 +14,6 @@ void Model::Draw()
         meshes[i].Draw();
 }
 
-void Model::loadModelOri(QString path)
-{
-    Assimp::Importer import;
-    const aiScene* scene = import.ReadFile(path.toStdString(), aiProcess_Triangulate | aiProcess_GenNormals);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-    {
-        loadSuccess = false;
-        return;
-    }
-    QString modelName = path.mid(path.lastIndexOf('/') + 1);
-    directory = path.mid(0, path.lastIndexOf('/'));
-    processNode(scene->mRootNode, scene);
-}
-
 void Model::loadModel(QString path)
 {
     Mesh tempMesh;
@@ -53,11 +38,19 @@ void Model::loadModel(QString path)
             maxY = std::max(maxY, v_p.y);
             maxZ = std::max(maxZ, v_p.z);
             ver.worldSpacePos = v_p;
-            /*if (mesh->mTextureCoords[0])
-                ver.texCoord = Coord2D(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-            else
-                ver.texCoord = Coord2D(0.0f, 0.0f);*/
             tempMesh.vertices.push_back(ver);
+        }
+        else if (!line.compare(0, 3, "vn ")) {
+            iss >> trash >> trash;
+            Vector3D n;
+            for (int i = 0; i < 3; i++) iss >> n[i];
+            tempMesh.vertNormals.push_back(n);
+        }
+        else if (!line.compare(0, 3, "vt ")) {
+            iss >> trash >> trash;
+            Coord2D uv;
+            for (int i = 0; i < 2; i++) iss >> uv[i];
+            tempMesh.vertUVs.push_back(uv);
         }
         else if (!line.compare(0, 2, "f ")) {
             std::vector<unsigned> f;
@@ -75,108 +68,68 @@ void Model::loadModel(QString path)
     vertexCount += tempMesh.vertices.size();
     triangleCount += tempMesh.faces.size();
     meshes.push_back(tempMesh);
-    computeNormal();
-}
-
-void Model::computeNormal()
-{
     for (int l = 0; l < meshes.size(); ++l) {
-        std::vector<Vector3D> faceNormals;
-        for (int i = 0; i < meshes[l].indices.size(); i += 3) {
-            Vector3D AB = (meshes[l].vertices[(meshes[l].indices[i + 1])]).worldSpacePos - (meshes[l].vertices[(meshes[l].indices[i])]).worldSpacePos;
-            Vector3D AC = (meshes[l].vertices[(meshes[l].indices[i + 2])]).worldSpacePos - (meshes[l].vertices[(meshes[l].indices[i])]).worldSpacePos;
-            Vector3D faceN = glm::normalize(glm::cross(AB, AC));
-            faceNormals.push_back(faceN);
-        }
-        for (int i = 0; i < meshes[l].vertices.size(); ++i) {
-            std::vector<int> tempMs = meshes[l].verToFace[i];
-            Vector3D verNave(0.0, 0.0, 0.0);
-            for (int j = 0; j < tempMs.size(); ++j) {
-                verNave += faceNormals[tempMs[j]];
+        if (meshes[l].vertNormals.size() == meshes[l].vertices.size()) {
+            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
+                meshes[l].vertices[i].normal = meshes[l].vertNormals[i];
             }
-            verNave /= tempMs.size();
-            verNave = glm::normalize(verNave);
-            meshes[l].vertices[i].normal = verNave;
         }
+        else computeNormal(l);
+
+        if (meshes[l].vertUVs.size() == meshes[l].vertices.size()) {
+            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
+                meshes[l].vertices[i].texCoord = meshes[l].vertUVs[i];
+            }
+        }
+        else {
+            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
+                meshes[l].vertices[i].texCoord = Coord2D(0.0f, 0.0f);
+            }
+        }
+
+        meshes[l].diffuseTextureIndex = loadMaterialTextures(path, "diffuse");
+        meshes[l].specularTextureIndex = loadMaterialTextures(path, "specular");
     }
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene)
+void Model::computeNormal(int meshIdx)
 {
-    for(unsigned int i = 0; i < node->mNumMeshes; i++)
-    {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+    std::vector<Vector3D> faceNormals;
+    for (int i = 0; i < meshes[meshIdx].indices.size(); i += 3) {
+        Vector3D AB = (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i + 1])]).worldSpacePos - (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i])]).worldSpacePos;
+        Vector3D AC = (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i + 2])]).worldSpacePos - (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i])]).worldSpacePos;
+        Vector3D faceN = glm::normalize(glm::cross(AB, AC));
+        faceNormals.push_back(faceN);
     }
-    for(unsigned int i = 0; i < node->mNumChildren; i++)
-    {
-        processNode(node->mChildren[i], scene);
+    for (int i = 0; i < meshes[meshIdx].vertices.size(); ++i) {
+        std::vector<int> tempMs = meshes[meshIdx].verToFace[i];
+        Vector3D verNave(0.0, 0.0, 0.0);
+        for (int j = 0; j < tempMs.size(); ++j) {
+            verNave += faceNormals[tempMs[j]];
+        }
+        verNave /= tempMs.size();
+        verNave = glm::normalize(verNave);
+        meshes[meshIdx].vertices[i].normal = verNave;
     }
 }
 
-Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
+int Model::loadMaterialTextures(QString path, std::string type)
 {
-    vertexCount += mesh->mNumVertices;
-    triangleCount += mesh->mNumFaces;
-    Mesh res;
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
-    Vertex vertex;
-    for(unsigned int i = 0; i < mesh->mNumVertices; i++)
-    {
-        minX = std::min(minX, mesh->mVertices[i].x);
-        minY = std::min(minY, mesh->mVertices[i].y);
-        minZ = std::min(minZ, mesh->mVertices[i].z);
-        maxX = std::max(maxX, mesh->mVertices[i].x);
-        maxY = std::max(maxY, mesh->mVertices[i].y);
-        maxZ = std::max(maxZ, mesh->mVertices[i].z);
-        vertex.worldSpacePos = Coord3D(mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z);
-        vertex.normal = Coord3D(mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z);
-        if(mesh->mTextureCoords[0])//only process one texture
-            vertex.texCoord = Coord2D(mesh->mTextureCoords[0][i].x,mesh->mTextureCoords[0][i].y);
-        else
-            vertex.texCoord = Coord2D(0.0f,0.0f);
-        vertices.push_back(vertex);
-    }
-    res.vertices = vertices;
-    for(unsigned int i = 0; i < mesh->mNumFaces; i++)
-    {
-        aiFace face = mesh->mFaces[i];
-        for(unsigned int j = 0; j < face.mNumIndices; j++)
-            indices.push_back(face.mIndices[j]);
-    }
-    res.indices = indices;
-    if(mesh->mMaterialIndex >= 0)
-    {
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        res.diffuseTextureIndex = loadMaterialTextures(res, material, aiTextureType_DIFFUSE);
-        res.specularTextureIndex = loadMaterialTextures(res, material, aiTextureType_SPECULAR);
-    }
-    return res;
-}
+    QString t_p = path;
+    std::ifstream diffuse;
+    t_p.chop(4);
+    std::string t_ps = t_p.toStdString() + "_" + type + ".png";
+    diffuse.open(t_ps, std::ifstream::in);
+    if (diffuse.fail()) return -1;
 
-int Model::loadMaterialTextures(Mesh &mesh, aiMaterial *mat, aiTextureType type)
-{
-    if(mat->GetTextureCount(type) > 0)
+    Texture texture;
+    if (texture.LoadFromImage(QString::fromStdString(t_ps)))
     {
-        aiString str;
-        mat->GetTexture(type, 0, &str);
-        QString path = directory + '/' + str.C_Str();
-        for(int i = 0; i < textureList.size(); i++)
-        {
-            if(textureList[i].path == path)
-                return i;
-        }
-        Texture texture;
-        if(texture.LoadFromImage(path))
-        {
-            qDebug() << path;
-            textureList.push_back(texture);
-            return (int)textureList.size() - 1;
-        }
+        qDebug() << QString::fromStdString(t_ps);
+        textureList.push_back(texture);
+        return (int)textureList.size() - 1;
     }
-    return -1;
+    else return -1;
 }
 
 

@@ -2,6 +2,7 @@
 #define TEXTURE_H
 #include <QString>
 #include <QImage>
+#include <qDebug>
 #include "BasicDataStructure.hpp"
 
 class Texture
