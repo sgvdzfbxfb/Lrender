@@ -19,19 +19,13 @@ class LRender : public QMainWindow
 public:
 
     enum Option { MUTITHREAD, FACECULLING };
-    enum Style { DARK, LIGHT };
     explicit LRender(QWidget *parent = nullptr);
     ~LRender();
-    void SetStyle(Style style);
     void SetOption(Option option, bool val);
     void SetLightColor(LightColorType type, QColor color);
     void SetCameraPara(CameraPara para, float val);
     void SetLightDir();
 private slots:
-    void on_actionLight_triggered();
-
-    void on_actionDark_triggered();
-
     void on_actionopen_file_triggered();
 
     void on_actionsave_image_triggered();

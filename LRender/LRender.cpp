@@ -20,31 +20,6 @@ LRender::LRender(QWidget *parent)
 LRender::~LRender()
 {}
 
-void LRender::SetStyle(Style style)
-{
-    QFile f;
-    if (style == LIGHT)
-    {
-        f.setFileName(":/qdarkstyle/light/style.qss");
-        ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, BACKGROUND);
-        ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, LINE);
-        ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, POINT);
-        ui->actionLight->setChecked(true);
-        ui->actionDark->setChecked(false);
-    }
-    else
-    {
-        f.setFileName(":/qdarkstyle/dark/style.qss");
-        ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
-        ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, LINE);
-        ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, POINT);
-        ui->actionDark->setChecked(true);
-        ui->actionLight->setChecked(false);
-    }
-    f.open(QFile::ReadOnly | QFile::Text);
-    //QTextStream ts(&f);
-    //qApp->setStyleSheet(ts.readAll());
-}
 void LRender::SetOption(Option option, bool val)
 {
     if (option == MUTITHREAD)
@@ -105,16 +80,6 @@ void LRender::SetLightDir()
     ui->RenderWidget->SetLightDir(Vector4D(-lightDir, 0.f));
 }
 
-void LRender::on_actionLight_triggered()
-{
-    SetStyle(LIGHT);
-}
-
-void LRender::on_actionDark_triggered()
-{
-    SetStyle(DARK);
-}
-
 void LRender::on_actionopen_file_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open Model File", "", "OBJ(*.obj)");
@@ -134,7 +99,14 @@ void LRender::InitUI()
     setFixedSize(1120, 672);
     ui->Setting->setTabText(0, "Light");
     ui->Setting->setTabText(1, "Model");
-    SetStyle(LIGHT);
+    // light background
+    /*ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, BACKGROUND);
+    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, LINE);
+    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, POINT);*/
+    // dark background
+    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
+    ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, LINE);
+    ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, POINT);
     SetOption(MUTITHREAD, false);
     SetOption(FACECULLING, true);
     SetCameraPara(FOV, 60.f);

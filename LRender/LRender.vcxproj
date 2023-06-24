@@ -112,7 +112,6 @@
     <ClCompile Include="SRendererDevice.cpp" />
     <ClCompile Include="Texture.cpp" />
     <QtRcc Include="LRender.qrc" />
-    <QtUic Include="LRender.ui" />
     <QtMoc Include="LRender.h" />
     <ClCompile Include="LRender.cpp" />
     <ClCompile Include="LRenderWidget.cpp" />
@@ -134,8 +133,6 @@
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="SRendererDevice.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="ui_About.h" />
-    <ClInclude Include="ui_LRenderWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
