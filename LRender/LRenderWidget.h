@@ -44,7 +44,7 @@ public:
     void SetFaceCulling(bool val){SRendererDevice::GetInstance().faceCulling = val;}
     void SetMultiThread(bool val){SRendererDevice::GetInstance().multiThread = val;}
     void SaveImage(QString path){SRendererDevice::GetInstance().SaveImage(path);}
-    void LoadModel(QString path);
+    void LoadModel(QStringList paths);
     void InitDevice();
     Camera camera;
 protected:

@@ -69,9 +69,9 @@ void LRenderWidget::SetLightColor(Color color, LightColorType type)
     }
 }
 
-void LRenderWidget::LoadModel(QString path)
+void LRenderWidget::LoadModel(QStringList paths)
 {
-    Model *newModel = new Model(path);
+    Model *newModel = new Model(paths);
     if(!newModel->loadSuccess)
     {
         QMessageBox::critical(this,"Error","Model loading error!");

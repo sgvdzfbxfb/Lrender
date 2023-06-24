@@ -11,7 +11,7 @@
 class Model
 {
     public:
-        Model(QString path);
+        Model(QStringList paths);
         void Draw();
         Coord3D centre;
         int triangleCount{0};
@@ -28,7 +28,7 @@ class Model
         std::vector<Mesh> meshes;
         std::vector<Texture> textureList;
         QString directory;
-        void loadModel(QString path);
+        void loadModel(QStringList paths);
         void computeNormal(int meshIdx);
         int loadMaterialTextures(QString path, std::string type);
 };

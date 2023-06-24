@@ -1,9 +1,9 @@
 #include "Model.h"
 #include <QDebug>
 
-Model::Model(QString path)
+Model::Model(QStringList paths)
 {
-    loadModel(path);
+    loadModel(paths);
     centre = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 }
 
@@ -14,60 +14,67 @@ void Model::Draw()
         meshes[i].Draw();
 }
 
-void Model::loadModel(QString path)
+void Model::loadModel(QStringList paths)
 {
-    Mesh tempMesh;
-    std::ifstream in;
-    in.open(path.toStdString(), std::ifstream::in);
-    if (in.fail()) return;
-    std::string line;
-    while (!in.eof()) {
-        std::getline(in, line);
-        std::istringstream iss(line.c_str());
-        char trash;
-        if (!line.compare(0, 2, "v ")) {
-            iss >> trash;
-            Vertex ver;
-            Vector3D v_p;
-            for (int i = 0; i < 3; i++) iss >> v_p[i];
+    QList<QString>::Iterator path = paths.begin(), itend = paths.end();
+    int i = 0;
+    for (; path != itend; path++, i++) {
+        Mesh tempMesh;
+        std::ifstream in;
+        in.open(path->toStdString(), std::ifstream::in);
+        if (in.fail()) return;
+        std::string line;
+        while (!in.eof()) {
+            std::getline(in, line);
+            std::istringstream iss(line.c_str());
+            char trash;
+            if (!line.compare(0, 2, "v ")) {
+                iss >> trash;
+                Vertex ver;
+                Vector3D v_p;
+                for (int i = 0; i < 3; i++) iss >> v_p[i];
 
-            minX = std::min(minX, v_p.x);
-            minY = std::min(minY, v_p.y);
-            minZ = std::min(minZ, v_p.z);
-            maxX = std::max(maxX, v_p.x);
-            maxY = std::max(maxY, v_p.y);
-            maxZ = std::max(maxZ, v_p.z);
-            ver.worldSpacePos = v_p;
-            tempMesh.vertices.push_back(ver);
-        }
-        else if (!line.compare(0, 3, "vn ")) {
-            iss >> trash >> trash;
-            Vector3D n;
-            for (int i = 0; i < 3; i++) iss >> n[i];
-            tempMesh.vertNormals.push_back(n);
-        }
-        else if (!line.compare(0, 3, "vt ")) {
-            iss >> trash >> trash;
-            Coord2D uv;
-            for (int i = 0; i < 2; i++) iss >> uv[i];
-            tempMesh.vertUVs.push_back(uv);
-        }
-        else if (!line.compare(0, 2, "f ")) {
-            std::vector<unsigned> f;
-            int itrash, idx;
-            iss >> trash;
-            while (iss >> idx >> trash >> itrash >> trash >> itrash) {
-                idx--; // in wavefront obj all indices start at 1, not zero
-                tempMesh.indices.push_back(idx);
-                f.push_back(idx);
-                (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                minX = std::min(minX, v_p.x);
+                minY = std::min(minY, v_p.y);
+                minZ = std::min(minZ, v_p.z);
+                maxX = std::max(maxX, v_p.x);
+                maxY = std::max(maxY, v_p.y);
+                maxZ = std::max(maxZ, v_p.z);
+                ver.worldSpacePos = v_p;
+                tempMesh.vertices.push_back(ver);
             }
-            tempMesh.faces.push_back(f);
+            else if (!line.compare(0, 3, "vn ")) {
+                iss >> trash >> trash;
+                Vector3D n;
+                for (int i = 0; i < 3; i++) iss >> n[i];
+                tempMesh.vertNormals.push_back(n);
+            }
+            else if (!line.compare(0, 3, "vt ")) {
+                iss >> trash >> trash;
+                Coord2D uv;
+                for (int i = 0; i < 2; i++) iss >> uv[i];
+                tempMesh.vertUVs.push_back(uv);
+            }
+            else if (!line.compare(0, 2, "f ")) {
+                std::vector<unsigned> f;
+                int itrash, idx;
+                iss >> trash;
+                while (iss >> idx >> trash >> itrash >> trash >> itrash) {
+                    idx--; // in wavefront obj all indices start at 1, not zero
+                    tempMesh.indices.push_back(idx);
+                    f.push_back(idx);
+                    (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                }
+                tempMesh.faces.push_back(f);
+            }
         }
+        vertexCount += tempMesh.vertices.size();
+        triangleCount += tempMesh.faces.size();
+        tempMesh.diffuseTextureIndex = loadMaterialTextures(*(path), "diffuse");
+        tempMesh.specularTextureIndex = loadMaterialTextures(*(path), "specular");
+        meshes.push_back(tempMesh);
     }
-    vertexCount += tempMesh.vertices.size();
-    triangleCount += tempMesh.faces.size();
-    meshes.push_back(tempMesh);
+    
     for (int l = 0; l < meshes.size(); ++l) {
         if (meshes[l].vertNormals.size() == meshes[l].vertices.size()) {
             for (int i = 0; i < meshes[l].vertices.size(); ++i) {
@@ -86,9 +93,6 @@ void Model::loadModel(QString path)
                 meshes[l].vertices[i].texCoord = Coord2D(0.0f, 0.0f);
             }
         }
-
-        meshes[l].diffuseTextureIndex = loadMaterialTextures(path, "diffuse");
-        meshes[l].specularTextureIndex = loadMaterialTextures(path, "specular");
     }
 }
 

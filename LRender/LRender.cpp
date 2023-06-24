@@ -82,9 +82,9 @@ void LRender::SetLightDir()
 
 void LRender::on_actionopen_file_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, "Open Model File", "", "OBJ(*.obj)");
-    if (!filePath.isEmpty())
-        ui->RenderWidget->LoadModel(filePath);
+    QStringList filePaths = QFileDialog::getOpenFileNames(this, "Open Model File", "", "OBJ(*.obj)");
+    if (!filePaths.isEmpty())
+        ui->RenderWidget->LoadModel(filePaths);
 }
 
 void LRender::on_actionsave_image_triggered()
