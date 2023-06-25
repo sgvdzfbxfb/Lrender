@@ -13,13 +13,6 @@
 
 class Shader;
 
-struct EdgeEquation
-{
-    VectorI3D As,Bs,Cs;
-    EdgeEquation(const Triangle &tri);
-    Vector3D GetBarycentric(VectorI3D val);
-};
-
 class SRendererDevice
 {
 public:

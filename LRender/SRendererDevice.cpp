@@ -4,29 +4,11 @@
 
 /********************************************************************************/
 // helper functions
-
-static inline bool JudgeOnTopLeftEdge(CoordI2D v0, CoordI2D v1)
-{
-    return (v0.y > v1.y) || (v0.x > v1.x && v1.y == v0.y);
-}
-
 static inline bool JudgeInsideTriangle(Vector3D bc_screen)
 {
     bool flag = true;
     if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) flag = false;
     return flag;
-}
-
-template<class T>
-static inline T CorrectPerspective(float viewDepth, std::vector<T> attribute, Triangle& tri, glm::vec3& barycentric)
-{
-    return viewDepth * (barycentric.x * attribute[0] / tri[0].clipSpacePos.w + barycentric.y * attribute[1] / tri[1].clipSpacePos.w + barycentric.z * attribute[2] / tri[2].clipSpacePos.w);
-}
-
-template<class T>
-static inline T CalculateInterpolation(T a, T b, T c, Vector3D &barycentric)
-{
-    return a * barycentric.x + b * barycentric.y + c * barycentric.z;
 }
 
 template<class T>
@@ -133,26 +115,6 @@ CoordI4D SRendererDevice::GetBoundingBox(Triangle & tri)
         yMax < h - 1 ? yMax : h - 1};
 }
 
-/********************************************************************************/
-// struct EdgeEquation implementation
-// see in https://zhuanlan.zhihu.com/p/140926917
-
-EdgeEquation::EdgeEquation(const Triangle &tri)
-{
-    As = {
-        tri[0].screenPos.y - tri[1].screenPos.y,
-        tri[1].screenPos.y - tri[2].screenPos.y,
-        tri[2].screenPos.y - tri[0].screenPos.y};
-    Bs = {
-        tri[1].screenPos.x - tri[0].screenPos.x,
-        tri[2].screenPos.x - tri[1].screenPos.x,
-        tri[0].screenPos.x - tri[2].screenPos.x};
-    Cs = {
-        tri[0].screenPos.x * tri[1].screenPos.y - tri[0].screenPos.y * tri[1].screenPos.x,
-        tri[1].screenPos.x * tri[2].screenPos.y - tri[1].screenPos.y * tri[2].screenPos.x,
-        tri[2].screenPos.x * tri[0].screenPos.y - tri[2].screenPos.y * tri[0].screenPos.x};
-}
-
 Vector3D SRendererDevice::GetBarycentric(Triangle& pts, CoordI2D P) {
     Vector3D u1(pts[2].screenPos.x - pts[0].screenPos.x, pts[1].screenPos.x - pts[0].screenPos.x, pts[0].screenPos.x - P[0]);
     Vector3D u2(pts[2].screenPos.y - pts[0].screenPos.y, pts[1].screenPos.y - pts[0].screenPos.y, pts[0].screenPos.y - P[1]);
@@ -205,7 +167,6 @@ void SRendererDevice::RasterizationTriangle(Triangle &tri)
     int yMin = boundingBox[1];
     int xMax = boundingBox[2];
     int yMax = boundingBox[3];
-    EdgeEquation triEdge(tri);
     Vector3D P;
     Fragment frag;
     for (P.x = xMin; P.x <= xMax; P.x++)
