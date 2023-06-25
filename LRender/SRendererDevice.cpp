@@ -10,7 +10,7 @@ static inline bool JudgeOnTopLeftEdge(CoordI2D v0, CoordI2D v1)
     return (v0.y > v1.y) || (v0.x > v1.x && v1.y == v0.y);
 }
 
-bool JudgeInsideTriangle(Vector3D bc_screen)
+static inline bool JudgeInsideTriangle(Vector3D bc_screen)
 {
     bool flag = true;
     if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) flag = false;
@@ -213,11 +213,9 @@ void SRendererDevice::RasterizationTriangle(Triangle &tri)
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
             Vector3D bc_screen = GetBarycentric(tri, CoordI2D(P.x, P.y));
-            //qDebug() << "111" << bc_screen.x << bc_screen.y << bc_screen.z;
             if (JudgeInsideTriangle(bc_screen)) {
-                //qDebug() << "111" << P.x << P.y;
                 P.z = 0;
-                for (int i = 0; i < 3; i++) P.z += tri[i].worldSpacePos[2] * bc_screen[i];
+                for (int i = 0; i < 3; i++) P.z += tri[i].screenDepth * bc_screen[i];
                 //frameBuffer.SetPixel(P.x, P.y, Color(1.0, 1.0, 1.0));
                 if (frameBuffer.JudgeDepth(P.x, P.y, P.z))
                 {
