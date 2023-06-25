@@ -10,14 +10,11 @@ static inline bool JudgeOnTopLeftEdge(CoordI2D v0, CoordI2D v1)
     return (v0.y > v1.y) || (v0.x > v1.x && v1.y == v0.y);
 }
 
-static inline bool JudgeInsideTriangle(EdgeEquation& triEdge,VectorI3D res)
+bool JudgeInsideTriangle(Vector3D bc_screen)
 {
     bool flag = true;
-    if(res.x == 0) flag &= triEdge.topLeftFlag[0];
-    if(res.y == 0) flag &= triEdge.topLeftFlag[1];
-    if(res.z == 0) flag &= triEdge.topLeftFlag[2];
-//    return flag && res.x >= 0 && res.y >=0 && res.z >= 0;
-    return flag && ((res.x >= 0 && res.y >= 0 && res.z >=0) || (res.x <= 0 && res.y <= 0 && res.z <= 0));
+    if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) flag = false;
+    return flag;
 }
 
 template<class T>
@@ -104,15 +101,15 @@ std::vector<Triangle> ConstructTriangle(std::vector<Vertex> vertexList)
     return res;
 }
 
-Fragment ConstructFragment(int x, int y, float z, float viewDepth, Triangle& tri, Vector3D& barycentric)
+Fragment ConstructFragment(int x, int y, float z, Triangle& tri, Vector3D& barycentric)
 {
     Fragment frag;
     frag.screenPos.x = x;
     frag.screenPos.y = y;
     frag.screenDepth = z;
-    frag.worldSpacePos = CorrectPerspective(viewDepth, std::vector<Color>{tri[0].worldSpacePos, tri[1].worldSpacePos, tri[2].worldSpacePos}, tri, barycentric);
-    frag.normal = CorrectPerspective(viewDepth, std::vector<Vector3D>{tri[0].normal, tri[1].normal, tri[2].normal}, tri, barycentric);
-    frag.texCoord = CorrectPerspective(viewDepth, std::vector<Coord2D>{tri[0].texCoord, tri[1].texCoord, tri[2].texCoord}, tri, barycentric);
+    for (int i = 0; i < 3; i++) frag.worldSpacePos += tri[i].worldSpacePos * barycentric[i];
+    for (int i = 0; i < 3; i++) frag.normal += tri[i].normal * barycentric[i];
+    for (int i = 0; i < 3; i++) frag.texCoord += tri[i].texCoord * barycentric[i];
     return frag;
 }
 
@@ -142,44 +139,29 @@ CoordI4D SRendererDevice::GetBoundingBox(Triangle & tri)
 
 EdgeEquation::EdgeEquation(const Triangle &tri)
 {
-    I = {
+    As = {
         tri[0].screenPos.y - tri[1].screenPos.y,
         tri[1].screenPos.y - tri[2].screenPos.y,
         tri[2].screenPos.y - tri[0].screenPos.y};
-    J = {
+    Bs = {
         tri[1].screenPos.x - tri[0].screenPos.x,
         tri[2].screenPos.x - tri[1].screenPos.x,
         tri[0].screenPos.x - tri[2].screenPos.x};
-    K = {
+    Cs = {
         tri[0].screenPos.x * tri[1].screenPos.y - tri[0].screenPos.y * tri[1].screenPos.x,
         tri[1].screenPos.x * tri[2].screenPos.y - tri[1].screenPos.y * tri[2].screenPos.x,
         tri[2].screenPos.x * tri[0].screenPos.y - tri[2].screenPos.y * tri[0].screenPos.x};
-    topLeftFlag[0] = JudgeOnTopLeftEdge(tri[0].screenPos,tri[1].screenPos);
-    topLeftFlag[1] = JudgeOnTopLeftEdge(tri[1].screenPos,tri[2].screenPos);
-    topLeftFlag[2] = JudgeOnTopLeftEdge(tri[2].screenPos,tri[0].screenPos);
-    twoArea = K[0] + K[1] + K[2];
-    delta = 1.f / twoArea;
 }
 
-VectorI3D EdgeEquation::GetResult(int x, int y)
-{
-    VectorI3D res = I * x + J * y + K;
-    return res;
-}
-
-void EdgeEquation::UpX(VectorI3D& res)
-{
-    res += I;
-}
-
-void EdgeEquation::UpY(VectorI3D& res)
-{
-    res += J;
-}
-
-Vector3D EdgeEquation::GetBarycentric(VectorI3D val)
-{
-    return {val.y * delta, val.z * delta, val.x * delta};
+Vector3D SRendererDevice::GetBarycentric(Triangle& pts, CoordI2D P) {
+    Vector3D u1(pts[2].screenPos.x - pts[0].screenPos.x, pts[1].screenPos.x - pts[0].screenPos.x, pts[0].screenPos.x - P[0]);
+    Vector3D u2(pts[2].screenPos.y - pts[0].screenPos.y, pts[1].screenPos.y - pts[0].screenPos.y, pts[0].screenPos.y - P[1]);
+    Vector3D u = glm::cross(u1, u2);
+    /* `pts` and `P` has integer value as coordinates
+       so `abs(u[2])` < 1 means `u[2]` is 0, that means
+       triangle is degenerate, in this case return something with negative coordinates */
+    if (std::abs(u.z) < 1) return Vector3D(-1, 1, 1);
+    return Vector3D(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
 }
 
 /********************************************************************************/
@@ -218,40 +200,31 @@ SRendererDevice::SRendererDevice(int _w, int _h):shader(nullptr), w(_w), h(_h), 
 
 void SRendererDevice::RasterizationTriangle(Triangle &tri)
 {
-    Triangle Tri = tri;
+    CoordI4D boundingBox = GetBoundingBox(tri);
+    int xMin = boundingBox[0];
+    int yMin = boundingBox[1];
+    int xMax = boundingBox[2];
+    int yMax = boundingBox[3];
+    EdgeEquation triEdge(tri);
+    Vector3D P;
     Fragment frag;
-    if (Tri[0].worldSpacePos.y == Tri[1].worldSpacePos.y && Tri[0].worldSpacePos.y == Tri[2].worldSpacePos.y) return; // i dont care about degenerate triangles
-    if (Tri[0].worldSpacePos.y > Tri[1].worldSpacePos.y)
+    for (P.x = xMin; P.x <= xMax; P.x++)
     {
-        std::swap(Tri[0].worldSpacePos, Tri[1].worldSpacePos);
-    }
-    if (Tri[0].worldSpacePos.y > Tri[2].worldSpacePos.y)
-    {
-        std::swap(Tri[0].worldSpacePos, Tri[2].worldSpacePos);
-    }
-    if (Tri[1].worldSpacePos.y > Tri[2].worldSpacePos.y)
-    {
-        std::swap(Tri[1].worldSpacePos, Tri[2].worldSpacePos);
-    }
-
-    float total_height = Tri[2].worldSpacePos.y - Tri[0].worldSpacePos.y;
-    for (float i = 0; i < total_height; i++) {
-        bool second_half = i > Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y || Tri[1].worldSpacePos.y == Tri[0].worldSpacePos.y;
-        float segment_height = second_half ? Tri[2].worldSpacePos.y - Tri[1].worldSpacePos.y : Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y;
-        float alpha = (float)i / total_height;
-        float beta = (float)(i - (second_half ? Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y : 0)) / segment_height; // be careful: with above conditions no division by zero here
-        Vector3D A = Tri[0].worldSpacePos + Vector3D(Tri[2].worldSpacePos - Tri[0].worldSpacePos) * alpha;
-        Vector3D B = second_half ? Tri[1].worldSpacePos + Vector3D(Tri[2].worldSpacePos - Tri[1].worldSpacePos) * beta : Tri[0].worldSpacePos + Vector3D(Tri[1].worldSpacePos - Tri[0].worldSpacePos) * beta;
-        if (A.x > B.x) { std::swap(A, B); }
-        for (float j = A.x; j <= B.x; j++) {
-            float phi = B.x == A.x ? 1.0 : (j - A.x) / (B.x - A.x);
-            Vector3D P = A + (B - A) * phi;
-
-            if (frameBuffer.JudgeDepth(i, j, P.z))
-            {
-                frag = ConstructFragment(i, j, P.z, Tri);
-                shader->FragmentShader(frag);
-                frameBuffer.SetPixel(frag.screenPos.x, frag.screenPos.y, frag.fragmentColor);
+        for (P.y = yMin; P.y <= yMax; P.y++)
+        {
+            Vector3D bc_screen = GetBarycentric(tri, CoordI2D(P.x, P.y));
+            //qDebug() << "111" << bc_screen.x << bc_screen.y << bc_screen.z;
+            if (JudgeInsideTriangle(bc_screen)) {
+                //qDebug() << "111" << P.x << P.y;
+                P.z = 0;
+                for (int i = 0; i < 3; i++) P.z += tri[i].worldSpacePos[2] * bc_screen[i];
+                //frameBuffer.SetPixel(P.x, P.y, Color(1.0, 1.0, 1.0));
+                if (frameBuffer.JudgeDepth(P.x, P.y, P.z))
+                {
+                    frag = ConstructFragment(P.x, P.y, P.z, tri, bc_screen);
+                    shader->FragmentShader(frag);
+                    frameBuffer.SetPixel(P.x, P.y, frag.fragmentColor);
+                }
             }
         }
     }

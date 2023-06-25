@@ -15,14 +15,8 @@ class Shader;
 
 struct EdgeEquation
 {
-    VectorI3D I,J,K;
-    bool topLeftFlag[3];
-    int twoArea;
-    float delta;
+    VectorI3D As,Bs,Cs;
     EdgeEquation(const Triangle &tri);
-    VectorI3D GetResult(int x, int y);
-    void UpX(VectorI3D& res);
-    void UpY(VectorI3D& res);
     Vector3D GetBarycentric(VectorI3D val);
 };
 
@@ -73,6 +67,7 @@ private:
     void ConvertToScreen(Triangle &tri);
     void ExecutePerspectiveDivision(Triangle& tri);
     CoordI4D GetBoundingBox(Triangle & tri);
+    Vector3D GetBarycentric(Triangle& pts, CoordI2D P);
     std::vector<Triangle> ClipTriangle(Triangle& tri);
     std::optional<Line> ClipLine(Line& line);
 };
