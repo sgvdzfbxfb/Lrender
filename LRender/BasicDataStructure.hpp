@@ -50,12 +50,12 @@ using Line = std::array<CoordI2D, 2>;
 
 struct Fragment
 {
-    Coord3D worldSpacePos;
-    CoordI2D screenPos;
-    float screenDepth;
-    Color fragmentColor;
-    Vector3D normal;
-    Coord2D texCoord;
+    Coord3D worldSpacePos = Coord3D(0.0, 0.0, 0.0);
+    CoordI2D screenPos = CoordI2D(0, 0);
+    float screenDepth = FLT_MAX;
+    Color fragmentColor = Color(0.0, 0.0, 0.0);
+    Vector3D normal = Vector3D(0.0, 0.0, 0.0);
+    Coord2D texCoord = Coord2D(0.0, 0.0);
 };
 
 struct Light

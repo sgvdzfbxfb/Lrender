@@ -216,7 +216,6 @@ void SRendererDevice::RasterizationTriangle(Triangle &tri)
             if (JudgeInsideTriangle(bc_screen)) {
                 P.z = 0;
                 for (int i = 0; i < 3; i++) P.z += tri[i].screenDepth * bc_screen[i];
-                //frameBuffer.SetPixel(P.x, P.y, Color(1.0, 1.0, 1.0));
                 if (frameBuffer.JudgeDepth(P.x, P.y, P.z))
                 {
                     frag = ConstructFragment(P.x, P.y, P.z, tri, bc_screen);
