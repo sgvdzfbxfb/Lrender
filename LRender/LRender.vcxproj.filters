@@ -98,4 +98,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="About.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtUic Include="LRender.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtUic Include="LRenderWidget.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+  </ItemGroup>
 </Project>

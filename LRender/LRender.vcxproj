@@ -134,6 +134,11 @@
     <ClInclude Include="SRendererDevice.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="About.ui" />
+    <QtUic Include="LRender.ui" />
+    <QtUic Include="LRenderWidget.ui" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
