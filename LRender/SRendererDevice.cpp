@@ -218,36 +218,42 @@ SRendererDevice::SRendererDevice(int _w, int _h):shader(nullptr), w(_w), h(_h), 
 
 void SRendererDevice::RasterizationTriangle(Triangle &tri)
 {
-    CoordI4D boundingBox = GetBoundingBox(tri);
-    int xMin = boundingBox[0];
-    int yMin = boundingBox[1];
-    int xMax = boundingBox[2];
-    int yMax = boundingBox[3];
-    EdgeEquation triEdge(tri);
-    if(faceCulling && triEdge.twoArea <= 0) return;
-    else if(triEdge.twoArea == 0) return;
+    Triangle Tri = tri;
     Fragment frag;
-    VectorI3D cy = triEdge.GetResult(xMin, yMin);
-    for(int y = yMin; y <= yMax; y++)
+    if (Tri[0].worldSpacePos.y == Tri[1].worldSpacePos.y && Tri[0].worldSpacePos.y == Tri[2].worldSpacePos.y) return; // i dont care about degenerate triangles
+    if (Tri[0].worldSpacePos.y > Tri[1].worldSpacePos.y)
     {
-        VectorI3D cx = cy;
-        for(int x = xMin; x <= xMax; x++)
-        {
-            if(JudgeInsideTriangle(triEdge, cx))
+        std::swap(Tri[0].worldSpacePos, Tri[1].worldSpacePos);
+    }
+    if (Tri[0].worldSpacePos.y > Tri[2].worldSpacePos.y)
+    {
+        std::swap(Tri[0].worldSpacePos, Tri[2].worldSpacePos);
+    }
+    if (Tri[1].worldSpacePos.y > Tri[2].worldSpacePos.y)
+    {
+        std::swap(Tri[1].worldSpacePos, Tri[2].worldSpacePos);
+    }
+
+    float total_height = Tri[2].worldSpacePos.y - Tri[0].worldSpacePos.y;
+    for (float i = 0; i < total_height; i++) {
+        bool second_half = i > Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y || Tri[1].worldSpacePos.y == Tri[0].worldSpacePos.y;
+        float segment_height = second_half ? Tri[2].worldSpacePos.y - Tri[1].worldSpacePos.y : Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y;
+        float alpha = (float)i / total_height;
+        float beta = (float)(i - (second_half ? Tri[1].worldSpacePos.y - Tri[0].worldSpacePos.y : 0)) / segment_height; // be careful: with above conditions no division by zero here
+        Vector3D A = Tri[0].worldSpacePos + Vector3D(Tri[2].worldSpacePos - Tri[0].worldSpacePos) * alpha;
+        Vector3D B = second_half ? Tri[1].worldSpacePos + Vector3D(Tri[2].worldSpacePos - Tri[1].worldSpacePos) * beta : Tri[0].worldSpacePos + Vector3D(Tri[1].worldSpacePos - Tri[0].worldSpacePos) * beta;
+        if (A.x > B.x) { std::swap(A, B); }
+        for (float j = A.x; j <= B.x; j++) {
+            float phi = B.x == A.x ? 1.0 : (j - A.x) / (B.x - A.x);
+            Vector3D P = A + (B - A) * phi;
+
+            if (frameBuffer.JudgeDepth(i, j, P.z))
             {
-                Vector3D barycentric = triEdge.GetBarycentric(cx);
-                float screenDepth = CalculateInterpolation(tri[0].screenDepth, tri[1].screenDepth, tri[2].screenDepth, barycentric);
-                if (frameBuffer.JudgeDepth(x, y, screenDepth))
-                {
-                    float viewDepth = 1.0f / (barycentric.x / tri[0].ndcSpacePos.w + barycentric.y / tri[1].ndcSpacePos.w + barycentric.z / tri[2].ndcSpacePos.w);
-                    frag = ConstructFragment(x, y, screenDepth, viewDepth, tri, barycentric);
-                    shader->FragmentShader(frag);
-                    frameBuffer.SetPixel(frag.screenPos.x,frag.screenPos.y,frag.fragmentColor);
-                }
+                frag = ConstructFragment(i, j, P.z, Tri);
+                shader->FragmentShader(frag);
+                frameBuffer.SetPixel(frag.screenPos.x, frag.screenPos.y, frag.fragmentColor);
             }
-            triEdge.UpX(cx);
         }
-        triEdge.UpY(cy);
     }
 }
 
