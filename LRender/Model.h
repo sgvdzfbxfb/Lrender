@@ -29,7 +29,7 @@ class Model
         std::vector<Texture> textureList;
         QString directory;
         void loadModel(QStringList paths);
-        void computeNormal(int meshIdx);
+        void computeNormal(Mesh& inMesh);
         int loadMaterialTextures(QString path, std::string type);
 };
 

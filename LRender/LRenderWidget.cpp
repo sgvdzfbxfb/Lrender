@@ -174,11 +174,6 @@ void LRenderWidget::Render()
     SRendererDevice::GetInstance().shader->Projection = camera.GetProjectionMatrix();
     SRendererDevice::GetInstance().shader->eyePos = camera.position;
     SRendererDevice::GetInstance().shader->material.shininess = 150.f;
-//    auto start = std::chrono::system_clock::now();
     model->Draw();
-//    auto finish = std::chrono::system_clock::now();
-//    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
-//    auto cost = double(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
-//    qDebug() << cost;
     update();
 }

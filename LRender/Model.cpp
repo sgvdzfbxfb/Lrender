@@ -20,12 +20,14 @@ void Model::loadModel(QStringList paths)
     int i = 0;
     for (; path != itend; path++, i++) {
         Mesh tempMesh;
-        std::ifstream in;
+        std::ifstream in, in_forCount;
         in.open(path->toStdString(), std::ifstream::in);
-        if (in.fail()) return;
+        in_forCount.open(path->toStdString(), std::ifstream::in);
+        if (in.fail() || in_forCount.fail()) return;
         std::string line;
-        while (!in.eof()) {
-            std::getline(in, line);
+        int v_count = 0, vn_count = 0, vt_count = 0, f_count = 0;
+        while (!in_forCount.eof()) {
+            std::getline(in_forCount, line);
             std::istringstream iss(line.c_str());
             char trash;
             if (!line.compare(0, 2, "v ")) {
@@ -42,28 +44,69 @@ void Model::loadModel(QStringList paths)
                 maxZ = std::max(maxZ, v_p.z);
                 ver.worldSpacePos = v_p;
                 tempMesh.vertices.push_back(ver);
+                v_count++;
             }
             else if (!line.compare(0, 3, "vn ")) {
                 iss >> trash >> trash;
                 Vector3D n;
                 for (int i = 0; i < 3; i++) iss >> n[i];
                 tempMesh.vertNormals.push_back(n);
+                vn_count++;
             }
             else if (!line.compare(0, 3, "vt ")) {
                 iss >> trash >> trash;
                 Coord2D uv;
                 for (int i = 0; i < 2; i++) iss >> uv[i];
                 tempMesh.vertUVs.push_back(uv);
+                vt_count++;
             }
             else if (!line.compare(0, 2, "f ")) {
+                f_count++;
+            }
+        }
+        while (!in.eof()) {
+            std::getline(in, line);
+            std::istringstream iss(line.c_str());
+            char trash;
+            if (!line.compare(0, 2, "f ")) {
                 std::vector<unsigned> f;
-                int itrash, idx;
+                int idx, vn_idx, vt_idx;
                 iss >> trash;
-                while (iss >> idx >> trash >> itrash >> trash >> itrash) {
-                    idx--; // in wavefront obj all indices start at 1, not zero
-                    tempMesh.indices.push_back(idx);
-                    f.push_back(idx);
-                    (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                if (vn_count == 0 && vt_count == 0) {
+                    while (iss >> idx) {
+                        idx--;
+                        tempMesh.indices.push_back(idx);
+                        f.push_back(idx);
+                        (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                    }
+                }
+                else if (vn_count != 0 && vn_count == v_count && vt_count == 0) {
+                    while (iss >> idx >> trash >> vn_idx) {
+                        idx--; vn_idx--;
+                        tempMesh.indices.push_back(idx);
+                        f.push_back(idx);
+                        tempMesh.vertices[idx].normal = tempMesh.vertNormals[vn_idx];
+                        (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                    }
+                }
+                else if (vn_count == 0 && vt_count != 0 && vt_count == v_count) {
+                    while (iss >> idx >> trash >> vt_idx) {
+                        idx--; vt_idx--;
+                        tempMesh.indices.push_back(idx);
+                        f.push_back(idx);
+                        tempMesh.vertices[idx].texCoord = tempMesh.vertUVs[vt_idx];
+                        (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                    }
+                }
+                else if (vn_count != 0 && vn_count == v_count && vt_count != 0 && vt_count == v_count) {
+                    while (iss >> idx >> trash >> vt_idx >> trash >> vn_idx) {
+                        idx--; vn_idx--; vt_idx--;
+                        tempMesh.indices.push_back(idx);
+                        f.push_back(idx);
+                        tempMesh.vertices[idx].normal = tempMesh.vertNormals[vn_idx];
+                        tempMesh.vertices[idx].texCoord = tempMesh.vertUVs[vt_idx];
+                        (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                    }
                 }
                 tempMesh.faces.push_back(f);
             }
@@ -72,48 +115,34 @@ void Model::loadModel(QStringList paths)
         triangleCount += tempMesh.faces.size();
         tempMesh.diffuseTextureIndex = loadMaterialTextures(*(path), "diffuse");
         tempMesh.specularTextureIndex = loadMaterialTextures(*(path), "specular");
+        if (vn_count == 0) computeNormal(tempMesh);
+        if (vt_count == 0) {
+            for (int i = 0; i < tempMesh.vertices.size(); ++i) {
+                tempMesh.vertices[i].texCoord = Coord2D(0.0f, 0.0f);
+            }
+        }
         meshes.push_back(tempMesh);
-    }
-    
-    for (int l = 0; l < meshes.size(); ++l) {
-        if (meshes[l].vertNormals.size() == meshes[l].vertices.size()) {
-            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
-                meshes[l].vertices[i].normal = meshes[l].vertNormals[i];
-            }
-        }
-        else computeNormal(l);
-
-        if (meshes[l].vertUVs.size() == meshes[l].vertices.size()) {
-            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
-                meshes[l].vertices[i].texCoord = meshes[l].vertUVs[i];
-            }
-        }
-        else {
-            for (int i = 0; i < meshes[l].vertices.size(); ++i) {
-                meshes[l].vertices[i].texCoord = Coord2D(0.0f, 0.0f);
-            }
-        }
     }
 }
 
-void Model::computeNormal(int meshIdx)
+void Model::computeNormal(Mesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
-    for (int i = 0; i < meshes[meshIdx].indices.size(); i += 3) {
-        Vector3D AB = (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i + 1])]).worldSpacePos - (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i])]).worldSpacePos;
-        Vector3D AC = (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i + 2])]).worldSpacePos - (meshes[meshIdx].vertices[(meshes[meshIdx].indices[i])]).worldSpacePos;
+    for (int i = 0; i < inMesh.indices.size(); i += 3) {
+        Vector3D AB = (inMesh.vertices[(inMesh.indices[i + 1])]).worldSpacePos - (inMesh.vertices[(inMesh.indices[i])]).worldSpacePos;
+        Vector3D AC = (inMesh.vertices[(inMesh.indices[i + 2])]).worldSpacePos - (inMesh.vertices[(inMesh.indices[i])]).worldSpacePos;
         Vector3D faceN = glm::normalize(glm::cross(AB, AC));
         faceNormals.push_back(faceN);
     }
-    for (int i = 0; i < meshes[meshIdx].vertices.size(); ++i) {
-        std::vector<int> tempMs = meshes[meshIdx].verToFace[i];
+    for (int i = 0; i < inMesh.vertices.size(); ++i) {
+        std::vector<int> tempMs = inMesh.verToFace[i];
         Vector3D verNave(0.0, 0.0, 0.0);
         for (int j = 0; j < tempMs.size(); ++j) {
             verNave += faceNormals[tempMs[j]];
         }
         verNave /= tempMs.size();
         verNave = glm::normalize(verNave);
-        meshes[meshIdx].vertices[i].normal = verNave;
+        inMesh.vertices[i].normal = verNave;
     }
 }
 
