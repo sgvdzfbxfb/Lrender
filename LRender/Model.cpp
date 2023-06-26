@@ -1,6 +1,25 @@
 #include "Model.h"
 #include <QDebug>
 
+
+std::vector<std::string> splitOBJ(const std::string& str, const std::string& delim) {
+    std::vector<std::string> res;
+    if ("" == str) return res;
+    char* strs = new char[str.length() + 1];
+    strcpy(strs, str.c_str());
+
+    char* d = new char[delim.length() + 1];
+    strcpy(d, delim.c_str());
+
+    char* p = strtok(strs, d);
+    while (p) {
+        std::string s = p;
+        res.push_back(s);
+        p = strtok(NULL, d);
+    }
+    return res;
+}
+
 Model::Model(QStringList paths)
 {
     loadModel(paths);
@@ -66,14 +85,15 @@ void Model::loadModel(QStringList paths)
         }
         while (!in.eof()) {
             std::getline(in, line);
-            std::istringstream iss(line.c_str());
-            char trash;
             if (!line.compare(0, 2, "f ")) {
                 std::vector<unsigned> f;
                 int idx, vn_idx, vt_idx;
-                iss >> trash;
+                std::vector<std::string> frg_res = splitOBJ(line, " ");
+                //qDebug() << "frg_res" << frg_res.size();
                 if (vn_count == 0 && vt_count == 0) {
-                    while (iss >> idx) {
+                    for (int k = 1; k < frg_res.size(); ++k) {
+                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        idx = atoi(idxs[0].c_str());
                         idx--;
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
@@ -81,7 +101,9 @@ void Model::loadModel(QStringList paths)
                     }
                 }
                 else if (vn_count != 0 && vn_count == v_count && vt_count == 0) {
-                    while (iss >> idx >> trash >> vn_idx) {
+                    for (int k = 1; k < frg_res.size(); ++k) {
+                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
                         idx--; vn_idx--;
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
@@ -90,7 +112,9 @@ void Model::loadModel(QStringList paths)
                     }
                 }
                 else if (vn_count == 0 && vt_count != 0 && vt_count == v_count) {
-                    while (iss >> idx >> trash >> vt_idx) {
+                    for (int k = 1; k < frg_res.size(); ++k) {
+                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
                         idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
@@ -99,7 +123,11 @@ void Model::loadModel(QStringList paths)
                     }
                 }
                 else if (vn_count != 0 && vn_count == v_count && vt_count != 0 && vt_count == v_count) {
-                    while (iss >> idx >> trash >> vt_idx >> trash >> vn_idx) {
+                    for (int k = 1; k < frg_res.size(); ++k) {
+                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        //qDebug() << k << "idxs" << QString::fromStdString(idxs[0]);
+                        //qDebug() << k << "idxs" << idxs.size();
+                        idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
                         idx--; vn_idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
@@ -122,6 +150,7 @@ void Model::loadModel(QStringList paths)
             }
         }
         meshes.push_back(tempMesh);
+        qDebug() << "Model Id:" << i + 1 << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
     }
 }
 
