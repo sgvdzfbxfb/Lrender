@@ -1,24 +1,24 @@
 #include "texture.h"
 #include <QDebug>
 
-bool Texture::loadFromImage(QString path)
+bool Texture::getTexture(QString path)
 {
     this->path = path;
     if(texture.load(path))
     {
         texture = texture.mirrored();
-        w = texture.width();
-        h = texture.height();
+        imgWidth = texture.width();
+        imgHeight = texture.height();
         return true;
     }
     return false;
 }
 
-Color Texture::sample2D(Coord2D coord)
+Color Texture::getColorFromUv(Coord2D coord)
 {
-    int x = static_cast<int>(coord.x * w - 0.5f) % w;
-    int y = static_cast<int>(coord.y * h - 0.5f) % h;
-    x = x < 0 ? w + x : x;
-    y = y < 0 ? h + y : y;
+    int x = static_cast<int>(coord.x * imgWidth - 0.5f) % imgWidth;
+    int y = static_cast<int>(coord.y * imgHeight - 0.5f) % imgHeight;
+    x = x < 0 ? imgWidth + x : x;
+    y = y < 0 ? imgHeight + y : y;
     return Color(texture.pixelColor(x, y).red() / 255.f, texture.pixelColor(x, y).green() / 255.f, texture.pixelColor(x, y).blue() / 255.f);
 }

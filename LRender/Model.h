@@ -14,9 +14,9 @@ class Model
     public:
         Model(QStringList paths);
         void draw();
-        Coord3D centre;
-        int triangleCount{0};
-        int vertexCount{0};
+        Coord3D modelCenter;
+        int faceNum{0};
+        int vertexNum{0};
         float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
     private:

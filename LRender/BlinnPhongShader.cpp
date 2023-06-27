@@ -11,8 +11,8 @@ void BlinnPhongShader::fragmentShader(Fragment &fragment)
 {
     Color diffuseColor = {0.6f,0.6f,0.6f};
     Color specularColor = {1.0f,1.0f,1.0f};
-    if(material.diffuse != -1) diffuseColor = renderAPI::API().textureList[material.diffuse].sample2D(fragment.texCoord);
-    if(material.specular != -1) specularColor = renderAPI::API().textureList[material.specular].sample2D(fragment.texCoord);
+    if(material.diffuse != -1) diffuseColor = renderAPI::API().textureList[material.diffuse].getColorFromUv(fragment.texCoord);
+    if(material.specular != -1) specularColor = renderAPI::API().textureList[material.specular].getColorFromUv(fragment.texCoord);
     Vector3D normal = glm::normalize(fragment.normal);
     Vector3D viewDir = glm::normalize(eyePos - fragment.worldSpacePos);
     auto calculateLight = [&](Light light)->Color

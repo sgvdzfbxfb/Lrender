@@ -13,10 +13,10 @@ glm::mat4 modelMatrix;
 
 LRenderWidget::LRenderWidget(QWidget *parent) :
     QWidget(parent),camera((float)DEFAULT_WIDTH/DEFAULT_HEIGHT, FIXED_CAMERA_FAR),
-    w(DEFAULT_WIDTH), h(DEFAULT_HEIGHT), ui(new Ui::LRenderWidget), model(nullptr)
+    scWidth(DEFAULT_WIDTH), scHeight(DEFAULT_HEIGHT), ui(new Ui::LRenderWidget), model(nullptr)
 {
     ui->setupUi(this);
-    setFixedSize(w, h);
+    setFixedSize(scWidth, scHeight);
     ui->FPSLabel->setStyleSheet("background:transparent");
     ui->FPSLabel->setVisible(false);
     initDevice();
@@ -34,7 +34,7 @@ LRenderWidget::~LRenderWidget()
 void LRenderWidget::resetCamera()
 {
     ui->FPSLabel->setVisible(true);
-    camera.setModel(model->centre,model->getYRange());
+    camera.setModel(model->modelCenter,model->getYRange());
     modelMatrix = glm::mat4(1.0f);
 }
 
@@ -81,13 +81,13 @@ void LRenderWidget::loadModel(QStringList paths)
     if(model != nullptr)
         delete model;
     model = newModel;
-    emit sendModelData(model->triangleCount,model->vertexCount);
+    emit sendModelData(model->faceNum,model->vertexNum);
     resetCamera();
 }
 
 void LRenderWidget::initDevice()
 {
-    renderAPI::init(w,h);
+    renderAPI::init(scWidth,scHeight);
     renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
     renderAPI::API().shader->lightList.push_back(Light());
 }
@@ -137,8 +137,8 @@ void LRenderWidget::processInput()
         if(!lastPos.isNull())
         {
             Vector2D motion = {(float)(currentPos - lastPos).x(),(float)(currentPos - lastPos).y()};
-            motion.x = (motion.x / w);
-            motion.y = (motion.y / h);
+            motion.x = (motion.x / scWidth);
+            motion.y = (motion.y / scHeight);
             if(currentBtns & Qt::LeftButton)
             {
                 camera.rotateAroundTarget(motion);

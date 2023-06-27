@@ -12,14 +12,14 @@ class Texture
         DIFFUSE,
         SPECLUAR
     };
-    int w;
-    int h;
+    int imgWidth;
+    int imgHeight;
     QImage texture;
 public:
     QString path;
     Texture() = default;
-    bool loadFromImage(QString path);
-    Color sample2D(Coord2D coord);
+    bool getTexture(QString path);
+    Color getColorFromUv(Coord2D coord);
 };
 
 #endif // TEXTURE_H

@@ -59,12 +59,11 @@ public slots:
     void render();
 
 private:
-    int w;
-    int h;
+    int scWidth;
+    int scHeight;
     QTimer timer;
     void processInput();
     void resetCamera();
-    void initUI();
     Ui::LRenderWidget *ui;
     Model* model;
 };

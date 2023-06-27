@@ -49,7 +49,7 @@ static inline std::bitset<N> getClipCode(T point, std::array<T, N>& clip)
     return res;
 }
 
-void renderAPI::executePerspectiveDivision(Triangle &tri)
+void renderAPI::perspectiveTrans(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
@@ -63,8 +63,8 @@ void renderAPI::convertToScreen(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        tri[i].screenPos.x = static_cast<int>(0.5f * w * (tri[i].ndcSpacePos.x + 1.0f) + 0.5f);
-        tri[i].screenPos.y = static_cast<int>(0.5f * h * (tri[i].ndcSpacePos.y + 1.0f) + 0.5f);
+        tri[i].screenPos.x = static_cast<int>(0.5f * width * (tri[i].ndcSpacePos.x + 1.0f) + 0.5f);
+        tri[i].screenPos.y = static_cast<int>(0.5f * height * (tri[i].ndcSpacePos.y + 1.0f) + 0.5f);
         tri[i].screenDepth = tri[i].ndcSpacePos.z;
     }
 }
@@ -94,10 +94,10 @@ Fragment constructFragment(int x, int y, float z, Triangle& tri, Vector3D& baryc
     return frag;
 }
 
-CoordI4D renderAPI::getBoundingBox(Triangle & tri)
+CoordI4D renderAPI::computeBoundingBox(Triangle & tri)
 {
-    int xMin = w - 1;
-    int yMin = h - 1;
+    int xMin = width - 1;
+    int yMin = height - 1;
     int xMax = 0;
     int yMax = 0;
     for(int i = 0; i < 3; i++)
@@ -110,11 +110,11 @@ CoordI4D renderAPI::getBoundingBox(Triangle & tri)
     return {
         xMin > 0 ? xMin : 0,
         yMin > 0 ? yMin : 0,
-        xMax < w - 1 ? xMax : w - 1,
-        yMax < h - 1 ? yMax : h - 1};
+        xMax < width - 1 ? xMax : width - 1,
+        yMax < height - 1 ? yMax : height - 1};
 }
 
-Vector3D renderAPI::getBarycentric(Triangle& pts, CoordI2D P) {
+Vector3D renderAPI::computeBarycentric(Triangle& pts, CoordI2D P) {
     Vector3D u1(pts[2].screenPos.x - pts[0].screenPos.x, pts[1].screenPos.x - pts[0].screenPos.x, pts[0].screenPos.x - P[0]);
     Vector3D u2(pts[2].screenPos.y - pts[0].screenPos.y, pts[1].screenPos.y - pts[0].screenPos.y, pts[0].screenPos.y - P[1]);
     Vector3D u = glm::cross(u1, u2);
@@ -126,39 +126,38 @@ Vector3D renderAPI::getBarycentric(Triangle& pts, CoordI2D P) {
 }
 
 // initiaize clip plane and screen border
-renderAPI::renderAPI(int _w, int _h):shader(nullptr), w(_w), h(_h), frame(w, h)
+renderAPI::renderAPI(int _w, int _h):shader(nullptr), width(_w), height(_h), frame(width, height)
 {
     {// set view planes
         // near
-        viewPlanes[0] = {0, 0, 1.f, 1.f};
+        viewBox[0] = {0, 0, 1.f, 1.f};
         // far
-        viewPlanes[1] = {0, 0, -1.f, 1.f};
+        viewBox[1] = {0, 0, -1.f, 1.f};
         // left
-        viewPlanes[2] = {1.f, 0, 0, 1.f};
+        viewBox[2] = {1.f, 0, 0, 1.f};
         // right
-        viewPlanes[3] = {-1.f, 0, 0, 1.f};
+        viewBox[3] = {-1.f, 0, 0, 1.f};
         // top
-        viewPlanes[4] = {0, 1.f, 0, 1.f};
+        viewBox[4] = {0, 1.f, 0, 1.f};
         // bottom
-        viewPlanes[5] = {0, -1.f, 0, 1.f};
+        viewBox[5] = {0, -1.f, 0, 1.f};
     }
     {// set screen border
         // left
-        screenLines[0] = {1.f, 0, 0};
+        screenEdge[0] = {1.f, 0, 0};
         // right
-        screenLines[1] = {-1.f, 0, (float)w};
+        screenEdge[1] = {-1.f, 0, (float)width};
         // bottom
-        screenLines[2] = {0, 1.f, 0};
+        screenEdge[2] = {0, 1.f, 0};
         // top
-        screenLines[3] = {0, -1.f, (float)h};
+        screenEdge[3] = {0, -1.f, (float)height};
     }
 }
 
 // half-space triangle rasterization algorithm
-
-void renderAPI::rasterizationTriangle(Triangle &tri)
+void renderAPI::facesRender(Triangle &tri)
 {
-    CoordI4D boundingBox = getBoundingBox(tri);
+    CoordI4D boundingBox = computeBoundingBox(tri);
     int xMin = boundingBox[0];
     int yMin = boundingBox[1];
     int xMax = boundingBox[2];
@@ -169,11 +168,11 @@ void renderAPI::rasterizationTriangle(Triangle &tri)
     {
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
-            Vector3D bc_screen = getBarycentric(tri, CoordI2D(P.x, P.y));
+            Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bc_screen)) {
                 P.z = 0;
                 for (int i = 0; i < 3; i++) P.z += tri[i].screenDepth * bc_screen[i];
-                if (frame.judgeDepth(P.x, P.y, P.z))
+                if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = constructFragment(P.x, P.y, P.z, tri, bc_screen);
                     shader->fragmentShader(frag);
@@ -187,10 +186,10 @@ void renderAPI::rasterizationTriangle(Triangle &tri)
 // Bresenham's line algorithm
 void renderAPI::drawLine(Line& line)
 {
-    int x0 = glm::clamp(static_cast<int>(line[0].x), 0, w - 1);
-    int x1 = glm::clamp(static_cast<int>(line[1].x), 0, w - 1);
-    int y0 = glm::clamp(static_cast<int>(line[0].y), 0, h - 1);
-    int y1 = glm::clamp(static_cast<int>(line[1].y), 0, h - 1);
+    int x0 = glm::clamp(static_cast<int>(line[0].x), 0, width - 1);
+    int x1 = glm::clamp(static_cast<int>(line[1].x), 0, width - 1);
+    int y0 = glm::clamp(static_cast<int>(line[0].y), 0, height - 1);
+    int y1 = glm::clamp(static_cast<int>(line[1].y), 0, height - 1);
     bool steep = false;
     if (abs(x0 - x1) < abs(y0 - y1))
     {
@@ -224,12 +223,12 @@ void renderAPI::drawLine(Line& line)
 }
 
 // Cohen-Sutherland algorithm in screen space
-std::optional<Line> renderAPI::clipLine(Line& line)
+std::optional<Line> renderAPI::lineClip(Line& line)
 {
     std::bitset<4> code[2] =
     {
-        getClipCode(Coord3D(line[0], 1), screenLines),
-        getClipCode(Coord3D(line[1], 1), screenLines)
+        getClipCode(Coord3D(line[0], 1), screenEdge),
+        getClipCode(Coord3D(line[1], 1), screenEdge)
     };
     if((code[0] | code[1]).none())return line;
     if((code[0] & code[1]).any())return std::nullopt;
@@ -237,19 +236,19 @@ std::optional<Line> renderAPI::clipLine(Line& line)
     {
         if((code[0] ^ code[1])[i])
         {
-            float da = calculateDistance(Coord3D(line[0], 1), screenLines[i]);
-            float db = calculateDistance(Coord3D(line[1], 1), screenLines[i]);
+            float da = calculateDistance(Coord3D(line[0], 1), screenEdge[i]);
+            float db = calculateDistance(Coord3D(line[1], 1), screenEdge[i]);
             float alpha = da / (da - db);
             CoordI2D np = calculateInterpolation(line[0], line[1], alpha);
             if(da > 0)
             {
                 line[1] = np;
-                code[1] = getClipCode(Coord3D(np, 1), screenLines);
+                code[1] = getClipCode(Coord3D(np, 1), screenEdge);
             }
             else
             {
                 line[0] = np;
-                code[0] = getClipCode(Coord3D(np, 1), screenLines);
+                code[0] = getClipCode(Coord3D(np, 1), screenEdge);
             }
         }
     }
@@ -257,7 +256,7 @@ std::optional<Line> renderAPI::clipLine(Line& line)
 }
 
 // WireframedTriangle
-void renderAPI::wireframedTriangle(Triangle &tri)
+void renderAPI::wireframeRedner(Triangle &tri)
 {
     Line triLine[3] =
     {
@@ -267,20 +266,18 @@ void renderAPI::wireframedTriangle(Triangle &tri)
     };
     for(auto &line : triLine)
     {
-        auto res = clipLine(line);
+        auto res = lineClip(line);
         if(res) drawLine(*res);
     }
 }
 
-/********************************************************************************/
 // render vertex
-
-void renderAPI::pointedTriangle(Triangle &tri)
+void renderAPI::pointsRender(Triangle &tri)
 {
     for(int i = 0; i < 3; i++)
     {
-        if(tri[i].screenPos.x >= 0 && tri[i].screenPos.x <= w - 1 &&
-                tri[i].screenPos.y >= 0 && tri[i].screenPos.y <= h - 1 &&
+        if(tri[i].screenPos.x >= 0 && tri[i].screenPos.x <= width - 1 &&
+                tri[i].screenPos.y >= 0 && tri[i].screenPos.y <= height - 1 &&
                 tri[i].screenDepth <= 1.f)
         {
             frame.setPixel(tri[i].screenPos.x, tri[i].screenPos.y,
@@ -289,15 +286,14 @@ void renderAPI::pointedTriangle(Triangle &tri)
     }
 }
 
-// clip triangle
-// Cohen-Sutherland algorithm & Sutherland-Hodgman algorithm in homogeneous space
-std::vector<Triangle> renderAPI::clipTriangle(Triangle &tri)
+// clip triangle, Cohen-Sutherland algorithm & Sutherland-Hodgman algorithm in homogeneous space
+std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
 {
     std::bitset<6> code[3] =
     {
-        getClipCode(tri[0].clipSpacePos, viewPlanes),
-        getClipCode(tri[1].clipSpacePos, viewPlanes),
-        getClipCode(tri[2].clipSpacePos, viewPlanes)
+        getClipCode(tri[0].clipSpacePos, viewBox),
+        getClipCode(tri[1].clipSpacePos, viewBox),
+        getClipCode(tri[2].clipSpacePos, viewBox)
     };
     if((code[0] | code[1] | code[2]).none())
         return {tri};
@@ -315,16 +311,16 @@ std::vector<Triangle> renderAPI::clipTriangle(Triangle &tri)
             }
             else if(!code[i][0] && code[k][0])
             {
-                float da = calculateDistance(tri[i].clipSpacePos, viewPlanes[0]);
-                float db = calculateDistance(tri[k].clipSpacePos, viewPlanes[0]);
+                float da = calculateDistance(tri[i].clipSpacePos, viewBox[0]);
+                float db = calculateDistance(tri[k].clipSpacePos, viewBox[0]);
                 float alpha = da / (da - db);
                 Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
                 res.push_back(np);
             }
             else if(code[i][0] && !code[k][0])
             {
-                float da = calculateDistance(tri[i].clipSpacePos, viewPlanes[0]);
-                float db = calculateDistance(tri[k].clipSpacePos, viewPlanes[0]);
+                float da = calculateDistance(tri[i].clipSpacePos, viewBox[0]);
+                float db = calculateDistance(tri[k].clipSpacePos, viewBox[0]);
                 float alpha = da / (da - db);
                 Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
                 res.push_back(np);
@@ -336,22 +332,21 @@ std::vector<Triangle> renderAPI::clipTriangle(Triangle &tri)
     return std::vector<Triangle>{tri};
 }
 
-// process triangle
-// clip triangle and choose one mode {TRIANGLE,LINE,POINT} to render.
-void renderAPI::processTriangle(Triangle &tri)
+// process triangle, clip triangle and choose one mode {TRIANGLE,LINE,POINT} to render.
+void renderAPI::rasterization(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
         shader->vertexShader(tri[i]);
     }
-    std::vector<Triangle> completedTriangleList = clipTriangle(tri);
+    std::vector<Triangle> completedTriangleList = faceClip(tri);
     for (auto &ctri : completedTriangleList)
     {
-        executePerspectiveDivision(ctri);
+        perspectiveTrans(ctri);
         convertToScreen(ctri);
-        if(renderMode == FACE)rasterizationTriangle(ctri);
-        else if(renderMode == EDGE) wireframedTriangle(ctri);
-        else if(renderMode == VERTEX) pointedTriangle(ctri);
+        if(renderMode == FACE)facesRender(ctri);
+        else if(renderMode == EDGE) wireframeRedner(ctri);
+        else if(renderMode == VERTEX) pointsRender(ctri);
     }
 }
 
@@ -367,11 +362,11 @@ void renderAPI::render()
     if(multiThread)
     {
         for (int i = 0; i < triangleList.size(); i++)
-            processTriangle(triangleList[i]);
+            rasterization(triangleList[i]);
     }
     else
     {
         for(int i = 0; i < triangleList.size(); i++)
-            processTriangle(triangleList[i]);
+            rasterization(triangleList[i]);
     }
 }

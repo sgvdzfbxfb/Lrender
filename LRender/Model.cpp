@@ -23,7 +23,7 @@ std::vector<std::string> splitOBJ(const std::string& str, const std::string& del
 Model::Model(QStringList paths)
 {
     loadModel(paths);
-    centre = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
+    modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 }
 
 void Model::draw()
@@ -139,8 +139,8 @@ void Model::loadModel(QStringList paths)
                 tempMesh.faces.push_back(f);
             }
         }
-        vertexCount += tempMesh.vertices.size();
-        triangleCount += tempMesh.faces.size();
+        vertexNum += tempMesh.vertices.size();
+        faceNum += tempMesh.faces.size();
         tempMesh.diffuseTextureIndex = loadMaterialTextures(*(path), "diffuse");
         tempMesh.specularTextureIndex = loadMaterialTextures(*(path), "specular");
         if (vn_count == 0) computeNormal(tempMesh);
@@ -185,7 +185,7 @@ int Model::loadMaterialTextures(QString path, std::string type)
     if (diffuse.fail()) return -1;
 
     Texture texture;
-    if (texture.loadFromImage(QString::fromStdString(t_ps)))
+    if (texture.getTexture(QString::fromStdString(t_ps)))
     {
         qDebug() << QString::fromStdString(t_ps);
         textureList.push_back(texture);

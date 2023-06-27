@@ -16,9 +16,9 @@ class Shader;
 class renderAPI
 {
 public:
-    RenderMode renderMode{FACE};
-    bool faceCulling{true};
-    bool multiThread{true};
+    RenderMode renderMode{ FACE };
+    bool faceCulling{ true };
+    bool multiThread{ true };
     std::vector<Vertex> vertexList;
     std::vector<unsigned> indices;
     std::vector<Texture> textureList;
@@ -47,20 +47,20 @@ public:
     renderAPI& operator=(renderAPI&&) = delete;
 
 private:
-    int w;
-    int h;
-    std::array<BorderPlane, 6> viewPlanes;
-    std::array<BorderLine, 4> screenLines;
+    int width;
+    int height;
+    std::array<BorderPlane, 6> viewBox;
+    std::array<BorderLine, 4> screenEdge;
     Frame frame;
-    void processTriangle(Triangle& tri);
-    void rasterizationTriangle(Triangle& tri);
-    void wireframedTriangle(Triangle& tri);
-    void pointedTriangle(Triangle &tri);
+    void rasterization(Triangle& tri);
+    void facesRender(Triangle& tri);
+    void wireframeRedner(Triangle& tri);
+    void pointsRender(Triangle &tri);
     void drawLine(Line& line);
     void convertToScreen(Triangle &tri);
-    void executePerspectiveDivision(Triangle& tri);
-    CoordI4D getBoundingBox(Triangle & tri);
-    Vector3D getBarycentric(Triangle& pts, CoordI2D P);
-    std::vector<Triangle> clipTriangle(Triangle& tri);
-    std::optional<Line> clipLine(Line& line);
+    void perspectiveTrans(Triangle& tri);
+    CoordI4D computeBoundingBox(Triangle & tri);
+    Vector3D computeBarycentric(Triangle& pts, CoordI2D P);
+    std::vector<Triangle> faceClip(Triangle& tri);
+    std::optional<Line> lineClip(Line& line);
 };
