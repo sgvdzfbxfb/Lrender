@@ -100,7 +100,7 @@ void Model::loadModel(QStringList paths)
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                     }
                 }
-                else if (vn_count != 0 && vn_count == v_count && vt_count == 0) {
+                else if (vn_count != 0 && vt_count == 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
@@ -111,7 +111,7 @@ void Model::loadModel(QStringList paths)
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                     }
                 }
-                else if (vn_count == 0 && vt_count != 0 && vt_count == v_count) {
+                else if (vn_count == 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
@@ -122,11 +122,9 @@ void Model::loadModel(QStringList paths)
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                     }
                 }
-                else if (vn_count != 0 && vn_count == v_count && vt_count != 0 && vt_count == v_count) {
+                else if (vn_count != 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
-                        //qDebug() << k << "idxs" << QString::fromStdString(idxs[0]);
-                        //qDebug() << k << "idxs" << idxs.size();
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
                         idx--; vn_idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
@@ -164,7 +162,7 @@ void Model::computeNormal(sigMesh& inMesh)
         faceNormals.push_back(faceN);
     }
     for (int i = 0; i < inMesh.vertices.size(); ++i) {
-        std::vector<int> tempMs = inMesh.verToFace[i];
+        std::vector<int> tempMs = inMesh.verToFace.at(i);
         Vector3D verNave(0.0, 0.0, 0.0);
         for (int j = 0; j < tempMs.size(); ++j) {
             verNave += faceNormals[tempMs[j]];
