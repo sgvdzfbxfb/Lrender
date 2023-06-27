@@ -17,7 +17,7 @@ struct sigMesh
     int diffuseTextureIndex{-1};
     int specularTextureIndex{-1};
     sigMesh() = default;
-    void draw();
+    void letMeshRender();
 };
 
 #endif // MESH_H

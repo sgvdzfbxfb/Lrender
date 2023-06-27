@@ -1,6 +1,6 @@
 #include "sigMesh.h"
 #include <QDebug>
-void sigMesh::draw()
+void sigMesh::letMeshRender()
 {
     renderAPI::API().vertexList = vertices;
     renderAPI::API().indices = indices;

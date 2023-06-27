@@ -13,7 +13,7 @@ class Model
 {
     public:
         Model(QStringList paths);
-        void draw();
+        void letModelRender();
         Coord3D modelCenter;
         int faceNum{0};
         int vertexNum{0};

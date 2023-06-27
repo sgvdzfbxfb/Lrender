@@ -25,11 +25,11 @@ Model::Model(QStringList paths)
     modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 }
 
-void Model::draw()
+void Model::letModelRender()
 {
     renderAPI::API().textureList = textureList;
     for(int i = 0; i < meshes.size(); i++)
-        meshes[i].draw();
+        meshes[i].letMeshRender();
 }
 
 void Model::loadModel(QStringList paths)
