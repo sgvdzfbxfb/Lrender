@@ -21,10 +21,10 @@ public:
     enum Option { MUTITHREAD, FACECULLING };
     explicit LRender(QWidget *parent = nullptr);
     ~LRender();
-    void SetOption(Option option, bool val);
-    void SetLightColor(LightColorType type, QColor color);
-    void SetCameraPara(CameraPara para, float val);
-    void SetLightDir();
+    void setOption(Option option, bool val);
+    void setLightColor(LightColorType type, QColor color);
+    void setCameraPara(cameraPara para, float val);
+    void setLightDir();
 private slots:
     void on_actionopen_file_triggered();
 
@@ -55,8 +55,8 @@ private slots:
     void on_actionAbout_triggered();
 private:
     Ui::LRender *ui;
-    void InitUI();
-    void InitSignalAndSlot();
+    void initUI();
+    void initSignalAndSlot();
     QColor specularColor;
     QColor diffuseColor;
     QColor ambientColor;

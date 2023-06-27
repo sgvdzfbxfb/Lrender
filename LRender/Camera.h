@@ -2,12 +2,12 @@
 #define CAMERA_H
 
 #include <cmath>
-#include "BasicDataStructure.hpp"
+#include "dataType.h"
 #include "corecrt_math_defines.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-enum CameraPara {FOV,NEAR};
+enum cameraPara {FOV,NEAR};
 //Orbit Camera
 class Camera
 {
@@ -19,12 +19,12 @@ public:
     float zNear;
     float zFar;
     float fov;
-    void RotateAroundTarget(Vector2D motion);
-    void MoveTarget(Vector2D motion);
-    void CloseToTarget(int ratio);
-    void SetModel(Coord3D modelCentre, float yRange);
-    glm::mat4 GetViewMatrix();
-    glm::mat4 GetProjectionMatrix();
+    void rotateAroundTarget(Vector2D motion);
+    void moveTarget(Vector2D motion);
+    void closeToTarget(int ratio);
+    void setModel(Coord3D modelCentre, float yRange);
+    glm::mat4 getViewMatrix();
+    glm::mat4 getProjectionMatrix();
 };
 
 #endif // CAMERA_H

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Shader.hpp"
-#include "Texture.h"
+#include "shader.h"
+#include "texture.h"
 
 class BlinnPhongShader : public Shader
 {
 public:
-    virtual void VertexShader(Vertex &vertex) override;
-    virtual void FragmentShader(Fragment &fragment) override;
+    virtual void vertexShader(Vertex &vertex) override;
+    virtual void fragmentShader(Fragment &fragment) override;
 };

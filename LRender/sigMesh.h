@@ -2,11 +2,11 @@
 #define MESH_H
 
 #include <QString>
-#include "BasicDataStructure.hpp"
-#include "Texture.h"
+#include "dataType.h"
+#include "texture.h"
 #include "renderAPI.h"
 
-struct Mesh
+struct sigMesh
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
@@ -16,8 +16,8 @@ struct Mesh
     std::vector<Coord2D> vertUVs;
     int diffuseTextureIndex{-1};
     int specularTextureIndex{-1};
-    Mesh() = default;
-    void Draw();
+    sigMesh() = default;
+    void draw();
 };
 
 #endif // MESH_H

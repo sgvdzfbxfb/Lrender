@@ -18,9 +18,9 @@
 #include <QWheelEvent>
 #include <QMessageBox>
 #include "renderAPI.h"
-#include "BlinnPhongShader.h"
-#include "Model.h"
-#include "Camera.h"
+#include "blinnPhongShader.h"
+#include "model.h"
+#include "camera.h"
 
 #define DEFAULT_WIDTH 800
 #define DEFAULT_HEIGHT 600
@@ -37,15 +37,15 @@ class LRenderWidget : public QWidget
 public:
     explicit LRenderWidget(QWidget *parent = nullptr);
     ~LRenderWidget();
-    void SetRenderColor(Color color, RenderColorType type);
-    void SetLightColor(Color color, LightColorType type);
-    void SetLightDir(Vector4D dir){renderAPI::GetInstance().shader->lightList[0].dir = dir;}
-    void SetRenderMode(RenderMode mode){renderAPI::GetInstance().renderMode = mode;}
-    void SetFaceCulling(bool val){renderAPI::GetInstance().faceCulling = val;}
-    void SetMultiThread(bool val){renderAPI::GetInstance().multiThread = val;}
-    void SaveImage(QString path){renderAPI::GetInstance().SaveImage(path);}
-    void LoadModel(QStringList paths);
-    void InitDevice();
+    void setRenderColor(Color color, RenderColorType type);
+    void setLightColor(Color color, LightColorType type);
+    void setLightDir(Vector4D dir){renderAPI::API().shader->lightList[0].dir = dir;}
+    void setRenderMode(RenderMode mode){renderAPI::API().renderMode = mode;}
+    void setFaceCulling(bool val){renderAPI::API().faceCulling = val;}
+    void setMultiThread(bool val){renderAPI::API().multiThread = val;}
+    void saveImage(QString path){renderAPI::API().saveImage(path);}
+    void loadModel(QStringList paths);
+    void initDevice();
     Camera camera;
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
@@ -54,17 +54,17 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 signals:
-    void SendModelData(int triangleCount, int vertexCount);
+    void sendModelData(int triangleCount, int vertexCount);
 public slots:
-    void Render();
+    void render();
 
 private:
     int w;
     int h;
     QTimer timer;
-    void ProcessInput();
-    void ResetCamera();
-    void InitUI();
+    void processInput();
+    void resetCamera();
+    void initUI();
     Ui::LRenderWidget *ui;
     Model* model;
 };

@@ -6,10 +6,10 @@
 #include <climits>
 #include <bitset>
 #include <immintrin.h>
-#include "BasicDataStructure.hpp"
-#include "FrameBuffer.h"
-#include "Texture.h"
-#include "Shader.hpp"
+#include "dataType.h"
+#include "frame.h"
+#include "texture.h"
+#include "shader.h"
 
 class Shader;
 
@@ -27,18 +27,18 @@ public:
     Color pointColor;
     Color lineColor;
     renderAPI(int _w,int _h);
-    void ClearBuffer(){frameBuffer.ClearBuffer(clearColor);}
-    QImage& GetBuffer(){return frameBuffer.GetImage();}
-    bool SaveImage(QString path){return frameBuffer.SaveImage(path);}
-    void Render();
-    static void Init(int w,int h)
+    void clearBuffer(){ frame.clearBuffer(clearColor);}
+    QImage& getBuffer(){return frame.getImage();}
+    bool saveImage(QString path){return frame.saveImage(path);}
+    void render();
+    static void init(int w,int h)
     {
-        GetInstance(w, h);
+        API(w, h);
     }
-    static renderAPI& GetInstance(int w = 0 ,int h = 0)
+    static renderAPI& API(int w = 0 ,int h = 0)
     {
-        static renderAPI Instance(w, h);
-        return Instance;
+        static renderAPI renderWork(w, h);
+        return renderWork;
     }
 
     renderAPI(const renderAPI&) = delete;
@@ -51,16 +51,16 @@ private:
     int h;
     std::array<BorderPlane, 6> viewPlanes;
     std::array<BorderLine, 4> screenLines;
-    FrameBuffer frameBuffer;
-    void ProcessTriangle(Triangle& tri);
-    void RasterizationTriangle(Triangle& tri);
-    void WireframedTriangle(Triangle& tri);
-    void PointedTriangle(Triangle &tri);
-    void DrawLine(Line& line);
-    void ConvertToScreen(Triangle &tri);
-    void ExecutePerspectiveDivision(Triangle& tri);
-    CoordI4D GetBoundingBox(Triangle & tri);
-    Vector3D GetBarycentric(Triangle& pts, CoordI2D P);
-    std::vector<Triangle> ClipTriangle(Triangle& tri);
-    std::optional<Line> ClipLine(Line& line);
+    Frame frame;
+    void processTriangle(Triangle& tri);
+    void rasterizationTriangle(Triangle& tri);
+    void wireframedTriangle(Triangle& tri);
+    void pointedTriangle(Triangle &tri);
+    void drawLine(Line& line);
+    void convertToScreen(Triangle &tri);
+    void executePerspectiveDivision(Triangle& tri);
+    CoordI4D getBoundingBox(Triangle & tri);
+    Vector3D getBarycentric(Triangle& pts, CoordI2D P);
+    std::vector<Triangle> clipTriangle(Triangle& tri);
+    std::optional<Line> clipLine(Line& line);
 };

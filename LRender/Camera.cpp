@@ -1,7 +1,7 @@
-#include "Camera.h"
+#include "camera.h"
 #include <QDebug>
 
-void Camera::RotateAroundTarget(Vector2D motion)
+void Camera::rotateAroundTarget(Vector2D motion)
 {
     Vector3D formTarget = position-target;
     float radius = glm::length(formTarget);
@@ -22,7 +22,7 @@ void Camera::RotateAroundTarget(Vector2D motion)
     position = target + offset;
 }
 
-void Camera::MoveTarget(Vector2D motion)
+void Camera::moveTarget(Vector2D motion)
 {
     Vector3D fromPosition = target-position;
     Vector3D forward = glm::normalize(fromPosition);
@@ -37,7 +37,7 @@ void Camera::MoveTarget(Vector2D motion)
     position += (deltaX+deltaY);
 }
 
-void Camera::CloseToTarget(int ratio)
+void Camera::closeToTarget(int ratio)
 {
     Vector3D formTarget = position-target;
     float radius = glm::length(formTarget);
@@ -51,19 +51,19 @@ void Camera::CloseToTarget(int ratio)
     position = target + offset;
 }
 
-void Camera::SetModel(Coord3D modelCentre, float yRange)
+void Camera::setModel(Coord3D modelCentre, float yRange)
 {
     target = modelCentre;
     position = modelCentre;
     position.z += (yRange / std::tan(glm::radians(fov) / 2));
 }
 
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::getViewMatrix()
 {
     return glm::lookAt(position,target,{0.0f,1.0f,0.0f});
 }
 
-glm::mat4 Camera::GetProjectionMatrix()
+glm::mat4 Camera::getProjectionMatrix()
 {
     return glm::perspective(glm::radians(fov), aspect, zNear, zFar);
 }

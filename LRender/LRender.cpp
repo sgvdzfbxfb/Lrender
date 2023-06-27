@@ -1,7 +1,7 @@
 #include "LRender.h"
 #include "ui_LRender.h"
 
-static inline QString GenerateStyleSheet(QColor color)
+static inline QString generateStyleSheet(QColor color)
 {
     return "background-color: rgb("
         + QString::number(static_cast<int>(color.red())) + ','
@@ -13,48 +13,48 @@ LRender::LRender(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::LRender)
 {
     ui->setupUi(this);
-    InitUI();
-    InitSignalAndSlot();
+    initUI();
+    initSignalAndSlot();
 }
 
 LRender::~LRender()
 {}
 
-void LRender::SetOption(Option option, bool val)
+void LRender::setOption(Option option, bool val)
 {
     if (option == MUTITHREAD)
     {
         ui->actionMultiThread->setChecked(val);
-        ui->RenderWidget->SetMultiThread(val);
+        ui->RenderWidget->setMultiThread(val);
     }
     else
     {
         ui->actionFaceCulling->setChecked(val);
-        ui->RenderWidget->SetFaceCulling(val);
+        ui->RenderWidget->setFaceCulling(val);
     }
 }
-void LRender::SetLightColor(LightColorType type, QColor color)
+void LRender::setLightColor(LightColorType type, QColor color)
 {
     switch (type)
     {
     case SPECULAR:
-        ui->SpecularColor->setStyleSheet(GenerateStyleSheet(color));
+        ui->SpecularColor->setStyleSheet(generateStyleSheet(color));
         specularColor = color;
         break;
     case DIFFUSE:
-        ui->DiffuseColor->setStyleSheet(GenerateStyleSheet(color));
+        ui->DiffuseColor->setStyleSheet(generateStyleSheet(color));
         diffuseColor = color;
         break;
     case AMBIENT:
-        ui->AmbientColor->setStyleSheet(GenerateStyleSheet(color));
+        ui->AmbientColor->setStyleSheet(generateStyleSheet(color));
         ambientColor = color;
         break;
     }
-    ui->RenderWidget->SetLightColor({ color.red() / 255.f,
+    ui->RenderWidget->setLightColor({ color.red() / 255.f,
                                      color.green() / 255.f,
                                      color.blue() / 255.f }, type);
 }
-void LRender::SetCameraPara(CameraPara para, float val)
+void LRender::setCameraPara(cameraPara para, float val)
 {
     if (para == FOV)
     {
@@ -67,7 +67,7 @@ void LRender::SetCameraPara(CameraPara para, float val)
         ui->RenderWidget->camera.zNear = val;
     }
 }
-void LRender::SetLightDir()
+void LRender::setLightDir()
 {
     Vector3D lightDir;
     float pitch = glm::radians(glm::clamp(static_cast<float>(ui->PitchSlider->value()), -89.9f, 89.9f));
@@ -77,24 +77,24 @@ void LRender::SetLightDir()
     lightDir.y = (1.f * (float)std::sin(pitch));
     lightDir.z = (1.f * (float)std::cos(pitch) * (float)std::cos(yaw));
 
-    ui->RenderWidget->SetLightDir(Vector4D(-lightDir, 0.f));
+    ui->RenderWidget->setLightDir(Vector4D(-lightDir, 0.f));
 }
 
 void LRender::on_actionopen_file_triggered()
 {
     QStringList filePaths = QFileDialog::getOpenFileNames(this, "Open Model File", "", "OBJ(*.obj)");
     if (!filePaths.isEmpty())
-        ui->RenderWidget->LoadModel(filePaths);
+        ui->RenderWidget->loadModel(filePaths);
 }
 
 void LRender::on_actionsave_image_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Save Image", "", "PNG(*.png)");
     if (!fileName.isEmpty())
-        ui->RenderWidget->SaveImage(fileName);
+        ui->RenderWidget->saveImage(fileName);
 }
 
-void LRender::InitUI()
+void LRender::initUI()
 {
     setFixedSize(1120, 672);
     ui->Setting->setTabText(0, "Light");
@@ -104,25 +104,25 @@ void LRender::InitUI()
     ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, LINE);
     ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, POINT);*/
     // dark background
-    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
-    ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, LINE);
-    ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, POINT);
-    SetOption(MUTITHREAD, false);
-    SetOption(FACECULLING, true);
-    SetCameraPara(FOV, 60.f);
-    SetCameraPara(NEAR, 1.0f);
-    SetLightColor(SPECULAR, QColor(255, 255, 255));
-    SetLightColor(DIFFUSE, QColor(153, 153, 153));
-    SetLightColor(AMBIENT, QColor(102, 102, 102));
-    SetLightDir();
+    ui->RenderWidget->setRenderColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
+    ui->RenderWidget->setRenderColor({ 0.98f, 0.98f, 0.98f }, LINE);
+    ui->RenderWidget->setRenderColor({ 0.98f, 0.98f, 0.98f }, POINT);
+    setOption(MUTITHREAD, false);
+    setOption(FACECULLING, true);
+    setCameraPara(FOV, 60.f);
+    setCameraPara(NEAR, 1.0f);
+    setLightColor(SPECULAR, QColor(255, 255, 255));
+    setLightColor(DIFFUSE, QColor(153, 153, 153));
+    setLightColor(AMBIENT, QColor(102, 102, 102));
+    setLightDir();
     QColorDialog::setCustomColor(0, QColor(255, 255, 255));
     QColorDialog::setCustomColor(2, QColor(153, 153, 153));
     QColorDialog::setCustomColor(4, QColor(102, 102, 102));
 }
 
-void LRender::InitSignalAndSlot()
+void LRender::initSignalAndSlot()
 {
-    connect(ui->RenderWidget, &LRenderWidget::SendModelData, this,
+    connect(ui->RenderWidget, &LRenderWidget::sendModelData, this,
         [this](int triangleCount, int vertexCount)
         {
             ui->TriangleNumberLabel->setText(QString::number(triangleCount));
@@ -136,11 +136,11 @@ void LRender::on_LineCheckBox_clicked()
     {
         if (ui->VertexCheckBox->isChecked())
             ui->VertexCheckBox->setChecked(false);
-        ui->RenderWidget->SetRenderMode(EDGE);
+        ui->RenderWidget->setRenderMode(EDGE);
     }
     else
     {
-        ui->RenderWidget->SetRenderMode(FACE);
+        ui->RenderWidget->setRenderMode(FACE);
     }
 }
 
@@ -150,63 +150,63 @@ void LRender::on_VertexCheckBox_clicked()
     {
         if (ui->LineCheckBox->isChecked())
             ui->LineCheckBox->setChecked(false);
-        ui->RenderWidget->SetRenderMode(VERTEX);
+        ui->RenderWidget->setRenderMode(VERTEX);
     }
     else
     {
-        ui->RenderWidget->SetRenderMode(FACE);
+        ui->RenderWidget->setRenderMode(FACE);
     }
 }
 
 void LRender::on_actionMultiThread_triggered()
 {
-    SetOption(MUTITHREAD, ui->actionMultiThread->isChecked());
+    setOption(MUTITHREAD, ui->actionMultiThread->isChecked());
 }
 
 void LRender::on_actionFaceCulling_triggered()
 {
-    SetOption(FACECULLING, ui->actionFaceCulling->isChecked());
+    setOption(FACECULLING, ui->actionFaceCulling->isChecked());
 }
 
 void LRender::on_FovSilder_valueChanged(int value)
 {
-    SetCameraPara(FOV, static_cast<float>(value));
+    setCameraPara(FOV, static_cast<float>(value));
 }
 
 void LRender::on_NearSilder_valueChanged(int value)
 {
-    SetCameraPara(NEAR, value / 10.f);
+    setCameraPara(NEAR, value / 10.f);
 }
 
 void LRender::on_SpecularColorSet_clicked()
 {
     QColor color = QColorDialog::getColor(specularColor, this, "Select Specular Color");
     if (color.isValid())
-        SetLightColor(SPECULAR, color);
+        setLightColor(SPECULAR, color);
 }
 
 void LRender::on_DiffuseColorSet_clicked()
 {
     QColor color = QColorDialog::getColor(diffuseColor, this, "Select Diffuse Color");
     if (color.isValid())
-        SetLightColor(DIFFUSE, color);
+        setLightColor(DIFFUSE, color);
 }
 
 void LRender::on_AmbientColorSet_clicked()
 {
     QColor color = QColorDialog::getColor(ambientColor, this, "Select Ambient Color");
     if (color.isValid())
-        SetLightColor(AMBIENT, color);
+        setLightColor(AMBIENT, color);
 }
 
 void LRender::on_PitchSlider_valueChanged(int value)
 {
-    SetLightDir();
+    setLightDir();
 }
 
 void LRender::on_YawDial_valueChanged(int value)
 {
-    SetLightDir();
+    setLightDir();
 }
 
 void LRender::on_actionAbout_triggered()

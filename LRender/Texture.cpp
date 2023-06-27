@@ -1,7 +1,7 @@
-#include "Texture.h"
+#include "texture.h"
 #include <QDebug>
 
-bool Texture::LoadFromImage(QString path)
+bool Texture::loadFromImage(QString path)
 {
     this->path = path;
     if(texture.load(path))
@@ -14,7 +14,7 @@ bool Texture::LoadFromImage(QString path)
     return false;
 }
 
-Color Texture::Sample2D(Coord2D coord)
+Color Texture::sample2D(Coord2D coord)
 {
     int x = static_cast<int>(coord.x * w - 0.5f) % w;
     int y = static_cast<int>(coord.y * h - 0.5f) % h;

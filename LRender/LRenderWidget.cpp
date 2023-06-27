@@ -9,7 +9,7 @@ QPoint lastPos;
 QPoint currentPos;
 int ratio;
 Qt::MouseButtons currentBtns;
-glm::mat4 ModelMatrix;
+glm::mat4 modelMatrix;
 
 LRenderWidget::LRenderWidget(QWidget *parent) :
     QWidget(parent),camera((float)DEFAULT_WIDTH/DEFAULT_HEIGHT, FIXED_CAMERA_FAR),
@@ -19,9 +19,9 @@ LRenderWidget::LRenderWidget(QWidget *parent) :
     setFixedSize(w, h);
     ui->FPSLabel->setStyleSheet("background:transparent");
     ui->FPSLabel->setVisible(false);
-    InitDevice();
+    initDevice();
     // set render frequency
-    connect(&timer,&QTimer::timeout,this,&LRenderWidget::Render);
+    connect(&timer,&QTimer::timeout,this,&LRenderWidget::render);
     timer.start(1);
 }
 
@@ -31,45 +31,45 @@ LRenderWidget::~LRenderWidget()
     delete model;
 }
 
-void LRenderWidget::ResetCamera()
+void LRenderWidget::resetCamera()
 {
     ui->FPSLabel->setVisible(true);
-    camera.SetModel(model->centre,model->GetYRange());
-    ModelMatrix = glm::mat4(1.0f);
+    camera.setModel(model->centre,model->getYRange());
+    modelMatrix = glm::mat4(1.0f);
 }
 
-void LRenderWidget::SetRenderColor(Color color, RenderColorType type)
+void LRenderWidget::setRenderColor(Color color, RenderColorType type)
 {
     switch(type)
     {
     case BACKGROUND:
-        renderAPI::GetInstance().clearColor = color;
+        renderAPI::API().clearColor = color;
         break;
     case LINE:
-        renderAPI::GetInstance().lineColor = color;
+        renderAPI::API().lineColor = color;
         break;
     case POINT:
-        renderAPI::GetInstance().pointColor = color;
+        renderAPI::API().pointColor = color;
     }
 }
 
-void LRenderWidget::SetLightColor(Color color, LightColorType type)
+void LRenderWidget::setLightColor(Color color, LightColorType type)
 {
     switch(type)
     {
     case DIFFUSE:
-        renderAPI::GetInstance().shader->lightList[0].diffuse = color;
+        renderAPI::API().shader->lightList[0].diffuse = color;
         break;
     case SPECULAR:
-        renderAPI::GetInstance().shader->lightList[0].specular = color;
+        renderAPI::API().shader->lightList[0].specular = color;
         break;
     case AMBIENT:
-        renderAPI::GetInstance().shader->lightList[0].ambient = color;
+        renderAPI::API().shader->lightList[0].ambient = color;
         break;
     }
 }
 
-void LRenderWidget::LoadModel(QStringList paths)
+void LRenderWidget::loadModel(QStringList paths)
 {
     Model *newModel = new Model(paths);
     if(!newModel->loadSuccess)
@@ -81,21 +81,21 @@ void LRenderWidget::LoadModel(QStringList paths)
     if(model != nullptr)
         delete model;
     model = newModel;
-    emit SendModelData(model->triangleCount,model->vertexCount);
-    ResetCamera();
+    emit sendModelData(model->triangleCount,model->vertexCount);
+    resetCamera();
 }
 
-void LRenderWidget::InitDevice()
+void LRenderWidget::initDevice()
 {
-    renderAPI::Init(w,h);
-    renderAPI::GetInstance().shader = std::make_unique<BlinnPhongShader>();
-    renderAPI::GetInstance().shader->lightList.push_back(Light());
+    renderAPI::init(w,h);
+    renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
+    renderAPI::API().shader->lightList.push_back(Light());
 }
 
 void LRenderWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawImage(0, 0, renderAPI::GetInstance().GetBuffer());
+    painter.drawImage(0, 0, renderAPI::API().getBuffer());
 }
 
 void LRenderWidget::mousePressEvent(QMouseEvent *event)
@@ -130,7 +130,7 @@ void LRenderWidget::wheelEvent(QWheelEvent *event)
     ratio += res.y();
 }
 
-void LRenderWidget::ProcessInput()
+void LRenderWidget::processInput()
 {
     if((currentBtns & Qt::LeftButton) || (currentBtns & Qt::RightButton))
     {
@@ -141,25 +141,25 @@ void LRenderWidget::ProcessInput()
             motion.y = (motion.y / h);
             if(currentBtns & Qt::LeftButton)
             {
-                camera.RotateAroundTarget(motion);
+                camera.rotateAroundTarget(motion);
             }
             if(currentBtns & Qt::RightButton)
             {
-                camera.MoveTarget(motion);
+                camera.moveTarget(motion);
             }
         }
         lastPos = currentPos;
     }
     if(ratio != 0)
     {
-        camera.CloseToTarget(ratio);
+        camera.closeToTarget(ratio);
         ratio = 0;
     }
 }
 
-void LRenderWidget::Render()
+void LRenderWidget::render()
 {
-    renderAPI::GetInstance().ClearBuffer();
+    renderAPI::API().clearBuffer();
     if(model == nullptr) return;
     int nowTime = QTime::currentTime().msecsSinceStartOfDay();
     if(lastFrameTime != 0)
@@ -168,12 +168,12 @@ void LRenderWidget::Render()
         ui->FPSLabel->setText(QStringLiteral("FPS : ")+QString::number(1000.0 / deltaTime, 'f', 0));
     }
     lastFrameTime = nowTime;
-    ProcessInput();
-    renderAPI::GetInstance().shader->Model = ModelMatrix;
-    renderAPI::GetInstance().shader->View = camera.GetViewMatrix();
-    renderAPI::GetInstance().shader->Projection = camera.GetProjectionMatrix();
-    renderAPI::GetInstance().shader->eyePos = camera.position;
-    renderAPI::GetInstance().shader->material.shininess = 150.f;
-    model->Draw();
+    processInput();
+    renderAPI::API().shader->modelMat = modelMatrix;
+    renderAPI::API().shader->viewMat = camera.getViewMatrix();
+    renderAPI::API().shader->projectionMat = camera.getProjectionMatrix();
+    renderAPI::API().shader->eyePos = camera.position;
+    renderAPI::API().shader->material.shininess = 150.f;
+    model->draw();
     update();
 }

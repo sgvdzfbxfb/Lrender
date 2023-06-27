@@ -3,7 +3,7 @@
 #include <QString>
 #include <QImage>
 #include <qDebug>
-#include "BasicDataStructure.hpp"
+#include "dataType.h"
 
 class Texture
 {
@@ -18,8 +18,8 @@ class Texture
 public:
     QString path;
     Texture() = default;
-    bool LoadFromImage(QString path);
-    Color Sample2D(Coord2D coord);
+    bool loadFromImage(QString path);
+    Color sample2D(Coord2D coord);
 };
 
 #endif // TEXTURE_H

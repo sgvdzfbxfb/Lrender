@@ -1,4 +1,4 @@
-#include "Model.h"
+#include "model.h"
 #include <QDebug>
 
 
@@ -26,11 +26,11 @@ Model::Model(QStringList paths)
     centre = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 }
 
-void Model::Draw()
+void Model::draw()
 {
-    renderAPI::GetInstance().textureList = textureList;
+    renderAPI::API().textureList = textureList;
     for(int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw();
+        meshes[i].draw();
 }
 
 void Model::loadModel(QStringList paths)
@@ -38,7 +38,7 @@ void Model::loadModel(QStringList paths)
     QList<QString>::Iterator path = paths.begin(), itend = paths.end();
     int i = 0;
     for (; path != itend; path++, i++) {
-        Mesh tempMesh;
+        sigMesh tempMesh;
         std::ifstream in, in_forCount;
         in.open(path->toStdString(), std::ifstream::in);
         in_forCount.open(path->toStdString(), std::ifstream::in);
@@ -154,7 +154,7 @@ void Model::loadModel(QStringList paths)
     }
 }
 
-void Model::computeNormal(Mesh& inMesh)
+void Model::computeNormal(sigMesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
     for (int i = 0; i < inMesh.indices.size(); i += 3) {
@@ -185,7 +185,7 @@ int Model::loadMaterialTextures(QString path, std::string type)
     if (diffuse.fail()) return -1;
 
     Texture texture;
-    if (texture.LoadFromImage(QString::fromStdString(t_ps)))
+    if (texture.loadFromImage(QString::fromStdString(t_ps)))
     {
         qDebug() << QString::fromStdString(t_ps);
         textureList.push_back(texture);

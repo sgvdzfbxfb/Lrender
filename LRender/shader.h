@@ -5,19 +5,19 @@
 #include <string>
 #include <functional>
 #include "renderAPI.h"
-#include "BasicDataStructure.hpp"
+#include "dataType.h"
 
 class renderAPI;
 
 class Shader
 {
 public:
-    glm::mat4 Model;
-    glm::mat4 View;
-    glm::mat4 Projection;
+    glm::mat4 modelMat;
+    glm::mat4 viewMat;
+    glm::mat4 projectionMat;
     std::vector<Light> lightList;
     Material material;
     Coord3D eyePos;
-    virtual void VertexShader(Vertex &vertex) = 0;
-    virtual void FragmentShader(Fragment &fragment) = 0;
+    virtual void vertexShader(Vertex &vertex) = 0;
+    virtual void fragmentShader(Fragment &fragment) = 0;
 };

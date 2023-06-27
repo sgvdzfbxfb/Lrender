@@ -6,18 +6,18 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
-#include "BasicDataStructure.hpp"
-#include "Mesh.h"
+#include "dataType.h"
+#include "sigMesh.h"
 
 class Model
 {
     public:
         Model(QStringList paths);
-        void Draw();
+        void draw();
         Coord3D centre;
         int triangleCount{0};
         int vertexCount{0};
-        float GetYRange(){return maxY - minY;}
+        float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
     private:
         float minX{FLT_MAX};
@@ -26,11 +26,11 @@ class Model
         float maxX{FLT_MIN};
         float maxY{FLT_MIN};
         float maxZ{FLT_MIN};
-        std::vector<Mesh> meshes;
+        std::vector<sigMesh> meshes;
         std::vector<Texture> textureList;
         QString directory;
         void loadModel(QStringList paths);
-        void computeNormal(Mesh& inMesh);
+        void computeNormal(sigMesh& inMesh);
         int loadMaterialTextures(QString path, std::string type);
 };
 

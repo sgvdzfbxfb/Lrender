@@ -104,13 +104,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="About.cpp" />
-    <ClCompile Include="BlinnPhongShader.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="blinnPhongShader.cpp" />
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="frame.cpp" />
+    <ClCompile Include="sigMesh.cpp" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="renderAPI.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="texture.cpp" />
     <QtRcc Include="LRender.qrc" />
     <QtMoc Include="LRender.h" />
     <ClCompile Include="LRender.cpp" />
@@ -124,15 +124,15 @@
     <QtMoc Include="About.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicDataStructure.hpp" />
-    <ClInclude Include="BlinnPhongShader.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="dataType.h" />
+    <ClInclude Include="blinnPhongShader.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="frame.h" />
+    <ClInclude Include="sigMesh.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="renderAPI.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="About.ui" />
