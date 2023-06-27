@@ -1,8 +1,7 @@
 #include "model.h"
 #include <QDebug>
 
-
-std::vector<std::string> splitOBJ(const std::string& str, const std::string& delim) {
+std::vector<std::string> splitOBJpath(const std::string& str, const std::string& delim) {
     std::vector<std::string> res;
     if ("" == str) return res;
     char* strs = new char[str.length() + 1];
@@ -88,11 +87,11 @@ void Model::loadModel(QStringList paths)
             if (!line.compare(0, 2, "f ")) {
                 std::vector<unsigned> f;
                 int idx, vn_idx, vt_idx;
-                std::vector<std::string> frg_res = splitOBJ(line, " ");
+                std::vector<std::string> frg_res = splitOBJpath(line, " ");
                 //qDebug() << "frg_res" << frg_res.size();
                 if (vn_count == 0 && vt_count == 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str());
                         idx--;
                         tempMesh.indices.push_back(idx);
@@ -102,7 +101,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count != 0 && vt_count == 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
                         idx--; vn_idx--;
                         tempMesh.indices.push_back(idx);
@@ -113,7 +112,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count == 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
                         idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
@@ -124,7 +123,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count != 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJ(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
                         idx--; vn_idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
@@ -139,8 +138,8 @@ void Model::loadModel(QStringList paths)
         }
         vertexNum += tempMesh.vertices.size();
         faceNum += tempMesh.faces.size();
-        tempMesh.diffuseTextureIndex = loadMaterialTextures(*(path), "diffuse");
-        tempMesh.specularTextureIndex = loadMaterialTextures(*(path), "specular");
+        tempMesh.diffuseTextureIndex = getMeshTexture(*(path), "diffuse");
+        tempMesh.specularTextureIndex = getMeshTexture(*(path), "specular");
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
             for (int i = 0; i < tempMesh.vertices.size(); ++i) {
@@ -173,7 +172,7 @@ void Model::computeNormal(sigMesh& inMesh)
     }
 }
 
-int Model::loadMaterialTextures(QString path, std::string type)
+int Model::getMeshTexture(QString path, std::string type)
 {
     QString t_p = path;
     std::ifstream diffuse;

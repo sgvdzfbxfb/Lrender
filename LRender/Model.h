@@ -31,7 +31,7 @@ class Model
         QString directory;
         void loadModel(QStringList paths);
         void computeNormal(sigMesh& inMesh);
-        int loadMaterialTextures(QString path, std::string type);
+        int getMeshTexture(QString path, std::string type);
 };
 
 #endif // MODEL_H
