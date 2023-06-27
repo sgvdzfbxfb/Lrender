@@ -37,10 +37,10 @@ class LRenderWidget : public QWidget
 public:
     explicit LRenderWidget(QWidget *parent = nullptr);
     ~LRenderWidget();
-    void setRenderColor(Color color, RenderColorType type);
-    void setLightColor(Color color, LightColorType type);
+    void setFigureColor(Color color, renderFigure type);
+    void setLightColor(Color color, lightColorType type);
     void setLightDir(Vector4D dir){renderAPI::API().shader->lightList[0].dir = dir;}
-    void setRenderMode(RenderMode mode){renderAPI::API().renderMode = mode;}
+    void setRenderMode(renderMode mode){renderAPI::API().renderMode = mode;}
     void setFaceCulling(bool val){renderAPI::API().faceCulling = val;}
     void setMultiThread(bool val){renderAPI::API().multiThread = val;}
     void saveImage(QString path){renderAPI::API().saveImage(path);}

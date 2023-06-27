@@ -38,12 +38,12 @@ void LRenderWidget::resetCamera()
     modelMatrix = glm::mat4(1.0f);
 }
 
-void LRenderWidget::setRenderColor(Color color, RenderColorType type)
+void LRenderWidget::setFigureColor(Color color, renderFigure type)
 {
     switch(type)
     {
     case BACKGROUND:
-        renderAPI::API().clearColor = color;
+        renderAPI::API().backgroundColor = color;
         break;
     case LINE:
         renderAPI::API().lineColor = color;
@@ -53,7 +53,7 @@ void LRenderWidget::setRenderColor(Color color, RenderColorType type)
     }
 }
 
-void LRenderWidget::setLightColor(Color color, LightColorType type)
+void LRenderWidget::setLightColor(Color color, lightColorType type)
 {
     switch(type)
     {

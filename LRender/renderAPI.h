@@ -16,18 +16,18 @@ class Shader;
 class renderAPI
 {
 public:
-    RenderMode renderMode{ FACE };
+    renderMode renderMode{ FACE };
     bool faceCulling{ true };
     bool multiThread{ true };
     std::vector<Vertex> vertexList;
     std::vector<unsigned> indices;
     std::vector<Texture> textureList;
     std::unique_ptr<Shader> shader;
-    Color clearColor;
-    Color pointColor;
-    Color lineColor;
+    Color backgroundColor = Color(0.0, 0.0, 0.0);
+    Color pointColor = Color(0.0, 0.0, 0.0);
+    Color lineColor = Color(0.0, 0.0, 0.0);
     renderAPI(int _w,int _h);
-    void clearBuffer(){ frame.clearBuffer(clearColor);}
+    void clearBuffer(){ frame.clearBuffer(backgroundColor);}
     QImage& getBuffer(){return frame.getImage();}
     bool saveImage(QString path){return frame.saveImage(path);}
     void render();

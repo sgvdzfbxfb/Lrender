@@ -27,10 +27,10 @@ static inline CoordI2D calculateInterpolation(CoordI2D a, CoordI2D b, float alph
 static inline Vertex calculateInterpolation(Vertex a, Vertex b, float alpha)
 {
     Vertex res;
-    res.clipSpacePos = calculateInterpolation(a.clipSpacePos, b.clipSpacePos, alpha);
-    res.worldSpacePos = calculateInterpolation(a.worldSpacePos, b.worldSpacePos, alpha);
+    res.clipPos = calculateInterpolation(a.clipPos, b.clipPos, alpha);
+    res.worldPos = calculateInterpolation(a.worldPos, b.worldPos, alpha);
     res.normal = calculateInterpolation(a.normal, b.normal, alpha);
-    res.texCoord = calculateInterpolation(a.texCoord, b.texCoord, alpha);
+    res.texUv = calculateInterpolation(a.texUv, b.texUv, alpha);
     return res;
 }
 
@@ -53,9 +53,9 @@ void renderAPI::perspectiveTrans(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        tri[i].ndcSpacePos.x /= tri[i].clipSpacePos.w;
-        tri[i].ndcSpacePos.y /= tri[i].clipSpacePos.w;
-        tri[i].ndcSpacePos.z /= tri[i].clipSpacePos.w;
+        tri[i].clipPos.x /= tri[i].clipPos.w;
+        tri[i].clipPos.y /= tri[i].clipPos.w;
+        tri[i].clipPos.z /= tri[i].clipPos.w;
     }
 }
 
@@ -63,9 +63,9 @@ void renderAPI::convertToScreen(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        tri[i].screenPos.x = static_cast<int>(0.5f * width * (tri[i].ndcSpacePos.x + 1.0f) + 0.5f);
-        tri[i].screenPos.y = static_cast<int>(0.5f * height * (tri[i].ndcSpacePos.y + 1.0f) + 0.5f);
-        tri[i].screenDepth = tri[i].ndcSpacePos.z;
+        tri[i].screenPos.x = static_cast<int>(0.5f * width * (tri[i].clipPos.x + 1.0f) + 0.5f);
+        tri[i].screenPos.y = static_cast<int>(0.5f * height * (tri[i].clipPos.y + 1.0f) + 0.5f);
+        tri[i].zValue = tri[i].clipPos.z;
     }
 }
 
@@ -87,10 +87,10 @@ Fragment constructFragment(int x, int y, float z, Triangle& tri, Vector3D& baryc
     Fragment frag;
     frag.screenPos.x = x;
     frag.screenPos.y = y;
-    frag.screenDepth = z;
-    for (int i = 0; i < 3; i++) frag.worldSpacePos += tri[i].worldSpacePos * barycentric[i];
+    frag.zValue = z;
+    for (int i = 0; i < 3; i++) frag.worldPos += tri[i].worldPos * barycentric[i];
     for (int i = 0; i < 3; i++) frag.normal += tri[i].normal * barycentric[i];
-    for (int i = 0; i < 3; i++) frag.texCoord += tri[i].texCoord * barycentric[i];
+    for (int i = 0; i < 3; i++) frag.texUv += tri[i].texUv * barycentric[i];
     return frag;
 }
 
@@ -171,7 +171,7 @@ void renderAPI::facesRender(Triangle &tri)
             Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bc_screen)) {
                 P.z = 0;
-                for (int i = 0; i < 3; i++) P.z += tri[i].screenDepth * bc_screen[i];
+                for (int i = 0; i < 3; i++) P.z += tri[i].zValue * bc_screen[i];
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = constructFragment(P.x, P.y, P.z, tri, bc_screen);
@@ -278,7 +278,7 @@ void renderAPI::pointsRender(Triangle &tri)
     {
         if(tri[i].screenPos.x >= 0 && tri[i].screenPos.x <= width - 1 &&
                 tri[i].screenPos.y >= 0 && tri[i].screenPos.y <= height - 1 &&
-                tri[i].screenDepth <= 1.f)
+                tri[i].zValue <= 1.f)
         {
             frame.setPixel(tri[i].screenPos.x, tri[i].screenPos.y,
                                  pointColor);
@@ -291,9 +291,9 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
 {
     std::bitset<6> code[3] =
     {
-        getClipCode(tri[0].clipSpacePos, viewBox),
-        getClipCode(tri[1].clipSpacePos, viewBox),
-        getClipCode(tri[2].clipSpacePos, viewBox)
+        getClipCode(tri[0].clipPos, viewBox),
+        getClipCode(tri[1].clipPos, viewBox),
+        getClipCode(tri[2].clipPos, viewBox)
     };
     if((code[0] | code[1] | code[2]).none())
         return {tri};
@@ -311,16 +311,16 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
             }
             else if(!code[i][0] && code[k][0])
             {
-                float da = calculateDistance(tri[i].clipSpacePos, viewBox[0]);
-                float db = calculateDistance(tri[k].clipSpacePos, viewBox[0]);
+                float da = calculateDistance(tri[i].clipPos, viewBox[0]);
+                float db = calculateDistance(tri[k].clipPos, viewBox[0]);
                 float alpha = da / (da - db);
                 Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
                 res.push_back(np);
             }
             else if(code[i][0] && !code[k][0])
             {
-                float da = calculateDistance(tri[i].clipSpacePos, viewBox[0]);
-                float db = calculateDistance(tri[k].clipSpacePos, viewBox[0]);
+                float da = calculateDistance(tri[i].clipPos, viewBox[0]);
+                float db = calculateDistance(tri[k].clipPos, viewBox[0]);
                 float alpha = da / (da - db);
                 Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
                 res.push_back(np);

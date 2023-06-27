@@ -60,7 +60,7 @@ void Model::loadModel(QStringList paths)
                 maxX = std::max(maxX, v_p.x);
                 maxY = std::max(maxY, v_p.y);
                 maxZ = std::max(maxZ, v_p.z);
-                ver.worldSpacePos = v_p;
+                ver.worldPos = v_p;
                 tempMesh.vertices.push_back(ver);
                 v_count++;
             }
@@ -117,7 +117,7 @@ void Model::loadModel(QStringList paths)
                         idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
-                        tempMesh.vertices[idx].texCoord = tempMesh.vertUVs[vt_idx];
+                        tempMesh.vertices[idx].texUv = tempMesh.vertUVs[vt_idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                     }
                 }
@@ -129,7 +129,7 @@ void Model::loadModel(QStringList paths)
                         tempMesh.indices.push_back(idx);
                         f.push_back(idx);
                         tempMesh.vertices[idx].normal = tempMesh.vertNormals[vn_idx];
-                        tempMesh.vertices[idx].texCoord = tempMesh.vertUVs[vt_idx];
+                        tempMesh.vertices[idx].texUv = tempMesh.vertUVs[vt_idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                     }
                 }
@@ -143,7 +143,7 @@ void Model::loadModel(QStringList paths)
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
             for (int i = 0; i < tempMesh.vertices.size(); ++i) {
-                tempMesh.vertices[i].texCoord = Coord2D(0.0f, 0.0f);
+                tempMesh.vertices[i].texUv = Coord2D(0.0f, 0.0f);
             }
         }
         meshes.push_back(tempMesh);
@@ -155,8 +155,8 @@ void Model::computeNormal(sigMesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
     for (int i = 0; i < inMesh.indices.size(); i += 3) {
-        Vector3D AB = (inMesh.vertices[(inMesh.indices[i + 1])]).worldSpacePos - (inMesh.vertices[(inMesh.indices[i])]).worldSpacePos;
-        Vector3D AC = (inMesh.vertices[(inMesh.indices[i + 2])]).worldSpacePos - (inMesh.vertices[(inMesh.indices[i])]).worldSpacePos;
+        Vector3D AB = (inMesh.vertices[(inMesh.indices[i + 1])]).worldPos - (inMesh.vertices[(inMesh.indices[i])]).worldPos;
+        Vector3D AC = (inMesh.vertices[(inMesh.indices[i + 2])]).worldPos - (inMesh.vertices[(inMesh.indices[i])]).worldPos;
         Vector3D faceN = glm::normalize(glm::cross(AB, AC));
         faceNormals.push_back(faceN);
     }

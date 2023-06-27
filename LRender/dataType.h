@@ -27,22 +27,18 @@ using CoordI4D = glm::ivec4;
 using BorderPlane = glm::vec4;
 using BorderLine = glm::vec3;
 
-enum RenderMode{FACE,EDGE,VERTEX};
-enum RenderColorType{BACKGROUND, LINE, POINT};
-enum LightColorType{DIFFUSE, SPECULAR, AMBIENT};
+enum renderMode{FACE,EDGE,VERTEX};
+enum renderFigure{BACKGROUND, LINE, POINT};
+enum lightColorType{DIFFUSE, SPECULAR, AMBIENT};
 
 struct Vertex
 {
-    Coord3D worldSpacePos;
-    union
-    {
-        Coord4D clipSpacePos;
-        Coord4D ndcSpacePos;
-    };
-    CoordI2D screenPos;
-    float screenDepth;
-    Vector3D normal;
-    Coord2D texCoord;
+    Coord3D worldPos = Coord3D(0.0, 0.0, 0.0);
+    Coord4D clipPos = Coord4D(0.0, 0.0, 0.0, 0.0);
+    CoordI2D screenPos = CoordI2D(0, 0);
+    float zValue = FLT_MAX;
+    Vector3D normal = Vector3D(0.0, 0.0, 0.0);
+    Coord2D texUv = Coord2D(0.0, 0.0);
 };
 
 using Triangle = std::array<Vertex, 3>;
@@ -50,12 +46,12 @@ using Line = std::array<CoordI2D, 2>;
 
 struct Fragment
 {
-    Coord3D worldSpacePos = Coord3D(0.0, 0.0, 0.0);
+    Coord3D worldPos = Coord3D(0.0, 0.0, 0.0);
     CoordI2D screenPos = CoordI2D(0, 0);
-    float screenDepth = FLT_MAX;
+    float zValue = FLT_MAX;
     Color fragmentColor = Color(0.0, 0.0, 0.0);
     Vector3D normal = Vector3D(0.0, 0.0, 0.0);
-    Coord2D texCoord = Coord2D(0.0, 0.0);
+    Coord2D texUv = Coord2D(0.0, 0.0);
 };
 
 struct Light

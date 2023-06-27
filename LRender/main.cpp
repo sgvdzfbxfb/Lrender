@@ -5,8 +5,8 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
-    QApplication a(argc, argv);
-    LRender w;
-    w.show();
-    return a.exec();
+    QApplication qtApp(argc, argv);
+    LRender lrender;
+    lrender.show();
+    return qtApp.exec();
 }

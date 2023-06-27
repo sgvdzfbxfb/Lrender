@@ -22,7 +22,7 @@ public:
     explicit LRender(QWidget *parent = nullptr);
     ~LRender();
     void setOption(Option option, bool val);
-    void setLightColor(LightColorType type, QColor color);
+    void setLightColor(lightColorType type, QColor color);
     void setCameraPara(cameraPara para, float val);
     void setLightDir();
 private slots:

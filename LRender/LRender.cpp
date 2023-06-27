@@ -33,7 +33,7 @@ void LRender::setOption(Option option, bool val)
         ui->RenderWidget->setFaceCulling(val);
     }
 }
-void LRender::setLightColor(LightColorType type, QColor color)
+void LRender::setLightColor(lightColorType type, QColor color)
 {
     switch (type)
     {
@@ -104,9 +104,9 @@ void LRender::initUI()
     ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, LINE);
     ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, POINT);*/
     // dark background
-    ui->RenderWidget->setRenderColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
-    ui->RenderWidget->setRenderColor({ 0.98f, 0.98f, 0.98f }, LINE);
-    ui->RenderWidget->setRenderColor({ 0.98f, 0.98f, 0.98f }, POINT);
+    ui->RenderWidget->setFigureColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
+    ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, LINE);
+    ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, POINT);
     setOption(MUTITHREAD, false);
     setOption(FACECULLING, true);
     setCameraPara(FOV, 60.f);
