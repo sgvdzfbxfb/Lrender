@@ -208,9 +208,3 @@ void LRender::on_YawDial_valueChanged(int value)
 {
     setLightDir();
 }
-
-void LRender::on_actionAbout_triggered()
-{
-    About about;
-    about.exec();
-}

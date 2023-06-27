@@ -27,9 +27,6 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="About.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="blinnPhongShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -65,9 +62,6 @@
     <QtMoc Include="LRenderWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="About.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="blinnPhongShader.h">
@@ -99,9 +93,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="About.ui">
-      <Filter>Resource Files</Filter>
-    </QtUic>
     <QtUic Include="LRender.ui">
       <Filter>Resource Files</Filter>
     </QtUic>

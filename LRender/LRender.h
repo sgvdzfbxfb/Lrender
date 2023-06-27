@@ -52,7 +52,6 @@ private slots:
 
     void on_YawDial_valueChanged(int value);
 
-    void on_actionAbout_triggered();
 private:
     Ui::LRender *ui;
     void initUI();

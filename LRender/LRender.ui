@@ -545,7 +545,7 @@
      <x>0</x>
      <y>0</y>
      <width>1120</width>
-     <height>17</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -589,15 +589,6 @@
     <addaction name="actionsave_image"/>
     <addaction name="actionexit"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="title">
-     <string>    Help    </string>
-    </property>
-    <addaction name="actionAbout"/>
-   </widget>
    <widget class="QMenu" name="menuSetting">
     <property name="minimumSize">
      <size>
@@ -613,7 +604,6 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
-   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionopen_file">

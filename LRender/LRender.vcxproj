@@ -103,7 +103,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="About.cpp" />
     <ClCompile Include="blinnPhongShader.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="frame.cpp" />
@@ -121,9 +120,6 @@
     <QtMoc Include="LRenderWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="About.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="dataType.h" />
     <ClInclude Include="blinnPhongShader.h" />
     <ClInclude Include="camera.h" />
@@ -135,7 +131,6 @@
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="About.ui" />
     <QtUic Include="LRender.ui" />
     <QtUic Include="LRenderWidget.ui" />
   </ItemGroup>
