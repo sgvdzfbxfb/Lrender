@@ -165,7 +165,10 @@ void LRenderWidget::render()
     if(lastFrameTime != 0)
     {
         deltaTime = nowTime - lastFrameTime;
-        ui->FPSLabel->setText(QStringLiteral("FPS : ")+QString::number(1000.0 / deltaTime, 'f', 0));
+        ui->FPSLabel->setText(QStringLiteral("FPS : ") + QString::number(1000.0 / deltaTime, 'f', 0));
+        QPalette white;
+        white.setColor(QPalette::WindowText, Qt::white);
+        ui->FPSLabel->setPalette(white);
     }
     lastFrameTime = nowTime;
     processInput();

@@ -5,7 +5,6 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include "LRenderWidget.h"
-#include "About.h"
 #include "ui_LRender.h"
 
 namespace Ui {
