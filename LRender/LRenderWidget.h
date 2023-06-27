@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QMessageBox>
-#include "SRendererDevice.h"
+#include "renderAPI.h"
 #include "BlinnPhongShader.h"
 #include "Model.h"
 #include "Camera.h"
@@ -39,11 +39,11 @@ public:
     ~LRenderWidget();
     void SetRenderColor(Color color, RenderColorType type);
     void SetLightColor(Color color, LightColorType type);
-    void SetLightDir(Vector4D dir){SRendererDevice::GetInstance().shader->lightList[0].dir = dir;}
-    void SetRenderMode(RenderMode mode){SRendererDevice::GetInstance().renderMode = mode;}
-    void SetFaceCulling(bool val){SRendererDevice::GetInstance().faceCulling = val;}
-    void SetMultiThread(bool val){SRendererDevice::GetInstance().multiThread = val;}
-    void SaveImage(QString path){SRendererDevice::GetInstance().SaveImage(path);}
+    void SetLightDir(Vector4D dir){renderAPI::GetInstance().shader->lightList[0].dir = dir;}
+    void SetRenderMode(RenderMode mode){renderAPI::GetInstance().renderMode = mode;}
+    void SetFaceCulling(bool val){renderAPI::GetInstance().faceCulling = val;}
+    void SetMultiThread(bool val){renderAPI::GetInstance().multiThread = val;}
+    void SaveImage(QString path){renderAPI::GetInstance().SaveImage(path);}
     void LoadModel(QStringList paths);
     void InitDevice();
     Camera camera;

@@ -109,7 +109,7 @@
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="SRendererDevice.cpp" />
+    <ClCompile Include="renderAPI.cpp" />
     <ClCompile Include="Texture.cpp" />
     <QtRcc Include="LRender.qrc" />
     <QtMoc Include="LRender.h" />
@@ -131,7 +131,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.hpp" />
-    <ClInclude Include="SRendererDevice.h" />
+    <ClInclude Include="renderAPI.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>

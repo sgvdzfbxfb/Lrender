@@ -43,13 +43,13 @@ void LRenderWidget::SetRenderColor(Color color, RenderColorType type)
     switch(type)
     {
     case BACKGROUND:
-        SRendererDevice::GetInstance().clearColor = color;
+        renderAPI::GetInstance().clearColor = color;
         break;
     case LINE:
-        SRendererDevice::GetInstance().lineColor = color;
+        renderAPI::GetInstance().lineColor = color;
         break;
     case POINT:
-        SRendererDevice::GetInstance().pointColor = color;
+        renderAPI::GetInstance().pointColor = color;
     }
 }
 
@@ -58,13 +58,13 @@ void LRenderWidget::SetLightColor(Color color, LightColorType type)
     switch(type)
     {
     case DIFFUSE:
-        SRendererDevice::GetInstance().shader->lightList[0].diffuse = color;
+        renderAPI::GetInstance().shader->lightList[0].diffuse = color;
         break;
     case SPECULAR:
-        SRendererDevice::GetInstance().shader->lightList[0].specular = color;
+        renderAPI::GetInstance().shader->lightList[0].specular = color;
         break;
     case AMBIENT:
-        SRendererDevice::GetInstance().shader->lightList[0].ambient = color;
+        renderAPI::GetInstance().shader->lightList[0].ambient = color;
         break;
     }
 }
@@ -87,15 +87,15 @@ void LRenderWidget::LoadModel(QStringList paths)
 
 void LRenderWidget::InitDevice()
 {
-    SRendererDevice::Init(w,h);
-    SRendererDevice::GetInstance().shader = std::make_unique<BlinnPhongShader>();
-    SRendererDevice::GetInstance().shader->lightList.push_back(Light());
+    renderAPI::Init(w,h);
+    renderAPI::GetInstance().shader = std::make_unique<BlinnPhongShader>();
+    renderAPI::GetInstance().shader->lightList.push_back(Light());
 }
 
 void LRenderWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawImage(0, 0, SRendererDevice::GetInstance().GetBuffer());
+    painter.drawImage(0, 0, renderAPI::GetInstance().GetBuffer());
 }
 
 void LRenderWidget::mousePressEvent(QMouseEvent *event)
@@ -159,7 +159,7 @@ void LRenderWidget::ProcessInput()
 
 void LRenderWidget::Render()
 {
-    SRendererDevice::GetInstance().ClearBuffer();
+    renderAPI::GetInstance().ClearBuffer();
     if(model == nullptr) return;
     int nowTime = QTime::currentTime().msecsSinceStartOfDay();
     if(lastFrameTime != 0)
@@ -169,11 +169,11 @@ void LRenderWidget::Render()
     }
     lastFrameTime = nowTime;
     ProcessInput();
-    SRendererDevice::GetInstance().shader->Model = ModelMatrix;
-    SRendererDevice::GetInstance().shader->View = camera.GetViewMatrix();
-    SRendererDevice::GetInstance().shader->Projection = camera.GetProjectionMatrix();
-    SRendererDevice::GetInstance().shader->eyePos = camera.position;
-    SRendererDevice::GetInstance().shader->material.shininess = 150.f;
+    renderAPI::GetInstance().shader->Model = ModelMatrix;
+    renderAPI::GetInstance().shader->View = camera.GetViewMatrix();
+    renderAPI::GetInstance().shader->Projection = camera.GetProjectionMatrix();
+    renderAPI::GetInstance().shader->eyePos = camera.position;
+    renderAPI::GetInstance().shader->material.shininess = 150.f;
     model->Draw();
     update();
 }

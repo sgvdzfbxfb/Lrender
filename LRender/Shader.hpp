@@ -4,10 +4,10 @@
 #include <cmath>
 #include <string>
 #include <functional>
-#include "SRendererDevice.h"
+#include "renderAPI.h"
 #include "BasicDataStructure.hpp"
 
-class SRendererDevice;
+class renderAPI;
 
 class Shader
 {

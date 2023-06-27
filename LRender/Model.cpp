@@ -28,7 +28,7 @@ Model::Model(QStringList paths)
 
 void Model::Draw()
 {
-    SRendererDevice::GetInstance().textureList = textureList;
+    renderAPI::GetInstance().textureList = textureList;
     for(int i = 0; i < meshes.size(); i++)
         meshes[i].Draw();
 }

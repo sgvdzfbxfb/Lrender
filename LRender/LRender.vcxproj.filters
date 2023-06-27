@@ -54,7 +54,7 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRendererDevice.cpp">
+    <ClCompile Include="renderAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -85,7 +85,7 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SRendererDevice.h">
+    <ClInclude Include="renderAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
