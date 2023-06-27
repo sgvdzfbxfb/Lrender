@@ -18,10 +18,13 @@ LRenderWidget::LRenderWidget(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(scWidth, scHeight);
     ui->FPSLabel->setStyleSheet("background:transparent");
+    QPalette white;
+    white.setColor(QPalette::WindowText, Qt::white);
+    ui->FPSLabel->setPalette(white);
     ui->FPSLabel->setVisible(false);
     initDevice();
     // set render frequency
-    connect(&timer,&QTimer::timeout,this,&LRenderWidget::render);
+    connect(&timer, &QTimer::timeout, this, &LRenderWidget::render);
     timer.start(1);
 }
 
@@ -34,7 +37,7 @@ LRenderWidget::~LRenderWidget()
 void LRenderWidget::resetCamera()
 {
     ui->FPSLabel->setVisible(true);
-    camera.setModel(model->modelCenter,model->getYRange());
+    camera.setModel(model->modelCenter, model->getYRange());
     modelMatrix = glm::mat4(1.0f);
 }
 
@@ -81,7 +84,7 @@ void LRenderWidget::loadModel(QStringList paths)
     if(model != nullptr)
         delete model;
     model = newModel;
-    emit sendModelData(model->faceNum,model->vertexNum);
+    emit sendModelData(model->faceNum, model->vertexNum);
     resetCamera();
 }
 
@@ -136,7 +139,7 @@ void LRenderWidget::processInput()
     {
         if(!lastPos.isNull())
         {
-            Vector2D motion = {(float)(currentPos - lastPos).x(),(float)(currentPos - lastPos).y()};
+            Vector2D motion = {(float)(currentPos - lastPos).x(), (float)(currentPos - lastPos).y()};
             motion.x = (motion.x / scWidth);
             motion.y = (motion.y / scHeight);
             if(currentBtns & Qt::LeftButton)
@@ -166,9 +169,6 @@ void LRenderWidget::render()
     {
         deltaTime = nowTime - lastFrameTime;
         ui->FPSLabel->setText(QStringLiteral("FPS : ") + QString::number(1000.0 / deltaTime, 'f', 0));
-        QPalette white;
-        white.setColor(QPalette::WindowText, Qt::white);
-        ui->FPSLabel->setPalette(white);
     }
     lastFrameTime = nowTime;
     processInput();

@@ -361,8 +361,7 @@ void renderAPI::render()
     }
     if(multiThread)
     {
-        for (int i = 0; i < triangleList.size(); i++)
-            rasterization(triangleList[i]);
+        
     }
     else
     {
