@@ -3,7 +3,7 @@
 
 void Camera::rotateAroundTarget(Vector2D motion)
 {
-    Vector3D formTarget = position-target;
+    Vector3D formTarget = position - target;
     float radius = glm::length(formTarget);
     float yaw = (float)std::atan2(formTarget.x, formTarget.z);
     float pitch = (float)std::asin(formTarget.y / radius);
@@ -24,7 +24,7 @@ void Camera::rotateAroundTarget(Vector2D motion)
 
 void Camera::moveTarget(Vector2D motion)
 {
-    Vector3D fromPosition = target-position;
+    Vector3D fromPosition = target - position;
     Vector3D forward = glm::normalize(fromPosition);
     Vector3D left = glm::normalize(glm::cross({0.0f,1.0f,0.0f},forward));
     Vector3D up = glm::normalize(glm::cross(forward,left));
@@ -39,7 +39,7 @@ void Camera::moveTarget(Vector2D motion)
 
 void Camera::closeToTarget(int ratio)
 {
-    Vector3D formTarget = position-target;
+    Vector3D formTarget = position - target;
     float radius = glm::length(formTarget);
     float yaw = (float)std::atan2(formTarget.x, formTarget.z);
     float pitch = (float)std::asin(formTarget.y / radius);
@@ -51,10 +51,10 @@ void Camera::closeToTarget(int ratio)
     position = target + offset;
 }
 
-void Camera::setModel(Coord3D modelCentre, float yRange)
+void Camera::setModel(Coord3D modelCenter, float yRange)
 {
-    target = modelCentre;
-    position = modelCentre;
+    target = modelCenter;
+    position = modelCenter;
     position.z += (yRange / std::tan(glm::radians(fov) / 2));
 }
 
