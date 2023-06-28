@@ -99,14 +99,20 @@ void LRender::initUI()
     setFixedSize(1120, 672);
     ui->Setting->setTabText(0, "Light");
     ui->Setting->setTabText(1, "Model");
+#if 0
     // light background
-    /*ui->RenderWidget->SetRenderColor({ 0.98f, 0.98f, 0.98f }, BACKGROUND);
-    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, LINE);
-    ui->RenderWidget->SetRenderColor({ 0.098f, 0.137f, 0.176f }, POINT);*/
+    ui->RenderWidget->setFigureColor({ 1.00f, 1.00f, 1.00f }, BACKGROUND);
+    ui->RenderWidget->setFigureColor({ 0.098f, 0.137f, 0.176f }, LINE);
+    ui->RenderWidget->setFigureColor({ 0.098f, 0.137f, 0.176f }, POINT);
+    ui->RenderWidget->switchLightMode(true);
+#else
     // dark background
-    ui->RenderWidget->setFigureColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
+    ui->RenderWidget->setFigureColor({ 9.f / 255.f, 12.f / 255.f, 25.f / 255.f }, BACKGROUND);
     ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, LINE);
     ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, POINT);
+    ui->RenderWidget->switchLightMode(false);
+
+#endif
     setOption(MUTITHREAD, true);
     setOption(FACECULLING, true);
     setCameraPara(FOV, 60.f);

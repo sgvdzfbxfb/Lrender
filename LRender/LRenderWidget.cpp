@@ -18,9 +18,6 @@ LRenderWidget::LRenderWidget(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(scWidth, scHeight);
     ui->FPSLabel->setStyleSheet("background:transparent");
-    QPalette white;
-    white.setColor(QPalette::WindowText, Qt::white);
-    ui->FPSLabel->setPalette(white);
     ui->FPSLabel->setVisible(false);
     initDevice();
     // set render frequency
@@ -93,6 +90,20 @@ void LRenderWidget::initDevice()
     renderAPI::init(scWidth,scHeight);
     renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
     renderAPI::API().shader->lightList.push_back(Light());
+}
+
+void LRenderWidget::switchLightMode(bool turnLight)
+{
+    if (turnLight) {
+        QPalette dark;
+        dark.setColor(QPalette::WindowText, Qt::black);
+        ui->FPSLabel->setPalette(dark);
+    }
+    else {
+        QPalette white;
+        white.setColor(QPalette::WindowText, Qt::white);
+        ui->FPSLabel->setPalette(white);
+    }
 }
 
 void LRenderWidget::paintEvent(QPaintEvent *)

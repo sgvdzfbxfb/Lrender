@@ -46,6 +46,7 @@ public:
     void saveImage(QString path){renderAPI::API().saveImage(path);}
     void loadModel(QStringList paths);
     void initDevice();
+    void switchLightMode(bool turnLight);
     Camera camera;
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
