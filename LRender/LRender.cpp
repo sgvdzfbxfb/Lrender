@@ -107,7 +107,7 @@ void LRender::initUI()
     ui->RenderWidget->setFigureColor({ 0.098f, 0.137f, 0.176f }, BACKGROUND);
     ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, LINE);
     ui->RenderWidget->setFigureColor({ 0.98f, 0.98f, 0.98f }, POINT);
-    setOption(MUTITHREAD, false);
+    setOption(MUTITHREAD, true);
     setOption(FACECULLING, true);
     setCameraPara(FOV, 60.f);
     setCameraPara(NEAR, 1.0f);

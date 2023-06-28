@@ -6,6 +6,9 @@
 #include <climits>
 #include <bitset>
 #include <immintrin.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_for_each.h>
+#include <tbb/blocked_range2d.h>
 #include "dataType.h"
 #include "frame.h"
 #include "texture.h"
