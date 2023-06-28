@@ -67,7 +67,7 @@ struct Light
 
 struct Material
 {
-    int diffuse;
-    int specular;
+    std::vector<int> diffuse;
+    std::vector<int> specular;
     float shininess;
 };

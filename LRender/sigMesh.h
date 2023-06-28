@@ -14,10 +14,10 @@ struct sigMesh
     std::map<int, std::vector<int>> verToFace;
     std::vector<Vector3D> vertNormals;
     std::vector<Coord2D> vertUVs;
-    int diffuseTextureIndex{-1};
-    int specularTextureIndex{-1};
+    std::vector<int> diffuseIds;
+    std::vector<int> specularIds;
     sigMesh() = default;
-    void letMeshRender();
+    void meshRender();
 };
 
 #endif // MESH_H

@@ -177,6 +177,6 @@ void LRenderWidget::render()
     renderAPI::API().shader->projectionMat = camera.getProjectionMatrix();
     renderAPI::API().shader->eyePos = camera.position;
     renderAPI::API().shader->material.shininess = 150.f;
-    model->letModelRender();
+    model->modelRender();
     update();
 }

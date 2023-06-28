@@ -2,9 +2,11 @@
 #define MODEL_H
 #include <cfloat>
 #include <iostream>
+#include <vector>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include <stdlib.h>
 #include "dataType.h"
 #include "sigMesh.h"
@@ -13,7 +15,7 @@ class Model
 {
     public:
         Model(QStringList paths);
-        void letModelRender();
+        void modelRender();
         Coord3D modelCenter;
         int faceNum{0};
         int vertexNum{0};
@@ -31,7 +33,7 @@ class Model
         QString directory;
         void loadModel(QStringList paths);
         void computeNormal(sigMesh& inMesh);
-        int getMeshTexture(QString path, std::string type);
+        int getMeshTexture(std::string t_ps, std::string type);
 };
 
 #endif // MODEL_H

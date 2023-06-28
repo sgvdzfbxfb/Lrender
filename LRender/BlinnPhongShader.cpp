@@ -9,10 +9,20 @@ void BlinnPhongShader::vertexShader(Vertex &vertex)
 
 void BlinnPhongShader::fragmentShader(Fragment &fragment)
 {
-    Color diffuseColor = {0.6f,0.6f,0.6f};
-    Color specularColor = {1.0f,1.0f,1.0f};
-    if(material.diffuse != -1) diffuseColor = renderAPI::API().textureList[material.diffuse].getColorFromUv(fragment.texUv);
-    if(material.specular != -1) specularColor = renderAPI::API().textureList[material.specular].getColorFromUv(fragment.texUv);
+    Color diffuseColor = {0.0f,0.0f,0.0f};
+    Color specularColor = {0.0f,0.0f,0.0f};
+    if (material.diffuse.size() != 0) {
+        for (int i = 0; i < material.diffuse.size(); ++i)
+            diffuseColor += renderAPI::API().textureList[material.diffuse[i]].getColorFromUv(fragment.texUv);
+        diffuseColor /= material.diffuse.size();
+    }
+    else diffuseColor = { 0.6f,0.6f,0.6f };
+    if (material.specular.size() != 0) {
+        for (int i = 0; i < material.specular.size(); ++i)
+            specularColor = renderAPI::API().textureList[material.specular[i]].getColorFromUv(fragment.texUv);
+        specularColor /= material.specular.size();
+    }
+    else specularColor = { 1.0f,1.0f,1.0f };
     Vector3D normal = glm::normalize(fragment.normal);
     Vector3D viewDir = glm::normalize(eyePos - fragment.worldPos);
     auto calculateLight = [&](Light light)->Color
@@ -28,9 +38,9 @@ void BlinnPhongShader::fragmentShader(Fragment &fragment)
         return (ambient + diffuse + specular);
     };
     Color result(0.f, 0.f, 0.f);
-    for(auto light : lightList)
+    for(int i = 0; i < lightList.size(); ++i)
     {
-        result += calculateLight(light);
+        result += calculateLight(lightList[i]);
     }
     if(result.x > 1.f) result.x = 1.f;
     if(result.y > 1.f) result.y = 1.f;

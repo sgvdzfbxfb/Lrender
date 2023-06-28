@@ -1,7 +1,9 @@
 #include "model.h"
 #include <QDebug>
 
-std::vector<std::string> splitOBJpath(const std::string& str, const std::string& delim) {
+using namespace std::filesystem;
+
+std::vector<std::string> splitString(const std::string& str, const std::string& delim) {
     std::vector<std::string> res;
     if ("" == str) return res;
     char* strs = new char[str.length() + 1];
@@ -19,17 +21,53 @@ std::vector<std::string> splitOBJpath(const std::string& str, const std::string&
     return res;
 }
 
+// 检查一个路径是否是目录
+bool checkIsDir(const std::string& dir) {
+    if (!exists(dir)) {
+        qDebug() << QString::fromStdString(dir) << "not exists. Please check.";
+        return false;
+    }
+    directory_entry entry(dir);
+    if (entry.is_directory())
+        return true;
+    return false;
+}
+
+// 搜索一个目录下所有的图像文件，以 jpg,jpeg,png 结尾的文件
+void getAllImageFiles(const std::string dir, std::vector<std::string>& files) {
+    // 首先检查目录是否为空，以及是否是目录
+    if (!checkIsDir(dir)) return;
+    // 递归遍历所有的文件
+    directory_iterator iters(dir);
+    for (auto& iter : iters) {
+        // 路径的拼接，基础知识还是不过关，只能用这个笨办法来了
+        std::string file_path(dir);
+        file_path += "/"; file_path += (iter.path().filename()).string();
+        // 查看是否是目录，如果是目录则循环递归
+        if (checkIsDir(file_path)) {
+            getAllImageFiles(file_path, files);
+        }
+        else { //不是目录则检查后缀是否是图像
+            std::string extension = (iter.path().extension()).string(); // 获取文件的后缀名
+            // 可以扩展成你自己想要的文件类型来进行筛选, 比如加上.gif .bmp之类的
+            if (extension == ".png") {
+                files.push_back(file_path);
+            }
+        }
+    }
+}
+
 Model::Model(QStringList paths)
 {
     loadModel(paths);
     modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 }
 
-void Model::letModelRender()
+void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
     for(int i = 0; i < meshes.size(); i++)
-        meshes[i].letMeshRender();
+        meshes[i].meshRender();
 }
 
 void Model::loadModel(QStringList paths)
@@ -87,11 +125,10 @@ void Model::loadModel(QStringList paths)
             if (!line.compare(0, 2, "f ")) {
                 std::vector<unsigned> f;
                 int idx, vn_idx, vt_idx;
-                std::vector<std::string> frg_res = splitOBJpath(line, " ");
-                //qDebug() << "frg_res" << frg_res.size();
+                std::vector<std::string> frg_res = splitString(line, " ");
                 if (vn_count == 0 && vt_count == 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str());
                         idx--;
                         tempMesh.indices.push_back(idx);
@@ -101,7 +138,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count != 0 && vt_count == 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
                         idx--; vn_idx--;
                         tempMesh.indices.push_back(idx);
@@ -112,7 +149,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count == 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
                         idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
@@ -123,7 +160,7 @@ void Model::loadModel(QStringList paths)
                 }
                 else if (vn_count != 0 && vt_count != 0) {
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitOBJpath(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
                         idx--; vn_idx--; vt_idx--;
                         tempMesh.indices.push_back(idx);
@@ -138,8 +175,19 @@ void Model::loadModel(QStringList paths)
         }
         vertexNum += tempMesh.vertices.size();
         faceNum += tempMesh.faces.size();
-        tempMesh.diffuseTextureIndex = getMeshTexture(*(path), "diffuse");
-        tempMesh.specularTextureIndex = getMeshTexture(*(path), "specular");
+        std::vector<std::string> texPaths; std::string folderPath;
+        std::vector<std::string> folderSp = splitString((*(path)).toStdString(), "/");
+        for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp[k] + "/";
+        folderPath.pop_back();
+        getAllImageFiles(folderPath, texPaths);
+        for (int k = 0; k < texPaths.size(); ++k) {
+            if (texPaths[k].find("diffuse") > 0 && texPaths[k].find("diffuse") < texPaths[k].length())
+                tempMesh.diffuseIds.push_back(getMeshTexture(texPaths[k], "diffuse"));
+            else if (texPaths[k].find("specular") > 0 && texPaths[k].find("specular") < texPaths[k].length())
+                tempMesh.specularIds.push_back(getMeshTexture(texPaths[k], "specular"));
+        }
+        //tempMesh.diffuseIds = getMeshTexture(*(path), "diffuse");
+        //tempMesh.specularIds = getMeshTexture(*(path), "specular");
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
             for (int i = 0; i < tempMesh.vertices.size(); ++i) {
@@ -172,14 +220,11 @@ void Model::computeNormal(sigMesh& inMesh)
     }
 }
 
-int Model::getMeshTexture(QString path, std::string type)
+int Model::getMeshTexture(std::string t_ps, std::string type)
 {
-    QString t_p = path;
-    std::ifstream diffuse;
-    t_p.chop(4);
-    std::string t_ps = t_p.toStdString() + "_" + type + ".png";
-    diffuse.open(t_ps, std::ifstream::in);
-    if (diffuse.fail()) return -1;
+    std::ifstream texStream;
+    texStream.open(t_ps, std::ifstream::in);
+    if (texStream.fail()) return -1;
 
     Texture texture;
     if (texture.getTexture(QString::fromStdString(t_ps)))
