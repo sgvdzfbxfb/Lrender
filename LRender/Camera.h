@@ -23,6 +23,8 @@ public:
     void moveTarget(Vector2D motion);
     void closeToTarget(int ratio);
     void setModel(Coord3D modelCenter, float yRange);
+    void setPositon(Vector3D new_p);
+    Vector3D getPositon();
     glm::mat4 getViewMatrix();
     glm::mat4 getProjectionMatrix();
 };

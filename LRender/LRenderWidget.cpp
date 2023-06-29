@@ -23,6 +23,7 @@ LRenderWidget::LRenderWidget(QWidget *parent) :
     // set render frequency
     connect(&timer, &QTimer::timeout, this, &LRenderWidget::render);
     timer.start(1);
+    this->grabKeyboard();
 }
 
 LRenderWidget::~LRenderWidget()
@@ -144,9 +145,24 @@ void LRenderWidget::wheelEvent(QWheelEvent *event)
     ratio += res.y();
 }
 
+void LRenderWidget::keyPressEvent(QKeyEvent* event)
+{
+    /*Vector3D updatePos = camera.getPositon();
+    switch (event->key()) {
+        case Qt::Key_A: updatePos.x -= 0.3; break;
+        case Qt::Key_D: updatePos.x += 0.3; break;
+        case Qt::Key_W: updatePos.z += 0.3; break;
+        case Qt::Key_S: updatePos.z -= 0.3; break;
+        case Qt::Key_Q: updatePos.y += 0.3; break;
+        case Qt::Key_E: updatePos.y -= 0.3; break;
+        default: break;
+    }
+    camera.setPositon(updatePos);*/
+}
+
 void LRenderWidget::processInput()
 {
-    if((currentBtns & Qt::LeftButton) || (currentBtns & Qt::RightButton))
+    if((currentBtns & Qt::LeftButton) || (currentBtns & Qt::MidButton))
     {
         if(!lastPos.isNull())
         {
@@ -157,7 +173,7 @@ void LRenderWidget::processInput()
             {
                 camera.rotateAroundTarget(motion);
             }
-            if(currentBtns & Qt::RightButton)
+            if(currentBtns & Qt::MidButton)
             {
                 camera.moveTarget(motion);
             }

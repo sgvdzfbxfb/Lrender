@@ -58,6 +58,16 @@ void Camera::setModel(Coord3D modelCenter, float yRange)
     position.z += (yRange / std::tan(glm::radians(fov) / 2));
 }
 
+void Camera::setPositon(Vector3D new_p)
+{
+    position = new_p;
+}
+
+Vector3D Camera::getPositon()
+{
+    return position;
+}
+
 glm::mat4 Camera::getViewMatrix()
 {
     return glm::lookAt(position,target,{0.0f,1.0f,0.0f});
