@@ -55,10 +55,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <IncludePath>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\lib\intel64\vc14;D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\redist\intel64\vc14;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -66,7 +66,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\lib\intel64\vc14;D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\redist\intel64\vc14;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -76,7 +76,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\lib\intel64\vc14;D:\dependency\oneapi-tbb-2021.9.0-win\oneapi-tbb-2021.9.0\redist\intel64\vc14;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
