@@ -251,7 +251,7 @@
                <item>
                 <widget class="QLabel" name="label_5">
                  <property name="text">
-                  <string>pitch</string>
+                  <string>light y dir</string>
                  </property>
                 </widget>
                </item>
@@ -277,8 +277,26 @@
                </property>
                <item>
                 <widget class="QSlider" name="PitchSlider">
+                 <property name="baseSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="mouseTracking">
+                  <bool>false</bool>
+                 </property>
+                 <property name="tabletTracking">
+                  <bool>false</bool>
+                 </property>
+                 <property name="acceptDrops">
+                  <bool>false</bool>
+                 </property>
                  <property name="layoutDirection">
                   <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <property name="autoFillBackground">
+                  <bool>false</bool>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -294,6 +312,12 @@
                  </property>
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="invertedAppearance">
+                  <bool>true</bool>
+                 </property>
+                 <property name="invertedControls">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -321,7 +345,7 @@
                <item>
                 <widget class="QLabel" name="label_2">
                  <property name="text">
-                  <string>yaw</string>
+                  <string>light xz dir</string>
                  </property>
                 </widget>
                </item>
@@ -347,6 +371,12 @@
                </property>
                <property name="sliderPosition">
                 <number>0</number>
+               </property>
+               <property name="wrapping">
+                <bool>true</bool>
+               </property>
+               <property name="notchesVisible">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -545,7 +575,7 @@
      <x>0</x>
      <y>0</y>
      <width>1120</width>
-     <height>22</height>
+     <height>17</height>
     </rect>
    </property>
    <property name="sizePolicy">
