@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1146</width>
+    <width>1356</width>
     <height>751</height>
    </rect>
   </property>
@@ -26,44 +26,22 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>1182</width>
+     <width>2000</width>
      <height>712</height>
     </size>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="LRenderWidget" name="RenderWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>800</width>
-        <height>700</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>800</width>
-        <height>700</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QWidget" name="verticalWidget" native="true">
       <property name="minimumSize">
        <size>
-        <width>320</width>
+        <width>340</width>
         <height>700</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>330</width>
+        <width>340</width>
         <height>700</height>
        </size>
       </property>
@@ -592,6 +570,28 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <widget class="LRenderWidget" name="RenderWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>1000</width>
+        <height>700</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1000</width>
+        <height>700</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -599,7 +599,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1146</width>
+     <width>1356</width>
      <height>17</height>
     </rect>
    </property>
@@ -638,7 +638,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>     File    </string>
+     <string>   File Option   </string>
     </property>
     <addaction name="actionopen_file"/>
     <addaction name="actionsave_image"/>
@@ -652,13 +652,13 @@
      </size>
     </property>
     <property name="title">
-     <string>    Setting    </string>
+     <string>   Render Option   </string>
     </property>
     <addaction name="actionMultiThread"/>
     <addaction name="actionFaceCulling"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionopen_file">

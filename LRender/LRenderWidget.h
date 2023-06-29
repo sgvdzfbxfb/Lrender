@@ -22,8 +22,8 @@
 #include "model.h"
 #include "camera.h"
 
-#define DEFAULT_WIDTH 800
-#define DEFAULT_HEIGHT 600
+#define DEFAULT_WIDTH 1000
+#define DEFAULT_HEIGHT 700
 #define FIXED_CAMERA_FAR 100.f
 
 namespace Ui {
