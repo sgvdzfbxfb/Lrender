@@ -96,9 +96,7 @@ void LRender::on_actionsave_image_triggered()
 
 void LRender::initUI()
 {
-    setFixedSize(1120, 672);
-    ui->Setting->setTabText(0, "Light");
-    ui->Setting->setTabText(1, "Model");
+    //setFixedSize(1230, 772);
 #if 0
     // light background
     ui->RenderWidget->setFigureColor({ 1.00f, 1.00f, 1.00f }, BACKGROUND);
