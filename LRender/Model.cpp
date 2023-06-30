@@ -67,7 +67,7 @@ void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
     for(int i = 0; i < meshes.size(); i++)
-        meshes[i].meshRender();
+        meshes.at(i).meshRender();
 }
 
 void Model::loadModel(QStringList paths)
@@ -205,7 +205,7 @@ void Model::loadModel(QStringList paths)
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
             for (int i = 0; i < tempMesh.vertices.size(); ++i) {
-                tempMesh.vertices[i].texUv = Coord2D(0.0f, 0.0f);
+                tempMesh.vertices.at(i).texUv = Coord2D(0.0f, 0.0f);
             }
         }
         meshes.push_back(tempMesh);
@@ -217,8 +217,8 @@ void Model::computeNormal(sigMesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
     for (int i = 0; i < inMesh.faces.size(); i++) {
-        Vector3D AB = inMesh.faces[i].at(1).worldPos - inMesh.faces[i].at(0).worldPos;
-        Vector3D AC = inMesh.faces[i].at(2).worldPos - inMesh.faces[i].at(0).worldPos;
+        Vector3D AB = inMesh.faces.at(i).at(1).worldPos - inMesh.faces.at(i).at(0).worldPos;
+        Vector3D AC = inMesh.faces.at(i).at(2).worldPos - inMesh.faces.at(i).at(0).worldPos;
         Vector3D faceN = glm::normalize(glm::cross(AB, AC));
         faceNormals.push_back(faceN);
     }
@@ -226,11 +226,11 @@ void Model::computeNormal(sigMesh& inMesh)
         std::vector<int> tempMs = inMesh.verToFace.at(i);
         Vector3D verNave(0.0, 0.0, 0.0);
         for (int j = 0; j < tempMs.size(); ++j) {
-            verNave += faceNormals[tempMs[j]];
+            verNave += faceNormals[tempMs.at(j)];
         }
         verNave /= tempMs.size();
         verNave = glm::normalize(verNave);
-        inMesh.vertices[i].normal = verNave;
+        inMesh.vertices.at(i).normal = verNave;
     }
     for (int i = 0; i < inMesh.faces.size(); ++i) {
         inMesh.faces.at(i).at(0).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(0)].normal;
@@ -313,7 +313,7 @@ void Model::loadSkyBox(std::string skyPath)
 
     for (int i = 0; i < skyPaths.size(); ++i) {
         Texture texture;
-        if (texture.getTexture(QString::fromStdString(skyPaths[i])))
+        if (texture.getTexture(QString::fromStdString(skyPaths.at(i))))
             cubeMapSkyBox.push_back(texture);
     }
 }

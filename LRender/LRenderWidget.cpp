@@ -86,6 +86,7 @@ void LRenderWidget::loadModel(QStringList paths)
     resetCamera();
     //QString  skyBoxPath = QFileDialog::getExistingDirectory();
     //if (!skyBoxPath.isEmpty())
+
     model->loadSkyBox("D:/Code/lrender/LRender/skybox");
 }
 

@@ -45,7 +45,7 @@ static inline std::bitset<N> getClipCode(T point, std::array<T, N>& clip)
 {
     std::bitset<N> res;
     for(int i = 0; i < N; i++)
-        if(calculateDistance(point, clip[i]) < 0) res.set(i, 1);
+        if(calculateDistance(point, clip.at(i)) < 0) res.set(i, 1);
     return res;
 }
 
@@ -69,9 +69,9 @@ void renderAPI::perspectiveTrans(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        tri[i].clipPos.x /= tri[i].clipPos.w;
-        tri[i].clipPos.y /= tri[i].clipPos.w;
-        tri[i].clipPos.z /= tri[i].clipPos.w;
+        tri.at(i).clipPos.x /= tri.at(i).clipPos.w;
+        tri.at(i).clipPos.y /= tri.at(i).clipPos.w;
+        tri.at(i).clipPos.z /= tri.at(i).clipPos.w;
     }
 }
 
@@ -79,9 +79,9 @@ void renderAPI::perspectiveTrans(Quad& quad)
 {
     for (int i = 0; i < 4; i++)
     {
-        quad[i].clipPos.x /= quad[i].clipPos.w;
-        quad[i].clipPos.y /= quad[i].clipPos.w;
-        quad[i].clipPos.z /= quad[i].clipPos.w;
+        quad.at(i).clipPos.x /= quad.at(i).clipPos.w;
+        quad.at(i).clipPos.y /= quad.at(i).clipPos.w;
+        quad.at(i).clipPos.z /= quad.at(i).clipPos.w;
     }
 }
 
@@ -89,9 +89,9 @@ void renderAPI::convertToScreen(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        tri[i].screenPos.x = static_cast<int>(0.5f * width * (tri[i].clipPos.x + 1.0f) + 0.5f);
-        tri[i].screenPos.y = static_cast<int>(0.5f * height * (tri[i].clipPos.y + 1.0f) + 0.5f);
-        tri[i].zValue = tri[i].clipPos.z;
+        tri.at(i).screenPos.x = static_cast<int>(0.5f * width * (tri.at(i).clipPos.x + 1.0f) + 0.5f);
+        tri.at(i).screenPos.y = static_cast<int>(0.5f * height * (tri.at(i).clipPos.y + 1.0f) + 0.5f);
+        tri.at(i).zValue = tri.at(i).clipPos.z;
     }
 }
 
@@ -99,9 +99,9 @@ void renderAPI::convertToScreen(Quad& quad)
 {
     for (int i = 0; i < 3; i++)
     {
-        quad[i].screenPos.x = static_cast<int>(0.5f * width * (quad[i].clipPos.x + 1.0f) + 0.5f);
-        quad[i].screenPos.y = static_cast<int>(0.5f * height * (quad[i].clipPos.y + 1.0f) + 0.5f);
-        quad[i].zValue = quad[i].clipPos.z;
+        quad.at(i).screenPos.x = static_cast<int>(0.5f * width * (quad.at(i).clipPos.x + 1.0f) + 0.5f);
+        quad.at(i).screenPos.y = static_cast<int>(0.5f * height * (quad.at(i).clipPos.y + 1.0f) + 0.5f);
+        quad.at(i).zValue = quad.at(i).clipPos.z;
     }
 }
 
@@ -138,10 +138,10 @@ CoordI4D renderAPI::computeBoundingBox(Triangle& tri)
     int yMax = 0;
     for(int i = 0; i < 3; i++)
     {
-        xMin = std::min(xMin, tri[i].screenPos.x);
-        yMin = std::min(yMin, tri[i].screenPos.y);
-        xMax = std::max(xMax, tri[i].screenPos.x);
-        yMax = std::max(yMax, tri[i].screenPos.y);
+        xMin = std::min(xMin, tri.at(i).screenPos.x);
+        yMin = std::min(yMin, tri.at(i).screenPos.y);
+        xMax = std::max(xMax, tri.at(i).screenPos.x);
+        yMax = std::max(yMax, tri.at(i).screenPos.y);
     }
     return {
         xMin > 0 ? xMin : 0,
@@ -158,10 +158,10 @@ CoordI4D renderAPI::computeBoundingBox(Quad& quad)
     int yMax = 0;
     for (int i = 0; i < 4; i++)
     {
-        xMin = std::min(xMin, quad[i].screenPos.x);
-        yMin = std::min(yMin, quad[i].screenPos.y);
-        xMax = std::max(xMax, quad[i].screenPos.x);
-        yMax = std::max(yMax, quad[i].screenPos.y);
+        xMin = std::min(xMin, quad.at(i).screenPos.x);
+        yMin = std::min(yMin, quad.at(i).screenPos.y);
+        xMax = std::max(xMax, quad.at(i).screenPos.x);
+        yMax = std::max(yMax, quad.at(i).screenPos.y);
     }
     return {
         xMin > 0 ? xMin : 0,
@@ -254,8 +254,9 @@ void renderAPI::skyBoxFacesRender(Triangle& tri)
         {
             Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bc_screen)) {
-                P.z = 0;
-                for (int i = 0; i < 3; i++) P.z += tri[i].zValue * bc_screen[i];
+                float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
+                P.z = bc_screen[0] * tri[0].clipPos.z / tri[0].clipPos.w + bc_screen[1] * tri[1].clipPos.z / tri[1].clipPos.w + bc_screen[2] * tri[2].clipPos.z / tri[2].clipPos.w;
+                P.z *= Z;
                 frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
                 skyShader->fragmentShader(frag);
                 frame.setPixel(P.x, P.y, frag.fragmentColor);
@@ -317,8 +318,8 @@ std::optional<Line> renderAPI::lineClip(Line& line)
     {
         if((code[0] ^ code[1])[i])
         {
-            float da = calculateDistance(Coord3D(line[0], 1), screenEdge[i]);
-            float db = calculateDistance(Coord3D(line[1], 1), screenEdge[i]);
+            float da = calculateDistance(Coord3D(line[0], 1), screenEdge.at(i));
+            float db = calculateDistance(Coord3D(line[1], 1), screenEdge.at(i));
             float alpha = da / (da - db);
             CoordI2D np = calculateInterpolation(line[0], line[1], alpha);
             if(da > 0)
@@ -357,11 +358,11 @@ void renderAPI::pointsRender(Triangle &tri)
 {
     for(int i = 0; i < 3; i++)
     {
-        if(tri[i].screenPos.x >= 0 && tri[i].screenPos.x <= width - 1 &&
-                tri[i].screenPos.y >= 0 && tri[i].screenPos.y <= height - 1 &&
-                tri[i].zValue <= 1.f)
+        if(tri.at(i).screenPos.x >= 0 && tri.at(i).screenPos.x <= width - 1 &&
+                tri.at(i).screenPos.y >= 0 && tri.at(i).screenPos.y <= height - 1 &&
+                tri.at(i).zValue <= 1.f)
         {
-            frame.setPixel(tri[i].screenPos.x, tri[i].screenPos.y,
+            frame.setPixel(tri.at(i).screenPos.x, tri.at(i).screenPos.y,
                                  pointColor);
         }
     }
@@ -392,18 +393,18 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
             }
             else if(!code[i][0] && code[k][0])
             {
-                float da = calculateDistance(tri[i].clipPos, viewBox[0]);
+                float da = calculateDistance(tri.at(i).clipPos, viewBox[0]);
                 float db = calculateDistance(tri[k].clipPos, viewBox[0]);
                 float alpha = da / (da - db);
-                Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
+                Vertex np = calculateInterpolation(tri.at(i), tri[k], alpha);
                 res.push_back(np);
             }
             else if(code[i][0] && !code[k][0])
             {
-                float da = calculateDistance(tri[i].clipPos, viewBox[0]);
+                float da = calculateDistance(tri.at(i).clipPos, viewBox[0]);
                 float db = calculateDistance(tri[k].clipPos, viewBox[0]);
                 float alpha = da / (da - db);
-                Vertex np = calculateInterpolation(tri[i], tri[k], alpha);
+                Vertex np = calculateInterpolation(tri.at(i), tri[k], alpha);
                 res.push_back(np);
                 res.push_back(tri[k]);
             }
@@ -418,7 +419,7 @@ void renderAPI::rasterization(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
     {
-        shader->vertexShader(tri[i]);
+        shader->vertexShader(tri.at(i));
     }
     std::vector<Triangle> completedTriangleList = faceClip(tri);
     for (auto &ctri : completedTriangleList)
@@ -440,13 +441,13 @@ void renderAPI::render()
             [&](tbb::blocked_range<size_t> r)
             {
                 for (size_t i = r.begin(); i < r.end(); i++)
-                    rasterization(faces[i]);
+                    rasterization(faces.at(i));
             });
     }
     else
     {
         for(int i = 0; i < faces.size(); i++)
-            rasterization(faces[i]);
+            rasterization(faces.at(i));
     }
 }
 
@@ -454,12 +455,12 @@ void renderAPI::render()
 void renderAPI::renderSkyBox()
 {
     for (int i = 0; i < SkyBoxFaces.size(); i++) {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 3; j++)
         {
-            skyShader->vertexShader(SkyBoxFaces[i][j]);
+            skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
         }
-        perspectiveTrans(SkyBoxFaces[i]);
-        convertToScreen(SkyBoxFaces[i]);
-        skyBoxFacesRender(SkyBoxFaces[i]);
+        perspectiveTrans(SkyBoxFaces.at(i));
+        convertToScreen(SkyBoxFaces.at(i));
+        skyBoxFacesRender(SkyBoxFaces.at(i));
     }
 }

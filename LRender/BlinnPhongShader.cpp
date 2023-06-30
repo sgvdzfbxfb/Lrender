@@ -13,13 +13,13 @@ void BlinnPhongShader::fragmentShader(Fragment &fragment)
     Color specularColor = {0.0f,0.0f,0.0f};
     if (material.diffuse.size() != 0) {
         for (int i = 0; i < material.diffuse.size(); ++i)
-            diffuseColor += renderAPI::API().textureList[material.diffuse[i]].getColorFromUv(fragment.texUv);
+            diffuseColor += renderAPI::API().textureList[material.diffuse.at(i)].getColorFromUv(fragment.texUv);
         diffuseColor /= material.diffuse.size();
     }
     else diffuseColor = { 0.6f,0.6f,0.6f };
     if (material.specular.size() != 0) {
         for (int i = 0; i < material.specular.size(); ++i)
-            specularColor = renderAPI::API().textureList[material.specular[i]].getColorFromUv(fragment.texUv);
+            specularColor = renderAPI::API().textureList[material.specular.at(i)].getColorFromUv(fragment.texUv);
         specularColor /= material.specular.size();
     }
     else specularColor = { 1.0f,1.0f,1.0f };
@@ -40,7 +40,7 @@ void BlinnPhongShader::fragmentShader(Fragment &fragment)
     Color result(0.f, 0.f, 0.f);
     for(int i = 0; i < lightList.size(); ++i)
     {
-        result += calculateLight(lightList[i]);
+        result += calculateLight(lightList.at(i));
     }
     if(result.x > 1.f) result.x = 1.f;
     if(result.y > 1.f) result.y = 1.f;
