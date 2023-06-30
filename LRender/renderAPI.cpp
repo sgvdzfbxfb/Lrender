@@ -49,6 +49,22 @@ static inline std::bitset<N> getClipCode(T point, std::array<T, N>& clip)
     return res;
 }
 
+static Coord3D interpolate(float alpha, float beta, float gamma, const Coord3D& vert1, const Coord3D& vert2, const Coord3D& vert3, float weight)
+{
+    return (alpha * vert1 + beta * vert2 + gamma * vert3) / weight;
+}
+
+static Coord2D interpolate(float alpha, float beta, float gamma, const Coord2D& vert1, const Coord2D& vert2, const Coord2D& vert3, float weight)
+{
+    auto u = (alpha * vert1[0] + beta * vert2[0] + gamma * vert3[0]);
+    auto v = (alpha * vert1[1] + beta * vert2[1] + gamma * vert3[1]);
+
+    u /= weight;
+    v /= weight;
+
+    return Coord2D(u, v);
+}
+
 void renderAPI::perspectiveTrans(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
@@ -108,9 +124,9 @@ Fragment interpolationFragment(int x, int y, float z, Triangle& tri, Vector3D& b
     frag.screenPos.x = x;
     frag.screenPos.y = y;
     frag.zValue = z;
-    for (int i = 0; i < 3; i++) frag.worldPos += tri[i].worldPos * barycentric[i];
-    for (int i = 0; i < 3; i++) frag.normal += tri[i].normal * barycentric[i];
-    for (int i = 0; i < 3; i++) frag.texUv += tri[i].texUv * barycentric[i];
+    frag.worldPos = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].worldPos, tri[1].worldPos, tri[2].worldPos, 1);
+    frag.normal = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].normal, tri[1].normal, tri[2].normal, 1);
+    frag.texUv = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].texUv, tri[1].texUv, tri[2].texUv, 1);
     return frag;
 }
 
@@ -210,8 +226,9 @@ void renderAPI::facesRender(Triangle &tri)
         {
             Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bc_screen)) {
-                P.z = 0;
-                for (int i = 0; i < 3; i++) P.z += tri[i].zValue * bc_screen[i];
+                float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
+                P.z = bc_screen[0] * tri[0].clipPos.z / tri[0].clipPos.w + bc_screen[1] * tri[1].clipPos.z / tri[1].clipPos.w + bc_screen[2] * tri[2].clipPos.z / tri[2].clipPos.w;
+                P.z *= Z;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
