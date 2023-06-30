@@ -242,10 +242,11 @@ void renderAPI::facesRender(Triangle &tri)
 
 void renderAPI::skyBoxFacesRender(Triangle& tri)
 {
-    int xMin = width - 1;
-    int yMin = height - 1;
-    int xMax = 0;
-    int yMax = 0;
+    CoordI4D boundingBox = computeBoundingBox(tri);
+    int xMin = boundingBox[0];
+    int yMin = boundingBox[1];
+    int xMax = boundingBox[2];
+    int yMax = boundingBox[3];
     Vector3D P;
     Fragment frag;
     for (P.x = xMin; P.x <= xMax; P.x++)
@@ -257,9 +258,12 @@ void renderAPI::skyBoxFacesRender(Triangle& tri)
                 float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
                 P.z = bc_screen[0] * tri[0].clipPos.z / tri[0].clipPos.w + bc_screen[1] * tri[1].clipPos.z / tri[1].clipPos.w + bc_screen[2] * tri[2].clipPos.z / tri[2].clipPos.w;
                 P.z *= Z;
-                frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
-                skyShader->fragmentShader(frag);
-                frame.setPixel(P.x, P.y, frag.fragmentColor);
+                if (frame.updateZbuffer(P.x, P.y, P.z))
+                {
+                    frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
+                    skyShader->fragmentShader(frag);
+                    frame.setPixel(P.x, P.y, frag.fragmentColor);
+                }
             }
         }
     }
@@ -459,8 +463,12 @@ void renderAPI::renderSkyBox()
         {
             skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
         }
-        perspectiveTrans(SkyBoxFaces.at(i));
-        convertToScreen(SkyBoxFaces.at(i));
-        skyBoxFacesRender(SkyBoxFaces.at(i));
+        std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
+        for (auto& ctri : completedTriangleList)
+        {
+            perspectiveTrans(ctri);
+            convertToScreen(ctri);
+            skyBoxFacesRender(ctri);
+        }
     }
 }

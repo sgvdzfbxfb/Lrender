@@ -87,7 +87,7 @@ void LRenderWidget::loadModel(QStringList paths)
     //QString  skyBoxPath = QFileDialog::getExistingDirectory();
     //if (!skyBoxPath.isEmpty())
 
-    model->loadSkyBox("D:/Code/lrender/LRender/skybox");
+    model->loadSkyBox("D:/Code/lrender/LRender/skybox2");
 }
 
 void LRenderWidget::initDevice()
@@ -204,15 +204,20 @@ void LRenderWidget::render()
     }
     lastFrameTime = nowTime;
     processInput();
-    // render skybox
-    renderAPI::API().skyBox = model->getSkyBox();
-    renderAPI::API().SkyBoxFaces = model->SkyBoxFaces;
-    renderAPI::API().renderSkyBox();
     renderAPI::API().shader->modelMat = modelMatrix;
     renderAPI::API().shader->viewMat = camera.getViewMatrix();
     renderAPI::API().shader->projectionMat = camera.getProjectionMatrix();
     renderAPI::API().shader->eyePos = camera.position;
     renderAPI::API().shader->material.shininess = 150.f;
-    model->modelRender();
+    // render skybox
+    renderAPI::API().skyShader->modelMat = modelMatrix;
+    renderAPI::API().skyShader->viewMat = camera.getViewMatrix();
+    renderAPI::API().skyShader->projectionMat = camera.getProjectionMatrix();
+    renderAPI::API().skyShader->eyePos = camera.position;
+    renderAPI::API().skyShader->material.shininess = 150.f;
+    renderAPI::API().skyBox = model->getSkyBox();
+    renderAPI::API().SkyBoxFaces = model->SkyBoxFaces;
+    renderAPI::API().renderSkyBox();
+    /*model->modelRender();*/
     update();
 }

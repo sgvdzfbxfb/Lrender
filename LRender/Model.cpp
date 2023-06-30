@@ -257,55 +257,55 @@ int Model::getMeshTexture(std::string t_ps, std::string type)
 void Model::loadSkyBox(std::string skyPath)
 {
     std::vector<Vertex> skyBoxVers;
-    Vertex Ver1; Ver1.worldPos = modelCenter + Coord3D(100.0, 100.0, -100.0); skyBoxVers.push_back(Ver1);
-    Vertex Ver2; Ver2.worldPos = modelCenter + Coord3D(100.0, -100.0, -100.0); skyBoxVers.push_back(Ver2);
-    Vertex Ver3; Ver3.worldPos = modelCenter + Coord3D(-100.0, -100.0, -100.0); skyBoxVers.push_back(Ver3);
-    Vertex Ver4; Ver4.worldPos = modelCenter + Coord3D(-100.0, 100.0, -100.0); skyBoxVers.push_back(Ver4);
-    Vertex Ver5; Ver5.worldPos = modelCenter + Coord3D(100.0, 100.0, 100.0); skyBoxVers.push_back(Ver5);
-    Vertex Ver6; Ver6.worldPos = modelCenter + Coord3D(100.0, -100.0, 100.0); skyBoxVers.push_back(Ver6);
-    Vertex Ver7; Ver7.worldPos = modelCenter + Coord3D(-100.0, -100.0, 100.0); skyBoxVers.push_back(Ver7);
-    Vertex Ver8; Ver8.worldPos = modelCenter + Coord3D(-100.0, 100.0, 100.0); skyBoxVers.push_back(Ver8);
+    Vertex Ver1; Ver1.worldPos = modelCenter + Coord3D(1.0, 1.0, -1.0); skyBoxVers.push_back(Ver1);
+    Vertex Ver2; Ver2.worldPos = modelCenter + Coord3D(1.0, -1.0, -1.0); skyBoxVers.push_back(Ver2);
+    Vertex Ver3; Ver3.worldPos = modelCenter + Coord3D(-1.0, -1.0, -1.0); skyBoxVers.push_back(Ver3);
+    Vertex Ver4; Ver4.worldPos = modelCenter + Coord3D(-1.0, 1.0, -1.0); skyBoxVers.push_back(Ver4);
+    Vertex Ver5; Ver5.worldPos = modelCenter + Coord3D(1.0, 1.0, 1.0); skyBoxVers.push_back(Ver5);
+    Vertex Ver6; Ver6.worldPos = modelCenter + Coord3D(1.0, -1.0, 1.0); skyBoxVers.push_back(Ver6);
+    Vertex Ver7; Ver7.worldPos = modelCenter + Coord3D(-1.0, -1.0, 1.0); skyBoxVers.push_back(Ver7);
+    Vertex Ver8; Ver8.worldPos = modelCenter + Coord3D(-1.0, 1.0, 1.0); skyBoxVers.push_back(Ver8);
 
     Triangle face11{ skyBoxVers[1], skyBoxVers[2], skyBoxVers[3] };
     face11.at(0).texUv = Coord2D(0.0, 0.0); face11.at(1).texUv = Coord2D(1.0, 0.0); face11.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face11);
-    Triangle face12{ skyBoxVers[2], skyBoxVers[3], skyBoxVers[0] };
-    face12.at(0).texUv = Coord2D(1.0, 0.0); face12.at(1).texUv = Coord2D(1.0, 1.0); face12.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face12{ skyBoxVers[1], skyBoxVers[3], skyBoxVers[0] };
+    face12.at(0).texUv = Coord2D(0.0, 0.0); face12.at(1).texUv = Coord2D(1.0, 1.0); face12.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face12);
 
     Triangle face21{ skyBoxVers[2], skyBoxVers[6], skyBoxVers[7] };
     face21.at(0).texUv = Coord2D(0.0, 0.0); face21.at(1).texUv = Coord2D(1.0, 0.0); face21.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face21);
-    Triangle face22{ skyBoxVers[6], skyBoxVers[7], skyBoxVers[3] };
-    face22.at(0).texUv = Coord2D(1.0, 0.0); face22.at(1).texUv = Coord2D(1.0, 1.0); face22.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face22{ skyBoxVers[2], skyBoxVers[7], skyBoxVers[3] };
+    face22.at(0).texUv = Coord2D(0.0, 0.0); face22.at(1).texUv = Coord2D(1.0, 1.0); face22.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face22);
 
     Triangle face31{ skyBoxVers[6], skyBoxVers[5], skyBoxVers[4] };
     face31.at(0).texUv = Coord2D(0.0, 0.0); face31.at(1).texUv = Coord2D(1.0, 0.0); face31.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face31);
-    Triangle face32{ skyBoxVers[5], skyBoxVers[4], skyBoxVers[7] };
-    face32.at(0).texUv = Coord2D(1.0, 0.0); face32.at(1).texUv = Coord2D(1.0, 1.0); face32.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face32{ skyBoxVers[6], skyBoxVers[4], skyBoxVers[7] };
+    face32.at(0).texUv = Coord2D(0.0, 0.0); face32.at(1).texUv = Coord2D(1.0, 1.0); face32.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face32);
 
     Triangle face41{ skyBoxVers[5], skyBoxVers[1], skyBoxVers[0] };
     face41.at(0).texUv = Coord2D(0.0, 0.0); face41.at(1).texUv = Coord2D(1.0, 0.0); face41.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face41);
-    Triangle face42{ skyBoxVers[1], skyBoxVers[0], skyBoxVers[4] };
-    face42.at(0).texUv = Coord2D(1.0, 0.0); face42.at(1).texUv = Coord2D(1.0, 1.0); face42.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face42{ skyBoxVers[5], skyBoxVers[0], skyBoxVers[4] };
+    face42.at(0).texUv = Coord2D(0.0, 0.0); face42.at(1).texUv = Coord2D(1.0, 1.0); face42.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face42);
 
     Triangle face51{ skyBoxVers[7], skyBoxVers[4], skyBoxVers[0] };
     face51.at(0).texUv = Coord2D(0.0, 0.0); face51.at(1).texUv = Coord2D(1.0, 0.0); face51.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face51);
-    Triangle face52{ skyBoxVers[4], skyBoxVers[0], skyBoxVers[3] };
-    face52.at(0).texUv = Coord2D(1.0, 0.0); face52.at(1).texUv = Coord2D(1.0, 1.0); face52.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face52{ skyBoxVers[7], skyBoxVers[0], skyBoxVers[3] };
+    face52.at(0).texUv = Coord2D(0.0, 0.0); face52.at(1).texUv = Coord2D(1.0, 1.0); face52.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face52);
 
     Triangle face61{ skyBoxVers[2], skyBoxVers[1], skyBoxVers[5] };
     face61.at(0).texUv = Coord2D(0.0, 0.0); face61.at(1).texUv = Coord2D(1.0, 0.0); face61.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face61);
-    Triangle face62{ skyBoxVers[1], skyBoxVers[5], skyBoxVers[6] };
-    face62.at(0).texUv = Coord2D(1.0, 0.0); face62.at(1).texUv = Coord2D(1.0, 1.0); face62.at(2).texUv = Coord2D(0.0, 1.0);
+    Triangle face62{ skyBoxVers[2], skyBoxVers[5], skyBoxVers[6] };
+    face62.at(0).texUv = Coord2D(0.0, 0.0); face62.at(1).texUv = Coord2D(1.0, 1.0); face62.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face62);
 
     std::vector<std::string> skyPaths;
@@ -313,8 +313,10 @@ void Model::loadSkyBox(std::string skyPath)
 
     for (int i = 0; i < skyPaths.size(); ++i) {
         Texture texture;
-        if (texture.getTexture(QString::fromStdString(skyPaths.at(i))))
+        if (texture.getTexture(QString::fromStdString(skyPaths.at(i)))) {
             cubeMapSkyBox.push_back(texture);
+            qDebug() << QString::fromStdString(skyPaths.at(i));
+        }
     }
 }
 
