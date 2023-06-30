@@ -33,7 +33,7 @@ bool checkIsDir(const std::string& dir) {
     return false;
 }
 
-// 搜索一个目录下所有的图像文件，以 jpg,jpeg,png 结尾的文件
+// 搜索一个目录下所有的图像文件，以 png 结尾的文件
 void getAllImageFiles(const std::string dir, std::vector<std::string>& files) {
     // 首先检查目录是否为空，以及是否是目录
     if (!checkIsDir(dir)) return;
@@ -254,4 +254,28 @@ int Model::getMeshTexture(std::string t_ps, std::string type)
     else return -1;
 }
 
+void Model::loadSkyBox(std::string skyPath)
+{
+    Vertex Ver1; Ver1.worldPos = modelCenter + Coord3D(100.0, 100.0, -100.0); Ver1.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver1);
+    Vertex Ver2; Ver2.worldPos = modelCenter + Coord3D(100.0, -100.0, -100.0); Ver2.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver2);
+    Vertex Ver3; Ver3.worldPos = modelCenter + Coord3D(-100.0, -100.0, -100.0); Ver3.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver3);
+    Vertex Ver4; Ver4.worldPos = modelCenter + Coord3D(-100.0, 100.0, -100.0); Ver4.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver4);
+    Vertex Ver5; Ver5.worldPos = modelCenter + Coord3D(100.0, 100.0, 100.0); Ver5.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver5);
+    Vertex Ver6; Ver6.worldPos = modelCenter + Coord3D(100.0, -100.0, 100.0); Ver6.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver6);
+    Vertex Ver7; Ver7.worldPos = modelCenter + Coord3D(-100.0, -100.0, 100.0); Ver7.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver7);
+    Vertex Ver8; Ver8.worldPos = modelCenter + Coord3D(-100.0, 100.0, 100.0); Ver8.texUv = Coord2D(0.0, 0.0); skyBoxVers.push_back(Ver8);
 
+    std::vector<std::string> skyPaths;
+    getAllImageFiles(skyPath, skyPaths);
+
+    for (int i = 0; i < skyPaths.size(); ++i) {
+        Texture texture;
+        if (texture.getTexture(QString::fromStdString(skyPaths[i])))
+            cubeMapSkyBox.push_back(texture);
+    }
+}
+
+std::vector<Texture> Model::getSkyBox()
+{
+    return cubeMapSkyBox;
+}

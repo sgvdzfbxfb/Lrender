@@ -2,7 +2,6 @@
 
 #include <QMainWindow>
 #include <QPalette>
-#include <QFileDialog>
 #include <QColorDialog>
 #include "LRenderWidget.h"
 #include "ui_LRender.h"

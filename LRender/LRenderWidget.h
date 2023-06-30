@@ -18,14 +18,16 @@
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include <QFileDialog>
 #include "renderAPI.h"
 #include "blinnPhongShader.h"
+#include "skyBoxShader.h"
 #include "model.h"
 #include "camera.h"
 
 #define DEFAULT_WIDTH 1000
 #define DEFAULT_HEIGHT 700
-#define FIXED_CAMERA_FAR 100.f
+#define FIXED_CAMERA_FAR 300.f
 
 namespace Ui {
 class LRenderWidget;

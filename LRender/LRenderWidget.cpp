@@ -84,12 +84,16 @@ void LRenderWidget::loadModel(QStringList paths)
     model = newModel;
     emit sendModelData(model->faceNum, model->vertexNum);
     resetCamera();
+    //QString  skyBoxPath = QFileDialog::getExistingDirectory();
+    //if (!skyBoxPath.isEmpty())
+    model->loadSkyBox("D:/Code/lrender/LRender/skybox");
 }
 
 void LRenderWidget::initDevice()
 {
     renderAPI::init(scWidth,scHeight);
     renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
+    renderAPI::API().skyShader = std::make_unique<SkyBoxShader>();
     renderAPI::API().shader->lightList.push_back(Light());
 }
 
@@ -199,6 +203,10 @@ void LRenderWidget::render()
     }
     lastFrameTime = nowTime;
     processInput();
+    // render skybox
+    renderAPI::API().skyBox = model->getSkyBox();
+    renderAPI::API().skyBoxVertices = model->skyBoxVers;
+    renderAPI::API().renderSkyBox();
     renderAPI::API().shader->modelMat = modelMatrix;
     renderAPI::API().shader->viewMat = camera.getViewMatrix();
     renderAPI::API().shader->projectionMat = camera.getProjectionMatrix();

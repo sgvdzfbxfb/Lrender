@@ -41,6 +41,7 @@ struct Vertex
     Coord2D texUv = Coord2D(0.0, 0.0);
 };
 
+using Quad = std::array<Vertex, 4>;
 using Triangle = std::array<Vertex, 3>;
 using Line = std::array<CoordI2D, 2>;
 

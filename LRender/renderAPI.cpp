@@ -59,6 +59,16 @@ void renderAPI::perspectiveTrans(Triangle &tri)
     }
 }
 
+void renderAPI::perspectiveTrans(Quad& quad)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        quad[i].clipPos.x /= quad[i].clipPos.w;
+        quad[i].clipPos.y /= quad[i].clipPos.w;
+        quad[i].clipPos.z /= quad[i].clipPos.w;
+    }
+}
+
 void renderAPI::convertToScreen(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
@@ -66,6 +76,16 @@ void renderAPI::convertToScreen(Triangle &tri)
         tri[i].screenPos.x = static_cast<int>(0.5f * width * (tri[i].clipPos.x + 1.0f) + 0.5f);
         tri[i].screenPos.y = static_cast<int>(0.5f * height * (tri[i].clipPos.y + 1.0f) + 0.5f);
         tri[i].zValue = tri[i].clipPos.z;
+    }
+}
+
+void renderAPI::convertToScreen(Quad& quad)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        quad[i].screenPos.x = static_cast<int>(0.5f * width * (quad[i].clipPos.x + 1.0f) + 0.5f);
+        quad[i].screenPos.y = static_cast<int>(0.5f * height * (quad[i].clipPos.y + 1.0f) + 0.5f);
+        quad[i].zValue = quad[i].clipPos.z;
     }
 }
 
@@ -82,7 +102,7 @@ std::vector<Triangle> constructTriangle(std::vector<Vertex> vertexList)
     return res;
 }
 
-Fragment constructFragment(int x, int y, float z, Triangle& tri, Vector3D& barycentric)
+Fragment interpolationFragment(int x, int y, float z, Triangle& tri, Vector3D& barycentric)
 {
     Fragment frag;
     frag.screenPos.x = x;
@@ -94,7 +114,7 @@ Fragment constructFragment(int x, int y, float z, Triangle& tri, Vector3D& baryc
     return frag;
 }
 
-CoordI4D renderAPI::computeBoundingBox(Triangle & tri)
+CoordI4D renderAPI::computeBoundingBox(Triangle& tri)
 {
     int xMin = width - 1;
     int yMin = height - 1;
@@ -112,6 +132,26 @@ CoordI4D renderAPI::computeBoundingBox(Triangle & tri)
         yMin > 0 ? yMin : 0,
         xMax < width - 1 ? xMax : width - 1,
         yMax < height - 1 ? yMax : height - 1};
+}
+
+CoordI4D renderAPI::computeBoundingBox(Quad& quad)
+{
+    int xMin = width - 1;
+    int yMin = height - 1;
+    int xMax = 0;
+    int yMax = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        xMin = std::min(xMin, quad[i].screenPos.x);
+        yMin = std::min(yMin, quad[i].screenPos.y);
+        xMax = std::max(xMax, quad[i].screenPos.x);
+        yMax = std::max(yMax, quad[i].screenPos.y);
+    }
+    return {
+        xMin > 0 ? xMin : 0,
+        yMin > 0 ? yMin : 0,
+        xMax < width - 1 ? xMax : width - 1,
+        yMax < height - 1 ? yMax : height - 1 };
 }
 
 Vector3D renderAPI::computeBarycentric(Triangle& pts, CoordI2D P) {
@@ -174,10 +214,35 @@ void renderAPI::facesRender(Triangle &tri)
                 for (int i = 0; i < 3; i++) P.z += tri[i].zValue * bc_screen[i];
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
-                    frag = constructFragment(P.x, P.y, P.z, tri, bc_screen);
+                    frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
                     shader->fragmentShader(frag);
                     frame.setPixel(P.x, P.y, frag.fragmentColor);
                 }
+            }
+        }
+    }
+}
+
+void renderAPI::skyBoxFacesRender(Triangle& tri)
+{
+    CoordI4D boundingBox = computeBoundingBox(tri);
+    int xMin = boundingBox[0];
+    int yMin = boundingBox[1];
+    int xMax = boundingBox[2];
+    int yMax = boundingBox[3];
+    Vector3D P;
+    Fragment frag;
+    for (P.x = xMin; P.x <= xMax; P.x++)
+    {
+        for (P.y = yMin; P.y <= yMax; P.y++)
+        {
+            Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
+            if (judgeInsideTriangle(bc_screen)) {
+                P.z = 0;
+                for (int i = 0; i < 3; i++) P.z += tri[i].zValue * bc_screen[i];
+                frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
+                skyShader->fragmentShader(frag);
+                frame.setPixel(P.x, P.y, frag.fragmentColor);
             }
         }
     }
@@ -366,5 +431,33 @@ void renderAPI::render()
     {
         for(int i = 0; i < faces.size(); i++)
             rasterization(faces[i]);
+    }
+}
+
+// render skybox
+void renderAPI::renderSkyBox()
+{
+    std::vector<Triangle> SkyBoxFaces;
+    Triangle face11{ skyBoxVertices[1], skyBoxVertices[2], skyBoxVertices[3] }; SkyBoxFaces.push_back(face11);
+    Triangle face12{ skyBoxVertices[2], skyBoxVertices[3], skyBoxVertices[0] }; SkyBoxFaces.push_back(face12);
+    Triangle face21{ skyBoxVertices[2], skyBoxVertices[6], skyBoxVertices[7] }; SkyBoxFaces.push_back(face21);
+    Triangle face22{ skyBoxVertices[6], skyBoxVertices[7], skyBoxVertices[3] }; SkyBoxFaces.push_back(face22);
+    Triangle face31{ skyBoxVertices[6], skyBoxVertices[5], skyBoxVertices[4] }; SkyBoxFaces.push_back(face31);
+    Triangle face32{ skyBoxVertices[5], skyBoxVertices[4], skyBoxVertices[7] }; SkyBoxFaces.push_back(face32);
+    Triangle face41{ skyBoxVertices[5], skyBoxVertices[1], skyBoxVertices[0] }; SkyBoxFaces.push_back(face41);
+    Triangle face42{ skyBoxVertices[1], skyBoxVertices[0], skyBoxVertices[4] }; SkyBoxFaces.push_back(face42);
+    Triangle face51{ skyBoxVertices[7], skyBoxVertices[4], skyBoxVertices[0] }; SkyBoxFaces.push_back(face51);
+    Triangle face52{ skyBoxVertices[4], skyBoxVertices[0], skyBoxVertices[3] }; SkyBoxFaces.push_back(face52);
+    Triangle face61{ skyBoxVertices[2], skyBoxVertices[1], skyBoxVertices[5] }; SkyBoxFaces.push_back(face61);
+    Triangle face62{ skyBoxVertices[1], skyBoxVertices[5], skyBoxVertices[6] }; SkyBoxFaces.push_back(face62);
+    
+    for (int i = 0; i < SkyBoxFaces.size(); i++) {
+        for (int j = 0; j < 4; j++)
+        {
+            skyShader->vertexShader(SkyBoxFaces[i][j]);
+        }
+        perspectiveTrans(SkyBoxFaces[i]);
+        convertToScreen(SkyBoxFaces[i]);
+        skyBoxFacesRender(SkyBoxFaces[i]);
     }
 }

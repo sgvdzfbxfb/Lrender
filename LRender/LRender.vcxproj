@@ -111,6 +111,7 @@
     <ClCompile Include="sigMesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="renderAPI.cpp" />
+    <ClCompile Include="skyBoxShader.cpp" />
     <ClCompile Include="texture.cpp" />
     <QtRcc Include="LRender.qrc" />
     <QtMoc Include="LRender.h" />
@@ -130,6 +131,7 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="renderAPI.h" />
+    <ClInclude Include="skyBoxShader.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
