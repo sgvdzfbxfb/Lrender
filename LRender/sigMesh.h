@@ -9,9 +9,9 @@
 struct sigMesh
 {
     std::vector<Vertex> vertices;
-    std::vector<unsigned> indices;
-    std::vector<std::vector<unsigned>> faces;
+    std::vector<Triangle> faces;
     std::map<int, std::vector<int>> verToFace;
+    std::map<int, std::vector<int>> faceToVer;
     std::vector<Vector3D> vertNormals;
     std::vector<Coord2D> vertUVs;
     std::vector<int> diffuseIds;

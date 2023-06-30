@@ -353,24 +353,18 @@ void renderAPI::rasterization(Triangle &tri)
 // main render function
 void renderAPI::render()
 {
-    std::vector<Triangle> triangleList;
-    for (int i = 0; i < indices.size(); i += 3)
-    {
-        assert(i + 1 < indices.size() && i + 2 < indices.size());
-        triangleList.push_back({vertexList.at(indices.at(i)), vertexList.at(indices.at(i + 1)), vertexList.at(indices.at(i + 2))});
-    }
     if(multiThread)
     {
-        tbb::parallel_for(tbb::blocked_range<size_t>(0, triangleList.size(), 2500),
+        tbb::parallel_for(tbb::blocked_range<size_t>(0, faces.size(), 2500),
             [&](tbb::blocked_range<size_t> r)
             {
                 for (size_t i = r.begin(); i < r.end(); i++)
-                    rasterization(triangleList[i]);
+                    rasterization(faces[i]);
             });
     }
     else
     {
-        for(int i = 0; i < triangleList.size(); i++)
-            rasterization(triangleList[i]);
+        for(int i = 0; i < faces.size(); i++)
+            rasterization(faces[i]);
     }
 }

@@ -123,52 +123,68 @@ void Model::loadModel(QStringList paths)
         while (!in.eof()) {
             std::getline(in, line);
             if (!line.compare(0, 2, "f ")) {
-                std::vector<unsigned> f;
+                Triangle f;
                 int idx, vn_idx, vt_idx;
                 std::vector<std::string> frg_res = splitString(line, " ");
                 if (vn_count == 0 && vt_count == 0) {
+                    int x = 0;
+                    std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str());
                         idx--;
-                        tempMesh.indices.push_back(idx);
-                        f.push_back(idx);
+                        f.at(x) = tempMesh.vertices[idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                        vers.push_back(idx);
+                        x++;
                     }
+                    tempMesh.faceToVer[tempMesh.faces.size()] = vers;
                 }
                 else if (vn_count != 0 && vt_count == 0) {
+                    int x = 0;
+                    std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
                         idx--; vn_idx--;
-                        tempMesh.indices.push_back(idx);
-                        f.push_back(idx);
-                        tempMesh.vertices[idx].normal = tempMesh.vertNormals[vn_idx];
+                        f.at(x) = tempMesh.vertices[idx];
+                        f.at(x).normal = tempMesh.vertNormals[vn_idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                        vers.push_back(idx);
+                        x++;
                     }
+                    tempMesh.faceToVer[tempMesh.faces.size()] = vers;
                 }
                 else if (vn_count == 0 && vt_count != 0) {
+                    int x = 0;
+                    std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
                         idx--; vt_idx--;
-                        tempMesh.indices.push_back(idx);
-                        f.push_back(idx);
-                        tempMesh.vertices[idx].texUv = tempMesh.vertUVs[vt_idx];
+                        f.at(x) = tempMesh.vertices[idx];
+                        f.at(x).texUv = tempMesh.vertUVs[vt_idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                        vers.push_back(idx);
+                        x++;
                     }
+                    tempMesh.faceToVer[tempMesh.faces.size()] = vers;
                 }
                 else if (vn_count != 0 && vt_count != 0) {
+                    int x = 0;
+                    std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
                         idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
                         idx--; vn_idx--; vt_idx--;
-                        tempMesh.indices.push_back(idx);
-                        f.push_back(idx);
-                        tempMesh.vertices[idx].normal = tempMesh.vertNormals[vn_idx];
-                        tempMesh.vertices[idx].texUv = tempMesh.vertUVs[vt_idx];
+                        f.at(x) = tempMesh.vertices[idx];
+                        f.at(x).normal = tempMesh.vertNormals[vn_idx];
+                        f.at(x).texUv = tempMesh.vertUVs[vt_idx];
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
+                        vers.push_back(idx);
+                        x++;
                     }
+                    tempMesh.faceToVer[tempMesh.faces.size()] = vers;
                 }
                 tempMesh.faces.push_back(f);
             }
@@ -186,8 +202,6 @@ void Model::loadModel(QStringList paths)
             else if (texPaths[k].find("specular") > 0 && texPaths[k].find("specular") < texPaths[k].length())
                 tempMesh.specularIds.push_back(getMeshTexture(texPaths[k], "specular"));
         }
-        //tempMesh.diffuseIds = getMeshTexture(*(path), "diffuse");
-        //tempMesh.specularIds = getMeshTexture(*(path), "specular");
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
             for (int i = 0; i < tempMesh.vertices.size(); ++i) {
@@ -202,9 +216,9 @@ void Model::loadModel(QStringList paths)
 void Model::computeNormal(sigMesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
-    for (int i = 0; i < inMesh.indices.size(); i += 3) {
-        Vector3D AB = (inMesh.vertices[(inMesh.indices[i + 1])]).worldPos - (inMesh.vertices[(inMesh.indices[i])]).worldPos;
-        Vector3D AC = (inMesh.vertices[(inMesh.indices[i + 2])]).worldPos - (inMesh.vertices[(inMesh.indices[i])]).worldPos;
+    for (int i = 0; i < inMesh.faces.size(); i++) {
+        Vector3D AB = inMesh.faces[i].at(1).worldPos - inMesh.faces[i].at(0).worldPos;
+        Vector3D AC = inMesh.faces[i].at(2).worldPos - inMesh.faces[i].at(0).worldPos;
         Vector3D faceN = glm::normalize(glm::cross(AB, AC));
         faceNormals.push_back(faceN);
     }
@@ -218,6 +232,11 @@ void Model::computeNormal(sigMesh& inMesh)
         verNave = glm::normalize(verNave);
         inMesh.vertices[i].normal = verNave;
     }
+    for (int i = 0; i < inMesh.faces.size(); ++i) {
+        inMesh.faces.at(i).at(0).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(0)].normal;
+        inMesh.faces.at(i).at(1).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(1)].normal;
+        inMesh.faces.at(i).at(2).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(2)].normal;
+    }
 }
 
 int Model::getMeshTexture(std::string t_ps, std::string type)
@@ -225,7 +244,6 @@ int Model::getMeshTexture(std::string t_ps, std::string type)
     std::ifstream texStream;
     texStream.open(t_ps, std::ifstream::in);
     if (texStream.fail()) return -1;
-
     Texture texture;
     if (texture.getTexture(QString::fromStdString(t_ps)))
     {

@@ -22,8 +22,7 @@ public:
     renderMode renderMode{ FACE };
     bool faceCulling{ true };
     bool multiThread{ true };
-    std::vector<Vertex> vertexList;
-    std::vector<unsigned> indices;
+    std::vector<Triangle> faces;
     std::vector<Texture> textureList;
     std::unique_ptr<Shader> shader;
     Color backgroundColor = Color(0.0, 0.0, 0.0);
