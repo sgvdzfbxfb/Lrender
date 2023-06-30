@@ -242,11 +242,10 @@ void renderAPI::facesRender(Triangle &tri)
 
 void renderAPI::skyBoxFacesRender(Triangle& tri)
 {
-    CoordI4D boundingBox = computeBoundingBox(tri);
-    int xMin = boundingBox[0];
-    int yMin = boundingBox[1];
-    int xMax = boundingBox[2];
-    int yMax = boundingBox[3];
+    int xMin = width - 1;
+    int yMin = height - 1;
+    int xMax = 0;
+    int yMax = 0;
     Vector3D P;
     Fragment frag;
     for (P.x = xMin; P.x <= xMax; P.x++)
@@ -454,20 +453,6 @@ void renderAPI::render()
 // render skybox
 void renderAPI::renderSkyBox()
 {
-    std::vector<Triangle> SkyBoxFaces;
-    Triangle face11{ skyBoxVertices[1], skyBoxVertices[2], skyBoxVertices[3] }; SkyBoxFaces.push_back(face11);
-    Triangle face12{ skyBoxVertices[2], skyBoxVertices[3], skyBoxVertices[0] }; SkyBoxFaces.push_back(face12);
-    Triangle face21{ skyBoxVertices[2], skyBoxVertices[6], skyBoxVertices[7] }; SkyBoxFaces.push_back(face21);
-    Triangle face22{ skyBoxVertices[6], skyBoxVertices[7], skyBoxVertices[3] }; SkyBoxFaces.push_back(face22);
-    Triangle face31{ skyBoxVertices[6], skyBoxVertices[5], skyBoxVertices[4] }; SkyBoxFaces.push_back(face31);
-    Triangle face32{ skyBoxVertices[5], skyBoxVertices[4], skyBoxVertices[7] }; SkyBoxFaces.push_back(face32);
-    Triangle face41{ skyBoxVertices[5], skyBoxVertices[1], skyBoxVertices[0] }; SkyBoxFaces.push_back(face41);
-    Triangle face42{ skyBoxVertices[1], skyBoxVertices[0], skyBoxVertices[4] }; SkyBoxFaces.push_back(face42);
-    Triangle face51{ skyBoxVertices[7], skyBoxVertices[4], skyBoxVertices[0] }; SkyBoxFaces.push_back(face51);
-    Triangle face52{ skyBoxVertices[4], skyBoxVertices[0], skyBoxVertices[3] }; SkyBoxFaces.push_back(face52);
-    Triangle face61{ skyBoxVertices[2], skyBoxVertices[1], skyBoxVertices[5] }; SkyBoxFaces.push_back(face61);
-    Triangle face62{ skyBoxVertices[1], skyBoxVertices[5], skyBoxVertices[6] }; SkyBoxFaces.push_back(face62);
-    
     for (int i = 0; i < SkyBoxFaces.size(); i++) {
         for (int j = 0; j < 4; j++)
         {

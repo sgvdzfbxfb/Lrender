@@ -21,7 +21,7 @@ class Model
         int vertexNum{0};
         float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
-        std::vector<Vertex> skyBoxVers;
+        std::vector<Triangle> SkyBoxFaces;
         std::vector<Texture> getSkyBox();
         void loadSkyBox(std::string skyPath);
     private:

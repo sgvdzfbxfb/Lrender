@@ -25,7 +25,7 @@ public:
     std::vector<Triangle> faces;
     std::vector<Texture> textureList;
     std::vector<Texture> skyBox;
-    std::vector<Vertex> skyBoxVertices;
+    std::vector<Triangle> SkyBoxFaces;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> skyShader;
     Color backgroundColor = Color(0.0, 0.0, 0.0);

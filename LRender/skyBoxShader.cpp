@@ -60,9 +60,9 @@ int getCubemapFaceIdx(Vector3D direction, Coord2D texcoord) {
 
 void SkyBoxShader::fragmentShader(Fragment& fragment)
 {
-    Color diffuseColor = {0.0f,0.0f,0.0f};
-    Color specularColor = {0.0f,0.0f,0.0f};
-    Vector3D viewDir = glm::normalize(eyePos - fragment.worldPos);
+    Color diffuseColor = {0.0f, 0.0f, 0.0f};
+    Color specularColor = {0.0f, 0.0f, 0.0f};
+    Vector3D viewDir = glm::normalize(eyePos - Coord3D(fragment.screenPos, 1.0));
     int cfId = getCubemapFaceIdx(viewDir, fragment.texUv);
     diffuseColor = renderAPI::API().skyBox[cfId].getColorFromUv(fragment.texUv);
     Color result(0.f, 0.f, 0.f);
