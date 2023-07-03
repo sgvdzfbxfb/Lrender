@@ -418,17 +418,40 @@ void renderAPI::render()
 // render skybox
 void renderAPI::renderSkyBox()
 {
-    for (int i = 0; i < SkyBoxFaces.size(); i++) {
-        for (int j = 0; j < 3; j++)
-        {
-            skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
-        }
-        std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
-        for (int j = 0; j < completedTriangleList.size(); j++)
-        {
-            perspectiveTrans(completedTriangleList[j]);
-            convertToScreen(completedTriangleList[j]);
-            skyBoxFacesRender(completedTriangleList[j], i);
+    if (multiThread)
+    {
+        tbb::parallel_for(tbb::blocked_range<size_t>(0, SkyBoxFaces.size()),
+            [&](tbb::blocked_range<size_t> r)
+            {
+                for (size_t i = r.begin(); i < r.end(); i++) {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
+                    }
+                    std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
+                    for (int j = 0; j < completedTriangleList.size(); j++)
+                    {
+                        perspectiveTrans(completedTriangleList[j]);
+                        convertToScreen(completedTriangleList[j]);
+                        skyBoxFacesRender(completedTriangleList[j], i);
+                    }
+                }
+            });
+    }
+    else
+    {
+        for (int i = 0; i < SkyBoxFaces.size(); i++) {
+            for (int j = 0; j < 3; j++)
+            {
+                skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
+            }
+            std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
+            for (int j = 0; j < completedTriangleList.size(); j++)
+            {
+                perspectiveTrans(completedTriangleList[j]);
+                convertToScreen(completedTriangleList[j]);
+                skyBoxFacesRender(completedTriangleList[j], i);
+            }
         }
     }
 }

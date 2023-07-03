@@ -89,7 +89,7 @@ void LRenderWidget::loadModel(QStringList paths)
     //QString  skyBoxPath = QFileDialog::getExistingDirectory();
     //if (!skyBoxPath.isEmpty())
 
-    model->loadSkyBox("D:/Code/lrender/LRender/skybox2");
+    model->loadSkyBox("D:/Code/lrender/LRender/skybox");
 }
 
 void LRenderWidget::initDevice()
