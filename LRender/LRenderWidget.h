@@ -51,6 +51,7 @@ public:
     void initDevice();
     void switchLightMode(bool turnLight);
     Camera camera;
+    Camera skyBoxCamera;
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

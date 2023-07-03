@@ -257,14 +257,14 @@ int Model::getMeshTexture(std::string t_ps, std::string type)
 void Model::loadSkyBox(std::string skyPath)
 {
     std::vector<Vertex> skyBoxVers;
-    Vertex Ver1; Ver1.worldPos = modelCenter + Coord3D(1.0, 1.0, -1.0); skyBoxVers.push_back(Ver1);
-    Vertex Ver2; Ver2.worldPos = modelCenter + Coord3D(1.0, -1.0, -1.0); skyBoxVers.push_back(Ver2);
-    Vertex Ver3; Ver3.worldPos = modelCenter + Coord3D(-1.0, -1.0, -1.0); skyBoxVers.push_back(Ver3);
-    Vertex Ver4; Ver4.worldPos = modelCenter + Coord3D(-1.0, 1.0, -1.0); skyBoxVers.push_back(Ver4);
-    Vertex Ver5; Ver5.worldPos = modelCenter + Coord3D(1.0, 1.0, 1.0); skyBoxVers.push_back(Ver5);
-    Vertex Ver6; Ver6.worldPos = modelCenter + Coord3D(1.0, -1.0, 1.0); skyBoxVers.push_back(Ver6);
-    Vertex Ver7; Ver7.worldPos = modelCenter + Coord3D(-1.0, -1.0, 1.0); skyBoxVers.push_back(Ver7);
-    Vertex Ver8; Ver8.worldPos = modelCenter + Coord3D(-1.0, 1.0, 1.0); skyBoxVers.push_back(Ver8);
+    Vertex Ver1; Ver1.worldPos = Coord3D(5.0, 5.0, -5.0); skyBoxVers.push_back(Ver1);
+    Vertex Ver2; Ver2.worldPos = Coord3D(5.0, -5.0, -5.0); skyBoxVers.push_back(Ver2);
+    Vertex Ver3; Ver3.worldPos = Coord3D(-5.0, -5.0, -5.0); skyBoxVers.push_back(Ver3);
+    Vertex Ver4; Ver4.worldPos = Coord3D(-5.0, 5.0, -5.0); skyBoxVers.push_back(Ver4);
+    Vertex Ver5; Ver5.worldPos = Coord3D(5.0, 5.0, 5.0); skyBoxVers.push_back(Ver5);
+    Vertex Ver6; Ver6.worldPos = Coord3D(5.0, -5.0, 5.0); skyBoxVers.push_back(Ver6);
+    Vertex Ver7; Ver7.worldPos = Coord3D(-5.0, -5.0, 5.0); skyBoxVers.push_back(Ver7);
+    Vertex Ver8; Ver8.worldPos = Coord3D(-5.0, 5.0, 5.0); skyBoxVers.push_back(Ver8);
 
     Triangle face11{ skyBoxVers[1], skyBoxVers[2], skyBoxVers[3] };
     face11.at(0).texUv = Coord2D(0.0, 0.0); face11.at(1).texUv = Coord2D(1.0, 0.0); face11.at(2).texUv = Coord2D(1.0, 1.0);

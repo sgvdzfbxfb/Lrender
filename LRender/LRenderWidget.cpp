@@ -13,6 +13,7 @@ glm::mat4 modelMatrix;
 
 LRenderWidget::LRenderWidget(QWidget *parent) :
     QWidget(parent),camera((float)DEFAULT_WIDTH/DEFAULT_HEIGHT, FIXED_CAMERA_FAR),
+    skyBoxCamera((float)DEFAULT_WIDTH / DEFAULT_HEIGHT, FIXED_CAMERA_FAR),
     scWidth(DEFAULT_WIDTH), scHeight(DEFAULT_HEIGHT), ui(new Ui::LRenderWidget), model(nullptr)
 {
     ui->setupUi(this);
@@ -35,6 +36,7 @@ LRenderWidget::~LRenderWidget()
 void LRenderWidget::resetCamera()
 {
     ui->FPSLabel->setVisible(true);
+    skyBoxCamera.setModel(Coord3D(0.0, 0.0, 0.0), 1.0);
     camera.setModel(model->modelCenter, model->getYRange());
     modelMatrix = glm::mat4(1.0f);
 }
@@ -177,6 +179,7 @@ void LRenderWidget::processInput()
             if(currentBtns & Qt::LeftButton)
             {
                 camera.rotateAroundTarget(motion);
+                skyBoxCamera.rotateAroundTarget(motion);
             }
             if(currentBtns & Qt::MidButton)
             {
@@ -204,20 +207,22 @@ void LRenderWidget::render()
     }
     lastFrameTime = nowTime;
     processInput();
+    
+    // render skybox
+    renderAPI::API().skyShader->modelMat = modelMatrix;
+    renderAPI::API().skyShader->viewMat = skyBoxCamera.getViewMatrix();
+    renderAPI::API().skyShader->projectionMat = skyBoxCamera.getProjectionMatrix();
+    renderAPI::API().skyShader->eyePos = skyBoxCamera.position;
+    renderAPI::API().skyShader->material.shininess = 150.f;
+    renderAPI::API().skyBox = model->getSkyBox();
+    renderAPI::API().SkyBoxFaces = model->SkyBoxFaces;
+    renderAPI::API().renderSkyBox();
+    // render model
     renderAPI::API().shader->modelMat = modelMatrix;
     renderAPI::API().shader->viewMat = camera.getViewMatrix();
     renderAPI::API().shader->projectionMat = camera.getProjectionMatrix();
     renderAPI::API().shader->eyePos = camera.position;
     renderAPI::API().shader->material.shininess = 150.f;
-    // render skybox
-    renderAPI::API().skyShader->modelMat = modelMatrix;
-    renderAPI::API().skyShader->viewMat = camera.getViewMatrix();
-    renderAPI::API().skyShader->projectionMat = camera.getProjectionMatrix();
-    renderAPI::API().skyShader->eyePos = camera.position;
-    renderAPI::API().skyShader->material.shininess = 150.f;
-    renderAPI::API().skyBox = model->getSkyBox();
-    renderAPI::API().SkyBoxFaces = model->SkyBoxFaces;
-    renderAPI::API().renderSkyBox();
-    /*model->modelRender();*/
+    model->modelRender();
     update();
 }
