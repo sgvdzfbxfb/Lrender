@@ -659,6 +659,7 @@
     </property>
     <addaction name="actionMultiThread"/>
     <addaction name="actionFaceCulling"/>
+    <addaction name="actionSkyBox"/>
    </widget>
    <addaction name="menuSetting"/>
    <addaction name="menuFile"/>
@@ -714,6 +715,14 @@
    </property>
    <property name="text">
     <string>FaceCulling</string>
+   </property>
+  </action>
+  <action name="actionSkyBox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>SkyBox</string>
    </property>
   </action>
  </widget>

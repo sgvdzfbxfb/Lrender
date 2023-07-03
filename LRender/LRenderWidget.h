@@ -45,7 +45,8 @@ public:
     void setLightDir(Vector4D dir){renderAPI::API().shader->lightList.at(0).dir = dir;}
     void setRenderMode(renderMode mode){renderAPI::API().renderMode = mode;}
     void setFaceCulling(bool val){renderAPI::API().faceCulling = val;}
-    void setMultiThread(bool val){renderAPI::API().multiThread = val;}
+    void setMultiThread(bool val) { renderAPI::API().multiThread = val; }
+    void setSkyBox(bool val){ ifShowSkyBox = val; }
     void saveImage(QString path){renderAPI::API().saveImage(path);}
     void loadModel(QStringList paths);
     void initDevice();
@@ -75,6 +76,7 @@ private:
     Model* model;
     std::vector<Texture> skyBoxTexture;
     std::vector<Triangle> skyBoxModel;
+    bool ifShowSkyBox = false;
 };
 
 #endif // LRENDERWIDGET_H

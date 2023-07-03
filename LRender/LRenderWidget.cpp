@@ -174,7 +174,7 @@ void LRenderWidget::loadSkyBox(std::string skyPath)
         Texture texture;
         if (texture.getTexture(QString::fromStdString(skyPaths.at(i)))) {
             skyBoxTexture.push_back(texture);
-            qDebug() << QString::fromStdString(skyPaths.at(i));
+            qDebug() << "load skybox texture img:" << QString::fromStdString(skyPaths.at(i));
         }
     }
 }
@@ -274,12 +274,14 @@ void LRenderWidget::render()
     processInput();
     
     // render skybox
-    renderAPI::API().skyShader->modelMat = modelMatrix;
-    renderAPI::API().skyShader->viewMat = skyBoxCamera.getViewMatrix();
-    renderAPI::API().skyShader->projectionMat = skyBoxCamera.getProjectionMatrix();
-    renderAPI::API().skyShader->material.shininess = 150.f;
-    renderAPI::API().skyShader->eyePos = skyBoxCamera.position;
-    renderAPI::API().renderSkyBox();
+    if (ifShowSkyBox) {
+        renderAPI::API().skyShader->modelMat = modelMatrix;
+        renderAPI::API().skyShader->viewMat = skyBoxCamera.getViewMatrix();
+        renderAPI::API().skyShader->projectionMat = skyBoxCamera.getProjectionMatrix();
+        renderAPI::API().skyShader->material.shininess = 150.f;
+        renderAPI::API().skyShader->eyePos = skyBoxCamera.position;
+        renderAPI::API().renderSkyBox();
+    }
 
     // render model
     renderAPI::API().shader->modelMat = modelMatrix;

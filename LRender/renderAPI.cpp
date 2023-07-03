@@ -2,6 +2,53 @@
 #include <QDebug>
 #include <QTime>
 
+// renderAPI related function
+static inline bool isInTriangle(Vector3D bc_screen)
+{
+    bool flag = true;
+    if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) flag = false;
+    return flag;
+}
+
+template<class T>
+static inline T calculateInterpolation(T a, T b, float alpha)
+{
+    return a * (1 - alpha) + b * alpha;
+}
+
+static inline CoordI2D calculateInterpolation(CoordI2D a, CoordI2D b, float alpha)
+{
+    CoordI2D res;
+    res.x = static_cast<int>(a.x * (1 - alpha) + b.x * alpha + 0.5f);
+    res.y = static_cast<int>(a.y * (1 - alpha) + b.y * alpha + 0.5f);
+    return res;
+}
+
+static inline Vertex calculateInterpolation(Vertex a, Vertex b, float alpha)
+{
+    Vertex res;
+    res.clipPos = calculateInterpolation(a.clipPos, b.clipPos, alpha);
+    res.worldPos = calculateInterpolation(a.worldPos, b.worldPos, alpha);
+    res.normal = calculateInterpolation(a.normal, b.normal, alpha);
+    res.texUv = calculateInterpolation(a.texUv, b.texUv, alpha);
+    return res;
+}
+
+template<class T>
+static inline float calculateDistance(T point, T border)
+{
+    return glm::dot(point, border);
+}
+
+template<class T, size_t N>
+static inline std::bitset<N> getClipCode(T point, std::array<T, N>& clip)
+{
+    std::bitset<N> res;
+    for (int i = 0; i < N; i++)
+        if (calculateDistance(point, clip.at(i)) < 0) res.set(i, 1);
+    return res;
+}
+
 void renderAPI::perspectiveTrans(Triangle& tri)
 {
     for (int i = 0; i < 3; i++)

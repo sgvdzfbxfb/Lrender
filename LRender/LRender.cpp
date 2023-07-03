@@ -27,10 +27,15 @@ void LRender::setOption(Option option, bool val)
         ui->actionMultiThread->setChecked(val);
         ui->RenderWidget->setMultiThread(val);
     }
-    else
+    else if (option == FACECULLING)
     {
         ui->actionFaceCulling->setChecked(val);
         ui->RenderWidget->setFaceCulling(val);
+    }
+    else
+    {
+        ui->actionSkyBox->setChecked(val);
+        ui->RenderWidget->setSkyBox(val);
     }
 }
 void LRender::setLightColor(lightColorType type, QColor color)
@@ -113,6 +118,7 @@ void LRender::initUI()
 #endif
     setOption(MUTITHREAD, true);
     setOption(FACECULLING, true);
+    setOption(SKYBOX, false);
     setCameraPara(FOV, 60.f);
     setCameraPara(NEAR, 1.0f);
     setLightColor(SPECULAR, QColor(255, 255, 255));
@@ -170,6 +176,11 @@ void LRender::on_actionMultiThread_triggered()
 void LRender::on_actionFaceCulling_triggered()
 {
     setOption(FACECULLING, ui->actionFaceCulling->isChecked());
+}
+
+void LRender::on_actionSkyBox_triggered()
+{
+    setOption(SKYBOX, ui->actionSkyBox->isChecked());
 }
 
 void LRender::on_FovSilder_valueChanged(int value)

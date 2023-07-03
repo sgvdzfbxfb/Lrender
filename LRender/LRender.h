@@ -16,7 +16,7 @@ class LRender : public QMainWindow
 
 public:
 
-    enum Option { MUTITHREAD, FACECULLING };
+    enum Option { MUTITHREAD, FACECULLING, SKYBOX };
     explicit LRender(QWidget *parent = nullptr);
     ~LRender();
     void setOption(Option option, bool val);
@@ -35,6 +35,8 @@ private slots:
     void on_actionMultiThread_triggered();
 
     void on_actionFaceCulling_triggered();
+
+    void on_actionSkyBox_triggered();
 
     void on_FovSilder_valueChanged(int value);
 
