@@ -61,13 +61,13 @@ void LRenderWidget::setLightColor(Color color, lightColorType type)
     switch(type)
     {
     case DIFFUSE:
-        renderAPI::API().shader->lightList[0].diffuse = color;
+        renderAPI::API().shader->lightList.at(0).diffuse = color;
         break;
     case SPECULAR:
-        renderAPI::API().shader->lightList[0].specular = color;
+        renderAPI::API().shader->lightList.at(0).specular = color;
         break;
     case AMBIENT:
-        renderAPI::API().shader->lightList[0].ambient = color;
+        renderAPI::API().shader->lightList.at(0).ambient = color;
         break;
     }
 }

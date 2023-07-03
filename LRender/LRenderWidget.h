@@ -42,7 +42,7 @@ public:
     ~LRenderWidget();
     void setFigureColor(Color color, renderFigure type);
     void setLightColor(Color color, lightColorType type);
-    void setLightDir(Vector4D dir){renderAPI::API().shader->lightList[0].dir = dir;}
+    void setLightDir(Vector4D dir){renderAPI::API().shader->lightList.at(0).dir = dir;}
     void setRenderMode(renderMode mode){renderAPI::API().renderMode = mode;}
     void setFaceCulling(bool val){renderAPI::API().faceCulling = val;}
     void setMultiThread(bool val){renderAPI::API().multiThread = val;}

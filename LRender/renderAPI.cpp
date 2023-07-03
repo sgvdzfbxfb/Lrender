@@ -92,7 +92,7 @@ std::vector<Triangle> constructTriangle(std::vector<Vertex> vertexList)
     {
         int k = (i + 1) % vertexList.size();
         int m = (i + 2) % vertexList.size();
-        Triangle tri{vertexList[0], vertexList[k], vertexList[m]};
+        Triangle tri{vertexList.at(0), vertexList.at(k), vertexList.at(m)};
         res.push_back(tri);
     }
     return res;
@@ -104,9 +104,9 @@ Fragment interpolationFragment(int x, int y, float z, Triangle& tri, Vector3D& b
     frag.screenPos.x = x;
     frag.screenPos.y = y;
     frag.zValue = z;
-    frag.worldPos = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].worldPos, tri[1].worldPos, tri[2].worldPos, 1);
-    frag.normal = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].normal, tri[1].normal, tri[2].normal, 1);
-    frag.texUv = interpolate(barycentric[0], barycentric[1], barycentric[2], tri[0].texUv, tri[1].texUv, tri[2].texUv, 1);
+    frag.worldPos = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).worldPos, tri.at(1).worldPos, tri.at(2).worldPos, 1);
+    frag.normal = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).normal, tri.at(1).normal, tri.at(2).normal, 1);
+    frag.texUv = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).texUv, tri.at(1).texUv, tri.at(2).texUv, 1);
     return frag;
 }
 
@@ -131,8 +131,8 @@ CoordI4D renderAPI::computeBoundingBox(Triangle& tri)
 }
 
 Vector3D renderAPI::computeBarycentric(Triangle& pts, CoordI2D P) {
-    Vector3D u1(pts[2].screenPos.x - pts[0].screenPos.x, pts[1].screenPos.x - pts[0].screenPos.x, pts[0].screenPos.x - P[0]);
-    Vector3D u2(pts[2].screenPos.y - pts[0].screenPos.y, pts[1].screenPos.y - pts[0].screenPos.y, pts[0].screenPos.y - P[1]);
+    Vector3D u1(pts.at(2).screenPos.x - pts.at(0).screenPos.x, pts.at(1).screenPos.x - pts.at(0).screenPos.x, pts.at(0).screenPos.x - P[0]);
+    Vector3D u2(pts.at(2).screenPos.y - pts.at(0).screenPos.y, pts.at(1).screenPos.y - pts.at(0).screenPos.y, pts.at(0).screenPos.y - P[1]);
     Vector3D u = glm::cross(u1, u2);
     /* `pts` and `P` has integer value as coordinates
        so `abs(u[2])` < 1 means `u[2]` is 0, that means
@@ -144,29 +144,29 @@ Vector3D renderAPI::computeBarycentric(Triangle& pts, CoordI2D P) {
 // initiaize clip plane and screen border
 renderAPI::renderAPI(int _w, int _h):shader(nullptr), width(_w), height(_h), frame(width, height)
 {
-    {// set view planes
+    {
         // near
-        viewBox[0] = {0, 0, 1.f, 1.f};
+        viewBox.at(0) = {0, 0, 1.f, 1.f};
         // far
-        viewBox[1] = {0, 0, -1.f, 1.f};
+        viewBox.at(1) = {0, 0, -1.f, 1.f};
         // left
-        viewBox[2] = {1.f, 0, 0, 1.f};
+        viewBox.at(2) = {1.f, 0, 0, 1.f};
         // right
-        viewBox[3] = {-1.f, 0, 0, 1.f};
+        viewBox.at(3) = {-1.f, 0, 0, 1.f};
         // top
-        viewBox[4] = {0, 1.f, 0, 1.f};
+        viewBox.at(4) = {0, 1.f, 0, 1.f};
         // bottom
-        viewBox[5] = {0, -1.f, 0, 1.f};
+        viewBox.at(5) = {0, -1.f, 0, 1.f};
     }
-    {// set screen border
+    {
         // left
-        screenEdge[0] = {1.f, 0, 0};
+        screenEdge.at(0) = {1.f, 0, 0};
         // right
-        screenEdge[1] = {-1.f, 0, (float)width};
+        screenEdge.at(1) = {-1.f, 0, (float)width};
         // bottom
-        screenEdge[2] = {0, 1.f, 0};
+        screenEdge.at(2) = {0, 1.f, 0};
         // top
-        screenEdge[3] = {0, -1.f, (float)height};
+        screenEdge.at(3) = {0, -1.f, (float)height};
     }
 }
 
@@ -184,14 +184,14 @@ void renderAPI::facesRender(Triangle &tri)
     {
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
-            Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
-            if (judgeInsideTriangle(bc_screen)) {
-                float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
-                P.z = bc_screen[0] * tri[0].clipPos.z + bc_screen[1] * tri[1].clipPos.z + bc_screen[2] * tri[2].clipPos.z;
+            Vector3D baryPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
+            if (judgeInsideTriangle(baryPos)) {
+                float Z = 1.0 / (baryPos[0] / tri.at(0).clipPos.w + baryPos[1] / tri.at(1).clipPos.w + baryPos[2] / tri.at(2).clipPos.w);
+                P.z = baryPos[0] * tri.at(0).clipPos.z + baryPos[1] * tri.at(1).clipPos.z + baryPos[2] * tri.at(2).clipPos.z;
                 P.z *= Z / 100.0;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
-                    frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
+                    frag = interpolationFragment(P.x, P.y, P.z, tri, baryPos);
                     shader->fragmentShader(frag);
                     frame.setPixel(P.x, P.y, frag.fragmentColor);
                 }
@@ -213,14 +213,14 @@ void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
     {
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
-            Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
-            if (judgeInsideTriangle(bc_screen)) {
-                float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
-                P.z = bc_screen[0] * tri[0].clipPos.z / tri[0].clipPos.w + bc_screen[1] * tri[1].clipPos.z / tri[1].clipPos.w + bc_screen[2] * tri[2].clipPos.z / tri[2].clipPos.w;
-                P.z *= Z;
+            Vector3D bcPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
+            if (judgeInsideTriangle(bcPos)) {
+                float Z = 1.0 / (bcPos[0] / tri.at(0).clipPos.w + bcPos[1] / tri.at(1).clipPos.w + bcPos[2] / tri.at(2).clipPos.w);
+                P.z = bcPos[0] * tri.at(0).clipPos.z + bcPos[1] * tri.at(1).clipPos.z + bcPos[2] * tri.at(2).clipPos.z;
+                P.z *= Z / 100.0;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
-                    frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
+                    frag = interpolationFragment(P.x, P.y, P.z, tri, bcPos);
                     skyShader->fragmentShader(frag, faceId);
                     frame.setPixel(P.x, P.y, frag.fragmentColor);
                 }
@@ -232,10 +232,10 @@ void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
 // Bresenham's line algorithm
 void renderAPI::drawLine(Line& line)
 {
-    int x0 = glm::clamp(static_cast<int>(line[0].x), 0, width - 1);
-    int x1 = glm::clamp(static_cast<int>(line[1].x), 0, width - 1);
-    int y0 = glm::clamp(static_cast<int>(line[0].y), 0, height - 1);
-    int y1 = glm::clamp(static_cast<int>(line[1].y), 0, height - 1);
+    int x0 = glm::clamp(static_cast<int>(line.at(0).x), 0, width - 1);
+    int x1 = glm::clamp(static_cast<int>(line.at(1).x), 0, width - 1);
+    int y0 = glm::clamp(static_cast<int>(line.at(0).y), 0, height - 1);
+    int y1 = glm::clamp(static_cast<int>(line.at(1).y), 0, height - 1);
     bool steep = false;
     if (abs(x0 - x1) < abs(y0 - y1))
     {
@@ -273,8 +273,8 @@ std::optional<Line> renderAPI::lineClip(Line& line)
 {
     std::bitset<4> code[2] =
     {
-        getClipCode(Coord3D(line[0], 1), screenEdge),
-        getClipCode(Coord3D(line[1], 1), screenEdge)
+        getClipCode(Coord3D(line.at(0), 1), screenEdge),
+        getClipCode(Coord3D(line.at(1), 1), screenEdge)
     };
     if((code[0] | code[1]).none())return line;
     if((code[0] & code[1]).any())return std::nullopt;
@@ -282,18 +282,18 @@ std::optional<Line> renderAPI::lineClip(Line& line)
     {
         if((code[0] ^ code[1])[i])
         {
-            float da = calculateDistance(Coord3D(line[0], 1), screenEdge.at(i));
-            float db = calculateDistance(Coord3D(line[1], 1), screenEdge.at(i));
-            float alpha = da / (da - db);
-            CoordI2D np = calculateInterpolation(line[0], line[1], alpha);
+            float da = calculateDistance(Coord3D(line.at(0), 1), screenEdge.at(i));
+            float db = calculateDistance(Coord3D(line.at(1), 1), screenEdge.at(i));
+            float alpha = da / (da - db);            
+            CoordI2D np = calculateInterpolation(line.at(0), line.at(1), alpha);
             if(da > 0)
             {
-                line[1] = np;
+                line.at(1) = np;
                 code[1] = getClipCode(Coord3D(np, 1), screenEdge);
             }
             else
             {
-                line[0] = np;
+                line.at(0) = np;
                 code[0] = getClipCode(Coord3D(np, 1), screenEdge);
             }
         }
@@ -306,9 +306,9 @@ void renderAPI::wireframeRedner(Triangle &tri)
 {
     Line triLine[3] =
     {
-        {tri[0].screenPos, tri[1].screenPos},
-        {tri[1].screenPos, tri[2].screenPos},
-        {tri[2].screenPos, tri[0].screenPos},
+        {tri.at(0).screenPos, tri.at(1).screenPos},
+        {tri.at(1).screenPos, tri.at(2).screenPos},
+        {tri.at(2).screenPos, tri.at(0).screenPos},
     };
     for(auto &line : triLine)
     {
@@ -337,9 +337,9 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
 {
     std::bitset<6> code[3] =
     {
-        getClipCode(tri[0].clipPos, viewBox),
-        getClipCode(tri[1].clipPos, viewBox),
-        getClipCode(tri[2].clipPos, viewBox)
+        getClipCode(tri.at(0).clipPos, viewBox),
+        getClipCode(tri.at(1).clipPos, viewBox),
+        getClipCode(tri.at(2).clipPos, viewBox)
     };
     if((code[0] | code[1] | code[2]).none())
         return {tri};
@@ -353,24 +353,24 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
             int k = (i + 1) % 3;
             if(!code[i][0] && !code[k][0])
             {
-                res.push_back(tri[k]);
+                res.push_back(tri.at(k));
             }
             else if(!code[i][0] && code[k][0])
             {
-                float da = calculateDistance(tri.at(i).clipPos, viewBox[0]);
-                float db = calculateDistance(tri[k].clipPos, viewBox[0]);
+                float da = calculateDistance(tri.at(i).clipPos, viewBox.at(0));
+                float db = calculateDistance(tri.at(k).clipPos, viewBox.at(0));
                 float alpha = da / (da - db);
-                Vertex np = calculateInterpolation(tri.at(i), tri[k], alpha);
+                Vertex np = calculateInterpolation(tri.at(i), tri.at(k), alpha);
                 res.push_back(np);
             }
             else if(code[i][0] && !code[k][0])
             {
-                float da = calculateDistance(tri.at(i).clipPos, viewBox[0]);
-                float db = calculateDistance(tri[k].clipPos, viewBox[0]);
+                float da = calculateDistance(tri.at(i).clipPos, viewBox.at(0));
+                float db = calculateDistance(tri.at(k).clipPos, viewBox.at(0));
                 float alpha = da / (da - db);
-                Vertex np = calculateInterpolation(tri.at(i), tri[k], alpha);
+                Vertex np = calculateInterpolation(tri.at(i), tri.at(k), alpha);
                 res.push_back(np);
-                res.push_back(tri[k]);
+                res.push_back(tri.at(k));
             }
         }
         return constructTriangle(res);

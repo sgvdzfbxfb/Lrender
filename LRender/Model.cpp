@@ -131,9 +131,9 @@ void Model::loadModel(QStringList paths)
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
-                        idx = atoi(idxs[0].c_str());
+                        idx = atoi(idxs.at(0).c_str());
                         idx--;
-                        f.at(x) = tempMesh.vertices[idx];
+                        f.at(x) = tempMesh.vertices.at(idx);
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                         vers.push_back(idx);
                         x++;
@@ -145,10 +145,10 @@ void Model::loadModel(QStringList paths)
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
-                        idx = atoi(idxs[0].c_str()); vn_idx = atoi(idxs[1].c_str());
+                        idx = atoi(idxs.at(0).c_str()); vn_idx = atoi(idxs.at(1).c_str());
                         idx--; vn_idx--;
-                        f.at(x) = tempMesh.vertices[idx];
-                        f.at(x).normal = tempMesh.vertNormals[vn_idx];
+                        f.at(x) = tempMesh.vertices.at(idx);
+                        f.at(x).normal = tempMesh.vertNormals.at(vn_idx);
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                         vers.push_back(idx);
                         x++;
@@ -160,10 +160,10 @@ void Model::loadModel(QStringList paths)
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
-                        idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str());
+                        idx = atoi(idxs.at(0).c_str()); vt_idx = atoi(idxs.at(1).c_str());
                         idx--; vt_idx--;
-                        f.at(x) = tempMesh.vertices[idx];
-                        f.at(x).texUv = tempMesh.vertUVs[vt_idx];
+                        f.at(x) = tempMesh.vertices.at(idx);
+                        f.at(x).texUv = tempMesh.vertUVs.at(vt_idx);
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                         vers.push_back(idx);
                         x++;
@@ -175,11 +175,11 @@ void Model::loadModel(QStringList paths)
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
                         std::vector<std::string> idxs = splitString(frg_res[k], "/");
-                        idx = atoi(idxs[0].c_str()); vt_idx = atoi(idxs[1].c_str()); vn_idx = atoi(idxs[2].c_str());
+                        idx = atoi(idxs.at(0).c_str()); vt_idx = atoi(idxs.at(1).c_str()); vn_idx = atoi(idxs.at(2).c_str());
                         idx--; vn_idx--; vt_idx--;
-                        f.at(x) = tempMesh.vertices[idx];
-                        f.at(x).normal = tempMesh.vertNormals[vn_idx];
-                        f.at(x).texUv = tempMesh.vertUVs[vt_idx];
+                        f.at(x) = tempMesh.vertices.at(idx);
+                        f.at(x).normal = tempMesh.vertNormals.at(vn_idx);
+                        f.at(x).texUv = tempMesh.vertUVs.at(vt_idx);
                         (tempMesh.verToFace[idx]).push_back(tempMesh.faces.size());
                         vers.push_back(idx);
                         x++;
@@ -266,45 +266,45 @@ void Model::loadSkyBox(std::string skyPath)
     Vertex Ver7; Ver7.worldPos = Coord3D(-5.0, -5.0, 5.0); skyBoxVers.push_back(Ver7);
     Vertex Ver8; Ver8.worldPos = Coord3D(-5.0, 5.0, 5.0); skyBoxVers.push_back(Ver8);
 
-    Triangle face11{ skyBoxVers[1], skyBoxVers[2], skyBoxVers[3] };
+    Triangle face11{ skyBoxVers.at(1), skyBoxVers.at(2), skyBoxVers.at(3) };
     face11.at(0).texUv = Coord2D(0.0, 0.0); face11.at(1).texUv = Coord2D(1.0, 0.0); face11.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face11);
-    Triangle face12{ skyBoxVers[1], skyBoxVers[3], skyBoxVers[0] };
+    Triangle face12{ skyBoxVers.at(1), skyBoxVers.at(3), skyBoxVers.at(0) };
     face12.at(0).texUv = Coord2D(0.0, 0.0); face12.at(1).texUv = Coord2D(1.0, 1.0); face12.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face12);
 
-    Triangle face21{ skyBoxVers[2], skyBoxVers[6], skyBoxVers[7] };
+    Triangle face21{ skyBoxVers.at(2), skyBoxVers.at(6), skyBoxVers.at(7) };
     face21.at(0).texUv = Coord2D(0.0, 0.0); face21.at(1).texUv = Coord2D(1.0, 0.0); face21.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face21);
-    Triangle face22{ skyBoxVers[2], skyBoxVers[7], skyBoxVers[3] };
+    Triangle face22{ skyBoxVers.at(2), skyBoxVers.at(7), skyBoxVers.at(3) };
     face22.at(0).texUv = Coord2D(0.0, 0.0); face22.at(1).texUv = Coord2D(1.0, 1.0); face22.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face22);
 
-    Triangle face31{ skyBoxVers[6], skyBoxVers[5], skyBoxVers[4] };
+    Triangle face31{ skyBoxVers.at(6), skyBoxVers.at(5), skyBoxVers.at(4) };
     face31.at(0).texUv = Coord2D(0.0, 0.0); face31.at(1).texUv = Coord2D(1.0, 0.0); face31.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face31);
-    Triangle face32{ skyBoxVers[6], skyBoxVers[4], skyBoxVers[7] };
+    Triangle face32{ skyBoxVers.at(6), skyBoxVers.at(4), skyBoxVers.at(7) };
     face32.at(0).texUv = Coord2D(0.0, 0.0); face32.at(1).texUv = Coord2D(1.0, 1.0); face32.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face32);
 
-    Triangle face41{ skyBoxVers[5], skyBoxVers[1], skyBoxVers[0] };
+    Triangle face41{ skyBoxVers.at(5), skyBoxVers.at(1), skyBoxVers.at(0) };
     face41.at(0).texUv = Coord2D(0.0, 0.0); face41.at(1).texUv = Coord2D(1.0, 0.0); face41.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face41);
-    Triangle face42{ skyBoxVers[5], skyBoxVers[0], skyBoxVers[4] };
+    Triangle face42{ skyBoxVers.at(5), skyBoxVers.at(0), skyBoxVers.at(4) };
     face42.at(0).texUv = Coord2D(0.0, 0.0); face42.at(1).texUv = Coord2D(1.0, 1.0); face42.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face42);
 
-    Triangle face51{ skyBoxVers[7], skyBoxVers[4], skyBoxVers[0] };
+    Triangle face51{ skyBoxVers.at(7), skyBoxVers.at(4), skyBoxVers.at(0) };
     face51.at(0).texUv = Coord2D(0.0, 0.0); face51.at(1).texUv = Coord2D(1.0, 0.0); face51.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face51);
-    Triangle face52{ skyBoxVers[7], skyBoxVers[0], skyBoxVers[3] };
+    Triangle face52{ skyBoxVers.at(7), skyBoxVers.at(0), skyBoxVers.at(3) };
     face52.at(0).texUv = Coord2D(0.0, 0.0); face52.at(1).texUv = Coord2D(1.0, 1.0); face52.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face52);
 
-    Triangle face61{ skyBoxVers[2], skyBoxVers[1], skyBoxVers[5] };
+    Triangle face61{ skyBoxVers.at(2), skyBoxVers.at(1), skyBoxVers.at(5) };
     face61.at(0).texUv = Coord2D(0.0, 0.0); face61.at(1).texUv = Coord2D(1.0, 0.0); face61.at(2).texUv = Coord2D(1.0, 1.0);
     SkyBoxFaces.push_back(face61);
-    Triangle face62{ skyBoxVers[2], skyBoxVers[5], skyBoxVers[6] };
+    Triangle face62{ skyBoxVers.at(2), skyBoxVers.at(5), skyBoxVers.at(6) };
     face62.at(0).texUv = Coord2D(0.0, 0.0); face62.at(1).texUv = Coord2D(1.0, 1.0); face62.at(2).texUv = Coord2D(0.0, 1.0);
     SkyBoxFaces.push_back(face62);
 
