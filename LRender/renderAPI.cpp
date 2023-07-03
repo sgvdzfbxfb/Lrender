@@ -104,9 +104,16 @@ Fragment interpolationFragment(int x, int y, float z, Triangle& tri, Vector3D& b
     frag.screenPos.x = x;
     frag.screenPos.y = y;
     frag.zValue = z;
-    frag.worldPos = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).worldPos, tri.at(1).worldPos, tri.at(2).worldPos, 1);
-    frag.normal = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).normal, tri.at(1).normal, tri.at(2).normal, 1);
-    frag.texUv = interpolate(barycentric[0], barycentric[1], barycentric[2], tri.at(0).texUv, tri.at(1).texUv, tri.at(2).texUv, 1);
+
+    Vector3D bc_corrected = { 0, 0, 0 };
+    for (int i = 0; i < 3; i++) bc_corrected[i] = barycentric[i] / tri[i].clipPos.w;
+    float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
+    for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;
+
+    for (int i = 0; i < 3; i++) frag.worldPos += tri[i].worldPos * bc_corrected[i];
+    for (int i = 0; i < 3; i++) frag.normal += tri[i].normal * bc_corrected[i];
+    for (int i = 0; i < 3; i++) frag.texUv += tri[i].texUv * bc_corrected[i];
+
     return frag;
 }
 
