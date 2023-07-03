@@ -3,9 +3,15 @@
 #include "shader.h"
 #include "texture.h"
 
-class SkyBoxShader : public Shader
+class SkyBoxShader
 {
 public:
-    virtual void vertexShader(Vertex &vertex) override;
-    virtual void fragmentShader(Fragment &fragment) override;
+    glm::mat4 modelMat;
+    glm::mat4 viewMat;
+    glm::mat4 projectionMat;
+    std::vector<Light> lightList;
+    Material material;
+    Coord3D eyePos;
+    void vertexShader(Vertex &vertex);
+    void fragmentShader(Fragment& fragment, int faceId);
 };

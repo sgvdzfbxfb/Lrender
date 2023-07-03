@@ -13,8 +13,10 @@
 #include "frame.h"
 #include "texture.h"
 #include "shader.h"
+#include "skyBoxShader.h"
 
 class Shader;
+class SkyBoxShader;
 
 class renderAPI
 {
@@ -27,7 +29,7 @@ public:
     std::vector<Texture> skyBox;
     std::vector<Triangle> SkyBoxFaces;
     std::unique_ptr<Shader> shader;
-    std::unique_ptr<Shader> skyShader;
+    std::unique_ptr<SkyBoxShader> skyShader;
     Color backgroundColor = Color(0.0, 0.0, 0.0);
     Color pointColor = Color(0.0, 0.0, 0.0);
     Color lineColor = Color(0.0, 0.0, 0.0);
@@ -60,16 +62,13 @@ private:
     Frame frame;
     void rasterization(Triangle& tri);
     void facesRender(Triangle& tri);
-    void skyBoxFacesRender(Triangle& tri);
+    void skyBoxFacesRender(Triangle& tri, int faceId);
     void wireframeRedner(Triangle& tri);
     void pointsRender(Triangle &tri);
     void drawLine(Line& line);
     void convertToScreen(Triangle& tri);
-    void convertToScreen(Quad& quad);
     void perspectiveTrans(Triangle& tri);
-    void perspectiveTrans(Quad& quad);
     CoordI4D computeBoundingBox(Triangle& tri);
-    CoordI4D computeBoundingBox(Quad& quad);
     Vector3D computeBarycentric(Triangle& pts, CoordI2D P);
     std::vector<Triangle> faceClip(Triangle& tri);
     std::optional<Line> lineClip(Line& line);

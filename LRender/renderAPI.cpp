@@ -75,16 +75,6 @@ void renderAPI::perspectiveTrans(Triangle &tri)
     }
 }
 
-void renderAPI::perspectiveTrans(Quad& quad)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        quad.at(i).clipPos.x /= quad.at(i).clipPos.w;
-        quad.at(i).clipPos.y /= quad.at(i).clipPos.w;
-        quad.at(i).clipPos.z /= quad.at(i).clipPos.w;
-    }
-}
-
 void renderAPI::convertToScreen(Triangle &tri)
 {
     for (int i = 0; i < 3; i++)
@@ -92,16 +82,6 @@ void renderAPI::convertToScreen(Triangle &tri)
         tri.at(i).screenPos.x = static_cast<int>(0.5f * width * (tri.at(i).clipPos.x + 1.0f) + 0.5f);
         tri.at(i).screenPos.y = static_cast<int>(0.5f * height * (tri.at(i).clipPos.y + 1.0f) + 0.5f);
         tri.at(i).zValue = tri.at(i).clipPos.z;
-    }
-}
-
-void renderAPI::convertToScreen(Quad& quad)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        quad.at(i).screenPos.x = static_cast<int>(0.5f * width * (quad.at(i).clipPos.x + 1.0f) + 0.5f);
-        quad.at(i).screenPos.y = static_cast<int>(0.5f * height * (quad.at(i).clipPos.y + 1.0f) + 0.5f);
-        quad.at(i).zValue = quad.at(i).clipPos.z;
     }
 }
 
@@ -148,26 +128,6 @@ CoordI4D renderAPI::computeBoundingBox(Triangle& tri)
         yMin > 0 ? yMin : 0,
         xMax < width - 1 ? xMax : width - 1,
         yMax < height - 1 ? yMax : height - 1};
-}
-
-CoordI4D renderAPI::computeBoundingBox(Quad& quad)
-{
-    int xMin = width - 1;
-    int yMin = height - 1;
-    int xMax = 0;
-    int yMax = 0;
-    for (int i = 0; i < 4; i++)
-    {
-        xMin = std::min(xMin, quad.at(i).screenPos.x);
-        yMin = std::min(yMin, quad.at(i).screenPos.y);
-        xMax = std::max(xMax, quad.at(i).screenPos.x);
-        yMax = std::max(yMax, quad.at(i).screenPos.y);
-    }
-    return {
-        xMin > 0 ? xMin : 0,
-        yMin > 0 ? yMin : 0,
-        xMax < width - 1 ? xMax : width - 1,
-        yMax < height - 1 ? yMax : height - 1 };
 }
 
 Vector3D renderAPI::computeBarycentric(Triangle& pts, CoordI2D P) {
@@ -227,8 +187,8 @@ void renderAPI::facesRender(Triangle &tri)
             Vector3D bc_screen = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bc_screen)) {
                 float Z = 1.0 / (bc_screen[0] / tri[0].clipPos.w + bc_screen[1] / tri[1].clipPos.w + bc_screen[2] / tri[2].clipPos.w);
-                P.z = bc_screen[0] * tri[0].clipPos.z / tri[0].clipPos.w + bc_screen[1] * tri[1].clipPos.z / tri[1].clipPos.w + bc_screen[2] * tri[2].clipPos.z / tri[2].clipPos.w;
-                P.z *= Z;
+                P.z = bc_screen[0] * tri[0].clipPos.z + bc_screen[1] * tri[1].clipPos.z + bc_screen[2] * tri[2].clipPos.z;
+                P.z *= Z / 100.0;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
@@ -240,7 +200,7 @@ void renderAPI::facesRender(Triangle &tri)
     }
 }
 
-void renderAPI::skyBoxFacesRender(Triangle& tri)
+void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
 {
     CoordI4D boundingBox = computeBoundingBox(tri);
     int xMin = boundingBox[0];
@@ -261,7 +221,7 @@ void renderAPI::skyBoxFacesRender(Triangle& tri)
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, bc_screen);
-                    skyShader->fragmentShader(frag);
+                    skyShader->fragmentShader(frag, faceId);
                     frame.setPixel(P.x, P.y, frag.fragmentColor);
                 }
             }
@@ -464,11 +424,11 @@ void renderAPI::renderSkyBox()
             skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
         }
         std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
-        for (auto& ctri : completedTriangleList)
+        for (int j = 0; j < completedTriangleList.size(); j++)
         {
-            perspectiveTrans(ctri);
-            convertToScreen(ctri);
-            skyBoxFacesRender(ctri);
+            perspectiveTrans(completedTriangleList[j]);
+            convertToScreen(completedTriangleList[j]);
+            skyBoxFacesRender(completedTriangleList[j], i);
         }
     }
 }

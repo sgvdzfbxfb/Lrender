@@ -217,6 +217,7 @@ void LRenderWidget::render()
     renderAPI::API().skyBox = model->getSkyBox();
     renderAPI::API().SkyBoxFaces = model->SkyBoxFaces;
     renderAPI::API().renderSkyBox();
+
     // render model
     renderAPI::API().shader->modelMat = modelMatrix;
     renderAPI::API().shader->viewMat = camera.getViewMatrix();
