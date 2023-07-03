@@ -3,7 +3,7 @@
 #include <QTime>
 
 // helper functions
-static inline bool judgeInsideTriangle(Vector3D bc_screen)
+static inline bool isInTriangle(Vector3D bc_screen)
 {
     bool flag = true;
     if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0) flag = false;
@@ -185,7 +185,7 @@ void renderAPI::facesRender(Triangle &tri)
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
             Vector3D baryPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
-            if (judgeInsideTriangle(baryPos)) {
+            if (isInTriangle(baryPos)) {
                 float Z = 1.0 / (baryPos[0] / tri.at(0).clipPos.w + baryPos[1] / tri.at(1).clipPos.w + baryPos[2] / tri.at(2).clipPos.w);
                 P.z = baryPos[0] * tri.at(0).clipPos.z + baryPos[1] * tri.at(1).clipPos.z + baryPos[2] * tri.at(2).clipPos.z;
                 P.z *= Z / 1000.0;
@@ -214,7 +214,7 @@ void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
         for (P.y = yMin; P.y <= yMax; P.y++)
         {
             Vector3D bcPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
-            if (judgeInsideTriangle(bcPos)) {
+            if (isInTriangle(bcPos)) {
                 float Z = 1.0 / (bcPos[0] / tri.at(0).clipPos.w + bcPos[1] / tri.at(1).clipPos.w + bcPos[2] / tri.at(2).clipPos.w);
                 P.z = bcPos[0] * tri.at(0).clipPos.z / tri.at(0).clipPos.w + bcPos[1] * tri.at(1).clipPos.z / tri.at(1).clipPos.w + bcPos[2] * tri.at(2).clipPos.z / tri.at(2).clipPos.w;
                 P.z *= Z;
