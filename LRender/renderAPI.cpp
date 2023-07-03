@@ -188,7 +188,7 @@ void renderAPI::facesRender(Triangle &tri)
             if (judgeInsideTriangle(baryPos)) {
                 float Z = 1.0 / (baryPos[0] / tri.at(0).clipPos.w + baryPos[1] / tri.at(1).clipPos.w + baryPos[2] / tri.at(2).clipPos.w);
                 P.z = baryPos[0] * tri.at(0).clipPos.z + baryPos[1] * tri.at(1).clipPos.z + baryPos[2] * tri.at(2).clipPos.z;
-                P.z *= Z / 100.0;
+                P.z *= Z / 1000.0;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, baryPos);
@@ -216,8 +216,8 @@ void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
             Vector3D bcPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (judgeInsideTriangle(bcPos)) {
                 float Z = 1.0 / (bcPos[0] / tri.at(0).clipPos.w + bcPos[1] / tri.at(1).clipPos.w + bcPos[2] / tri.at(2).clipPos.w);
-                P.z = bcPos[0] * tri.at(0).clipPos.z + bcPos[1] * tri.at(1).clipPos.z + bcPos[2] * tri.at(2).clipPos.z;
-                P.z *= Z / 100.0;
+                P.z = bcPos[0] * tri.at(0).clipPos.z / tri.at(0).clipPos.w + bcPos[1] * tri.at(1).clipPos.z / tri.at(1).clipPos.w + bcPos[2] * tri.at(2).clipPos.z / tri.at(2).clipPos.w;
+                P.z *= Z;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, bcPos);
