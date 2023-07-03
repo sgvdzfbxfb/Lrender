@@ -130,7 +130,7 @@ void Model::loadModel(QStringList paths)
                     int x = 0;
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res.at(k), "/");
                         idx = atoi(idxs.at(0).c_str());
                         idx--;
                         f.at(x) = tempMesh.vertices.at(idx);
@@ -144,7 +144,7 @@ void Model::loadModel(QStringList paths)
                     int x = 0;
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res.at(k), "/");
                         idx = atoi(idxs.at(0).c_str()); vn_idx = atoi(idxs.at(1).c_str());
                         idx--; vn_idx--;
                         f.at(x) = tempMesh.vertices.at(idx);
@@ -159,7 +159,7 @@ void Model::loadModel(QStringList paths)
                     int x = 0;
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res.at(k), "/");
                         idx = atoi(idxs.at(0).c_str()); vt_idx = atoi(idxs.at(1).c_str());
                         idx--; vt_idx--;
                         f.at(x) = tempMesh.vertices.at(idx);
@@ -174,7 +174,7 @@ void Model::loadModel(QStringList paths)
                     int x = 0;
                     std::vector<int> vers;
                     for (int k = 1; k < frg_res.size(); ++k) {
-                        std::vector<std::string> idxs = splitString(frg_res[k], "/");
+                        std::vector<std::string> idxs = splitString(frg_res.at(k), "/");
                         idx = atoi(idxs.at(0).c_str()); vt_idx = atoi(idxs.at(1).c_str()); vn_idx = atoi(idxs.at(2).c_str());
                         idx--; vn_idx--; vt_idx--;
                         f.at(x) = tempMesh.vertices.at(idx);
@@ -193,14 +193,14 @@ void Model::loadModel(QStringList paths)
         faceNum += tempMesh.faces.size();
         std::vector<std::string> texPaths; std::string folderPath;
         std::vector<std::string> folderSp = splitString((*(path)).toStdString(), "/");
-        for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp[k] + "/";
+        for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
         folderPath.pop_back();
         getAllImageFiles(folderPath, texPaths);
         for (int k = 0; k < texPaths.size(); ++k) {
-            if (texPaths[k].find("diffuse") > 0 && texPaths[k].find("diffuse") < texPaths[k].length())
-                tempMesh.diffuseIds.push_back(getMeshTexture(texPaths[k], "diffuse"));
-            else if (texPaths[k].find("specular") > 0 && texPaths[k].find("specular") < texPaths[k].length())
-                tempMesh.specularIds.push_back(getMeshTexture(texPaths[k], "specular"));
+            if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
+                tempMesh.diffuseIds.push_back(getMeshTexture(texPaths.at(k), "diffuse"));
+            else if (texPaths.at(k).find("specular") > 0 && texPaths.at(k).find("specular") < texPaths.at(k).length())
+                tempMesh.specularIds.push_back(getMeshTexture(texPaths.at(k), "specular"));
         }
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
