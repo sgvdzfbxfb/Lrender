@@ -427,15 +427,15 @@ void renderAPI::renderSkyBox()
 {
     if (multiThread)
     {
-        tbb::parallel_for(tbb::blocked_range<size_t>(0, SkyBoxFaces.size()),
+        tbb::parallel_for(tbb::blocked_range<size_t>(0, skyBoxModel.size()),
             [&](tbb::blocked_range<size_t> r)
             {
                 for (size_t i = r.begin(); i < r.end(); i++) {
                     for (int j = 0; j < 3; j++)
                     {
-                        skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
+                        skyShader->vertexShader(skyBoxModel.at(i).at(j));
                     }
-                    std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
+                    std::vector<Triangle> completedTriangleList = faceClip(skyBoxModel.at(i));
                     for (int j = 0; j < completedTriangleList.size(); j++)
                     {
                         perspectiveTrans(completedTriangleList[j]);
@@ -447,12 +447,12 @@ void renderAPI::renderSkyBox()
     }
     else
     {
-        for (int i = 0; i < SkyBoxFaces.size(); i++) {
+        for (int i = 0; i < skyBoxModel.size(); i++) {
             for (int j = 0; j < 3; j++)
             {
-                skyShader->vertexShader(SkyBoxFaces.at(i).at(j));
+                skyShader->vertexShader(skyBoxModel.at(i).at(j));
             }
-            std::vector<Triangle> completedTriangleList = faceClip(SkyBoxFaces.at(i));
+            std::vector<Triangle> completedTriangleList = faceClip(skyBoxModel.at(i));
             for (int j = 0; j < completedTriangleList.size(); j++)
             {
                 perspectiveTrans(completedTriangleList[j]);

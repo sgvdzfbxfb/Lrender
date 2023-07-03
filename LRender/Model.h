@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "dataType.h"
 #include "sigMesh.h"
+#include "tools.h"
 
 class Model
 {
@@ -21,9 +22,6 @@ class Model
         int vertexNum{0};
         float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
-        std::vector<Triangle> SkyBoxFaces;
-        std::vector<Texture> getSkyBox();
-        void loadSkyBox(std::string skyPath);
     private:
         float minX{FLT_MAX};
         float minY{FLT_MAX};
@@ -33,7 +31,6 @@ class Model
         float maxZ{FLT_MIN};
         std::vector<sigMesh> meshes;
         std::vector<Texture> textureList;
-        std::vector<Texture> cubeMapSkyBox;
         QString directory;
         void loadModel(QStringList paths);
         void computeNormal(sigMesh& inMesh);

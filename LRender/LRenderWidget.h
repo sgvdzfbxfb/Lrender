@@ -50,6 +50,7 @@ public:
     void loadModel(QStringList paths);
     void initDevice();
     void switchLightMode(bool turnLight);
+    void loadSkyBox(std::string skyPath);
     Camera camera;
     Camera skyBoxCamera;
 protected:
@@ -72,6 +73,8 @@ private:
     void resetCamera();
     Ui::LRenderWidget *ui;
     Model* model;
+    std::vector<Texture> skyBoxTexture;
+    std::vector<Triangle> skyBoxModel;
 };
 
 #endif // LRENDERWIDGET_H

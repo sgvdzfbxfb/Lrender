@@ -10,6 +10,6 @@ void SkyBoxShader::vertexShader(Vertex& vertex)
 void SkyBoxShader::fragmentShader(Fragment& fragment, int faceId)
 {
     Vector3D viewDir = glm::normalize(eyePos - Coord3D(fragment.screenPos, 1.0));
-    Color result = renderAPI::API().skyBox[faceId / 2.0].getColorFromUv(fragment.texUv);
+    Color result = renderAPI::API().skyBoxTexture[faceId / 2.0].getColorFromUv(fragment.texUv);
     fragment.fragmentColor = result;
 }

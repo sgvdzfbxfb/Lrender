@@ -26,8 +26,8 @@ public:
     bool multiThread{ true };
     std::vector<Triangle> faces;
     std::vector<Texture> textureList;
-    std::vector<Texture> skyBox;
-    std::vector<Triangle> SkyBoxFaces;
+    std::vector<Texture> skyBoxTexture;
+    std::vector<Triangle> skyBoxModel;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<SkyBoxShader> skyShader;
     Color backgroundColor = Color(0.0, 0.0, 0.0);
