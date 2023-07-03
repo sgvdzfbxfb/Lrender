@@ -4,7 +4,9 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <bitset>
 #include <qDebug>
+#include "dataType.h"
 
 using namespace std::filesystem;
 
