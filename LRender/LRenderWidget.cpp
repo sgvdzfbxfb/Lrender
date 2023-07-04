@@ -94,7 +94,7 @@ void LRenderWidget::initDevice()
     renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
     renderAPI::API().skyShader = std::make_unique<SkyBoxShader>();
     renderAPI::API().shader->lightList.push_back(Light());
-    loadSkyBox("D:/Code/lrender/LRender/skybox");
+    loadSkyBox("D:/Code/lrender/LRender/skybox/skybox1");
     renderAPI::API().skyBoxTexture = skyBoxTexture;
     renderAPI::API().skyBoxModel = skyBoxModel;
 }
@@ -125,13 +125,6 @@ void LRenderWidget::loadSkyBox(std::string skyPath)
     Vertex Ver7; Ver7.worldPos = Coord3D(-5.0, -5.0, 5.0); skyBoxVers.push_back(Ver7);
     Vertex Ver8; Ver8.worldPos = Coord3D(-5.0, 5.0, 5.0); skyBoxVers.push_back(Ver8);
 
-    Triangle face11{ skyBoxVers.at(1), skyBoxVers.at(2), skyBoxVers.at(3) };
-    face11.at(0).texUv = Coord2D(0.0, 0.0); face11.at(1).texUv = Coord2D(1.0, 0.0); face11.at(2).texUv = Coord2D(1.0, 1.0);
-    skyBoxModel.push_back(face11);
-    Triangle face12{ skyBoxVers.at(1), skyBoxVers.at(3), skyBoxVers.at(0) };
-    face12.at(0).texUv = Coord2D(0.0, 0.0); face12.at(1).texUv = Coord2D(1.0, 1.0); face12.at(2).texUv = Coord2D(0.0, 1.0);
-    skyBoxModel.push_back(face12);
-
     Triangle face21{ skyBoxVers.at(2), skyBoxVers.at(6), skyBoxVers.at(7) };
     face21.at(0).texUv = Coord2D(0.0, 0.0); face21.at(1).texUv = Coord2D(1.0, 0.0); face21.at(2).texUv = Coord2D(1.0, 1.0);
     skyBoxModel.push_back(face21);
@@ -139,12 +132,19 @@ void LRenderWidget::loadSkyBox(std::string skyPath)
     face22.at(0).texUv = Coord2D(0.0, 0.0); face22.at(1).texUv = Coord2D(1.0, 1.0); face22.at(2).texUv = Coord2D(0.0, 1.0);
     skyBoxModel.push_back(face22);
 
-    Triangle face31{ skyBoxVers.at(6), skyBoxVers.at(5), skyBoxVers.at(4) };
-    face31.at(0).texUv = Coord2D(0.0, 0.0); face31.at(1).texUv = Coord2D(1.0, 0.0); face31.at(2).texUv = Coord2D(1.0, 1.0);
-    skyBoxModel.push_back(face31);
-    Triangle face32{ skyBoxVers.at(6), skyBoxVers.at(4), skyBoxVers.at(7) };
-    face32.at(0).texUv = Coord2D(0.0, 0.0); face32.at(1).texUv = Coord2D(1.0, 1.0); face32.at(2).texUv = Coord2D(0.0, 1.0);
-    skyBoxModel.push_back(face32);
+    Triangle face61{ skyBoxVers.at(2), skyBoxVers.at(1), skyBoxVers.at(5) };
+    face61.at(0).texUv = Coord2D(0.0, 0.0); face61.at(1).texUv = Coord2D(1.0, 0.0); face61.at(2).texUv = Coord2D(1.0, 1.0);
+    skyBoxModel.push_back(face61);
+    Triangle face62{ skyBoxVers.at(2), skyBoxVers.at(5), skyBoxVers.at(6) };
+    face62.at(0).texUv = Coord2D(0.0, 0.0); face62.at(1).texUv = Coord2D(1.0, 1.0); face62.at(2).texUv = Coord2D(0.0, 1.0);
+    skyBoxModel.push_back(face62);
+
+    Triangle face11{ skyBoxVers.at(1), skyBoxVers.at(2), skyBoxVers.at(3) };
+    face11.at(0).texUv = Coord2D(0.0, 0.0); face11.at(1).texUv = Coord2D(1.0, 0.0); face11.at(2).texUv = Coord2D(1.0, 1.0);
+    skyBoxModel.push_back(face11);
+    Triangle face12{ skyBoxVers.at(1), skyBoxVers.at(3), skyBoxVers.at(0) };
+    face12.at(0).texUv = Coord2D(0.0, 0.0); face12.at(1).texUv = Coord2D(1.0, 1.0); face12.at(2).texUv = Coord2D(0.0, 1.0);
+    skyBoxModel.push_back(face12);
 
     Triangle face41{ skyBoxVers.at(5), skyBoxVers.at(1), skyBoxVers.at(0) };
     face41.at(0).texUv = Coord2D(0.0, 0.0); face41.at(1).texUv = Coord2D(1.0, 0.0); face41.at(2).texUv = Coord2D(1.0, 1.0);
@@ -160,12 +160,12 @@ void LRenderWidget::loadSkyBox(std::string skyPath)
     face52.at(0).texUv = Coord2D(0.0, 0.0); face52.at(1).texUv = Coord2D(1.0, 1.0); face52.at(2).texUv = Coord2D(0.0, 1.0);
     skyBoxModel.push_back(face52);
 
-    Triangle face61{ skyBoxVers.at(2), skyBoxVers.at(1), skyBoxVers.at(5) };
-    face61.at(0).texUv = Coord2D(0.0, 0.0); face61.at(1).texUv = Coord2D(1.0, 0.0); face61.at(2).texUv = Coord2D(1.0, 1.0);
-    skyBoxModel.push_back(face61);
-    Triangle face62{ skyBoxVers.at(2), skyBoxVers.at(5), skyBoxVers.at(6) };
-    face62.at(0).texUv = Coord2D(0.0, 0.0); face62.at(1).texUv = Coord2D(1.0, 1.0); face62.at(2).texUv = Coord2D(0.0, 1.0);
-    skyBoxModel.push_back(face62);
+    Triangle face31{ skyBoxVers.at(6), skyBoxVers.at(5), skyBoxVers.at(4) };
+    face31.at(0).texUv = Coord2D(0.0, 0.0); face31.at(1).texUv = Coord2D(1.0, 0.0); face31.at(2).texUv = Coord2D(1.0, 1.0);
+    skyBoxModel.push_back(face31);
+    Triangle face32{ skyBoxVers.at(6), skyBoxVers.at(4), skyBoxVers.at(7) };
+    face32.at(0).texUv = Coord2D(0.0, 0.0); face32.at(1).texUv = Coord2D(1.0, 1.0); face32.at(2).texUv = Coord2D(0.0, 1.0);
+    skyBoxModel.push_back(face32);
 
     std::vector<std::string> skyPaths;
     getAllImageFiles(skyPath, skyPaths);
