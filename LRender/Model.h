@@ -6,11 +6,13 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <QTime>
 #include <filesystem>
 #include <stdlib.h>
 #include "dataType.h"
 #include "sigMesh.h"
 #include "tools.h"
+#include "skeleton.h"
 
 class Model
 {
@@ -22,6 +24,8 @@ class Model
         int vertexNum{0};
         float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
+        Skeleton* skeleton;
+        QTime fTimeCounter;
     private:
         float minX{FLT_MAX};
         float minY{FLT_MAX};
@@ -35,6 +39,7 @@ class Model
         void loadModel(QStringList paths);
         void computeNormal(sigMesh& inMesh);
         int getMeshTexture(std::string t_ps, std::string type);
+        void updateModelSkeleton(float ft);
 };
 
 #endif // MODEL_H

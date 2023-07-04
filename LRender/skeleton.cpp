@@ -15,6 +15,10 @@ const char* private_get_extension(const char* filename) {
     return dot_pos == NULL ? "" : dot_pos + 1;
 }
 
+float float_lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}
+
 Vector3D vec3_new(float x, float y, float z) {
     Vector3D v;
     v.x = x;
@@ -58,10 +62,6 @@ Vector4D quat_slerp(Vector4D a, Vector4D b, float t) {
         float w = factor_a * a.w + factor_b * b.w;
         return quat_new(x, y, z, w);
     }
-}
-
-float float_lerp(float a, float b, float t) {
-    return a + (b - a) * t;
 }
 
 Vector3D vec3_lerp(Vector3D a, Vector3D b, float t) {
@@ -304,7 +304,7 @@ static void initialize_cache(skeleton_t *skeleton) {
     skeleton->last_time = -1;
 }
 
-static skeleton_t *load_ani(const char *filename) {
+static skeleton_t* load_ani(const char *filename) {
     skeleton_t *skeleton;
     FILE *file;
     int items;
@@ -421,13 +421,12 @@ static Vector3D get_scale(joint_t *joint, float frame_time) {
 }
 
 
-skeleton_t* Skeleton::skeleton_load(const char *filename) {
+void Skeleton::skeleton_load(const char *filename) {
     const char *extension = private_get_extension(filename);
     if (strcmp(extension, "ani") == 0) {
-        return load_ani(filename);
-    } else {
-        assert(0);
-        return NULL;
+        qDebug() << "1";
+        ske = load_ani(filename);
+        qDebug() << "2";
     }
 }
 

@@ -1,6 +1,7 @@
 #ifndef SKELETON_H
 #define SKELETON_H
 
+#include <qDebug>
 #include "dataType.h"
 
 #define LINE_SIZE 256
@@ -41,16 +42,9 @@ struct skeleton_t {
 
 class Skeleton {
   public:
-    float min_time;
-    float max_time;
-    int num_joints;
-    joint_t* joints;
-    /* cached result */
-    glm::mat4* joint_matrices;
-    glm::mat3* normal_matrices;
-    float last_time;
+    skeleton_t* ske;
     /* skeleton loading/releasing */
-    skeleton_t* skeleton_load(const char* filename);
+    void skeleton_load(const char* filename);
     void skeleton_release(skeleton_t* skeleton);
 
     /* joint updating/retrieving */
