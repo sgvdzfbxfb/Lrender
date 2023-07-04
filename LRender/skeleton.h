@@ -15,15 +15,15 @@ typedef struct {
     int parent_index;
     glm::mat4 inverse_bind;
     /* translations */
-    int num_translations = 0;
+    int num_translations;
     std::vector<float> translation_times;
     std::vector<Vector3D> translation_values;
     /* rotations */
-    int num_rotations = 0;
+    int num_rotations;
     std::vector<float> rotation_times;
     std::vector<Vector4D> rotation_values;
     /* scales */
-    int num_scales = 0;
+    int num_scales;
     std::vector<float> scale_times;
     std::vector<Vector3D> scale_values;
     /* interpolated */
@@ -48,8 +48,8 @@ class Skeleton {
     void skeleton_load(std::string filename);
 
     /* joint updating/retrieving */
-    void skeleton_update_joints(skeleton_t skeleton, float frame_time);
-    std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t skeleton);
-    std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t skeleton);
+    void skeleton_update_joints(skeleton_t* skeleton, float frame_time);
+    std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t* skeleton);
+    std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t* skeleton);
 };
 #endif

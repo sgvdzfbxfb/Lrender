@@ -12,7 +12,7 @@ Model::Model(QStringList paths)
 void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
-    updateModelSkeleton((float)fTimeCounter.elapsed() / 10.0);
+    updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
     for(int i = 0; i < meshes.size(); i++) meshes.at(i).meshRender();
 }
 
@@ -22,9 +22,10 @@ void Model::updateModelSkeleton(float ft)
     std::vector<glm::mat4> joint_matrices;
     std::vector<glm::mat3> joint_n_matrices;
     if (skTemp.ske.joints.size() != 0) {
-        skTemp.skeleton_update_joints(skTemp.ske, ft);
+        skTemp.skeleton_update_joints(&(skTemp.ske), ft);
         joint_matrices = skTemp.ske.joint_matrices;
         joint_n_matrices = skTemp.ske.normal_matrices;
+        qDebug() << ft << "                                 " << joint_matrices.size() << joint_n_matrices.size();
     }
 }
 

@@ -185,12 +185,13 @@ static void read_inverse_bind(FILE* file, joint_t* joint) {
     items = fscanf(file, " %s", line);
     assert(items == 1 && strcmp(line, "inverse-bind:") == 0);
     for (i = 0; i < 4; i++) {
-        items = fscanf(file, " %f %f %f %f",
-                       &(joint->inverse_bind[i][0]),
-                       &(joint->inverse_bind[i][1]),
-                       &(joint->inverse_bind[i][2]),
-                       &(joint->inverse_bind[i][3]));
+        items = fscanf(file, " %f %f %f %f\n",
+                       &joint->inverse_bind[i][0],
+                       &joint->inverse_bind[i][1],
+                       &joint->inverse_bind[i][2],
+                       &joint->inverse_bind[i][3]);
         assert(items == 4);
+        //qDebug() << "inverse-bind" << joint->inverse_bind[i][0] << joint->inverse_bind[i][1] << joint->inverse_bind[i][2] << joint->inverse_bind[i][3];
     }
     UNUSED_VAR(items);
 }
@@ -198,27 +199,23 @@ static void read_inverse_bind(FILE* file, joint_t* joint) {
 static void read_translations(FILE* file, joint_t* joint) {
     int items;
     int i;
-    qDebug() << "1";
 
-    items = fscanf(file, " translations %d:", &(joint->num_translations));
-    qDebug() << "2" << &(joint->num_translations) << joint->num_translations;
+    items = fscanf(file, " translations %d:\n", &joint->num_translations);
+    //qDebug() << "t1" << items << joint->num_translations;
     assert(items == 1 && joint->num_translations >= 0);
-    qDebug() << "3" << &(joint->num_translations) << joint->num_translations;
     if (joint->num_translations > 0) {
-        qDebug() << "4" << &(joint->num_translations) << joint->num_translations;
         int time_size = sizeof(float) * joint->num_translations;
         int value_size = sizeof(Vector3D) * joint->num_translations;
-        qDebug() << "5" << time_size << value_size << joint->num_translations;
         joint->translation_times.resize(time_size, 0.0);
         joint->translation_values.resize(value_size, Vector3D(0.0, 0.0, 0.0));
-        qDebug() << "6";
         for (i = 0; i < joint->num_translations; i++) {
-            items = fscanf(file, " time: %f, value: [%f, %f, %f]",
-                           &(joint->translation_times.at(i)),
-                           &(joint->translation_values.at(i).x),
-                           &(joint->translation_values.at(i).y),
-                           &(joint->translation_values.at(i).z));
+            items = fscanf(file, " time: %f, value: [%f, %f, %f]\n",
+                           &joint->translation_times.at(i),
+                           &joint->translation_values.at(i).x,
+                           &joint->translation_values.at(i).y,
+                           &joint->translation_values.at(i).z);
             assert(items == 4);
+            //qDebug() << "translations" << joint->translation_times.at(i) << joint->translation_values.at(i).x << joint->translation_values.at(i).y << joint->translation_values.at(i).z;
         }
     }
     UNUSED_VAR(items);
@@ -227,7 +224,8 @@ static void read_translations(FILE* file, joint_t* joint) {
 static void read_rotations(FILE* file, joint_t* joint) {
     int items;
     int i;
-    items = fscanf(file, " rotations %d:", &(joint->num_rotations));
+    items = fscanf(file, " rotations %d:\n", &joint->num_rotations);
+    //qDebug() << "r1" << items << joint->num_rotations;
     assert(items == 1 && joint->num_rotations >= 0);
     if (joint->num_rotations > 0) {
         int time_size = sizeof(float) * joint->num_rotations;
@@ -235,13 +233,14 @@ static void read_rotations(FILE* file, joint_t* joint) {
         joint->rotation_times.resize(time_size, 0.0);
         joint->rotation_values.resize(value_size, Vector4D(0.0, 0.0, 0.0, 0.0));
         for (i = 0; i < joint->num_rotations; i++) {
-            items = fscanf(file, " time: %f, value: [%f, %f, %f, %f]",
-                           &(joint->rotation_times.at(i)),
-                           &(joint->rotation_values.at(i).x),
-                           &(joint->rotation_values.at(i).y),
-                           &(joint->rotation_values.at(i).z),
-                           &(joint->rotation_values.at(i).w));
+            items = fscanf(file, " time: %f, value: [%f, %f, %f, %f]\n",
+                           &joint->rotation_times.at(i),
+                           &joint->rotation_values.at(i).x,
+                           &joint->rotation_values.at(i).y,
+                           &joint->rotation_values.at(i).z,
+                           &joint->rotation_values.at(i).w);
             assert(items == 5);
+            //qDebug() << "rotations" << joint->rotation_times.at(i) << joint->rotation_values.at(i).x << joint->rotation_values.at(i).y << joint->rotation_values.at(i).z << joint->rotation_values.at(i).w;
         }
     }
     UNUSED_VAR(items);
@@ -250,7 +249,8 @@ static void read_rotations(FILE* file, joint_t* joint) {
 static void read_scales(FILE* file, joint_t* joint) {
     int items;
     int i;
-    items = fscanf(file, " scales %d:", &(joint->num_scales));
+    items = fscanf(file, " scales %d:\n", &joint->num_scales);
+    //qDebug() << "s1" << items << joint->num_scales;
     assert(items == 1 && joint->num_scales >= 0);
     if (joint->num_scales > 0) {
         int time_size = sizeof(float) * joint->num_scales;
@@ -258,16 +258,14 @@ static void read_scales(FILE* file, joint_t* joint) {
         joint->scale_times.resize(time_size, 0.0);
         joint->scale_values.resize(value_size, Vector3D(0.0, 0.0, 0.0));
         for (i = 0; i < joint->num_scales; i++) {
-            items = fscanf(file, " time: %f, value: [%f, %f, %f]",
-                           &(joint->scale_times.at(i)),
-                           &(joint->scale_values.at(i).x),
-                           &(joint->scale_values.at(i).y),
-                           &(joint->scale_values.at(i).z));
+            items = fscanf(file, " time: %f, value: [%f, %f, %f]\n",
+                           &joint->scale_times.at(i),
+                           &joint->scale_values.at(i).x,
+                           &joint->scale_values.at(i).y,
+                           &joint->scale_values.at(i).z);
             assert(items == 4);
+            //qDebug() << "scales" << joint->scale_times.at(i) << joint->scale_values.at(i).x << joint->scale_values.at(i).y << joint->scale_values.at(i).z;
         }
-    } else {
-        joint->scale_times.clear();
-        joint->scale_values.clear();
     }
     UNUSED_VAR(items);
 }
@@ -275,17 +273,17 @@ static void read_scales(FILE* file, joint_t* joint) {
 static joint_t* load_joint(FILE* file) {
     joint_t* joint = new joint_t;
     int items;
+
+    items = fscanf(file, " joint %d:\n", &joint->joint_index);
+    //qDebug() << "j1" << joint->joint_index;
     assert(items == 1);
-    items = fscanf(file, " parent-index: %d", &joint->parent_index);
-    return joint;
+    items = fscanf(file, " parent-index: %d\n", &joint->parent_index);
+    //qDebug() << "j2" << joint->parent_index;
     assert(items == 1);
 
     read_inverse_bind(file, joint);
-    qDebug() << "c1" << joint->joint_index << joint->parent_index;
     read_translations(file, joint);
-    qDebug() << "c2" << joint->joint_index << joint->parent_index;
     read_rotations(file, joint);
-    qDebug() << "c3" << joint->joint_index << joint->parent_index;
     read_scales(file, joint);
 
     UNUSED_VAR(items);
@@ -293,10 +291,6 @@ static joint_t* load_joint(FILE* file) {
 }
 
 static void initialize_cache(skeleton_t skeleton) {
-    int joint_matrix_size = sizeof(glm::mat4) * skeleton.num_joints;
-    int normal_matrix_size = sizeof(glm::mat3) * skeleton.num_joints;
-    skeleton.joint_matrices.resize(joint_matrix_size, glm::mat4(0.0));
-    skeleton.normal_matrices.resize(normal_matrix_size, glm::mat4(0.0));
     skeleton.last_time = -1;
 }
 
@@ -311,16 +305,11 @@ static skeleton_t load_ani(std::string filename) {
     file = fopen(ch, "rb");
     assert(file != NULL);
 
-    items = fscanf(file, "joint-size: %d", &(skeleton->num_joints));
-    items = fscanf(file, "time-range: [%f, %f]", &(skeleton->min_time), &(skeleton->max_time));
-    skeleton->num_joints = 37;
-    skeleton->min_time = 0.0000000;
-    skeleton->max_time = 16.866667;
+    items = fscanf(file, "joint-size: %d\n", &(skeleton->num_joints));
+    items = fscanf(file, "time-range: [%f, %f]\n", &(skeleton->min_time), &(skeleton->max_time));
+    //qDebug() << "00" << skeleton->num_joints << skeleton->min_time << skeleton->max_time;
     for (i = 0; i < skeleton->num_joints; i++) {
-        qDebug() << "11" << skeleton->max_time;
         joint_t* joint = load_joint(file);
-        qDebug() << "22" << skeleton->max_time;
-        return *(skeleton);
         assert(joint->joint_index == i);
         skeleton->joints.push_back(joint);
     }
@@ -335,7 +324,6 @@ static Vector3D get_translation(joint_t* joint, float frame_time) {
     int num_translations = joint->num_translations;
     std::vector<float> translation_times = joint->translation_times;
     std::vector <Vector3D> translation_values = joint->translation_values;
-    qDebug() << "xx4" << num_translations << frame_time << translation_times.size() << num_translations - 1;
     if (num_translations == 0) {
         return vec3_new(0, 0, 0);
     } else if (frame_time <= translation_times.at(0)) {
@@ -423,12 +411,18 @@ void Skeleton::skeleton_load(std::string filename) {
     }
 }
 
-void Skeleton::skeleton_update_joints(skeleton_t skeleton, float frame_time) {
-    frame_time = fmod(frame_time, skeleton.max_time);
-    if (frame_time != skeleton.last_time) {
-        int i;
-        for (i = 0; i < skeleton.num_joints; i++) {
-            joint_t* joint = skeleton.joints.at(i);
+void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
+    frame_time = fmod(frame_time, skeleton->max_time);
+    qDebug() << "frame_time" << frame_time;
+    /*qDebug() << "jn" << skeleton->joints.size() << skeleton->num_joints;
+    for (int i = 0; i < skeleton->num_joints; ++i) {
+        qDebug() << i << "tr" << skeleton->joints[i]->num_translations;
+        qDebug() << i << "ro" << skeleton->joints[i]->num_rotations;
+        qDebug() << i << "sc" << skeleton->joints[i]->num_scales;
+    }*/
+    if (frame_time != skeleton->last_time) {
+        for (int i = 0; i < skeleton->num_joints; i++) {
+            joint_t* joint = skeleton->joints.at(i);
             Vector3D translation = get_translation(joint, frame_time);
             Vector4D rotation = get_rotation(joint, frame_time);
             Vector3D scale = get_scale(joint, frame_time);
@@ -437,23 +431,29 @@ void Skeleton::skeleton_update_joints(skeleton_t skeleton, float frame_time) {
 
             joint->transform = mat4_from_trs(translation, rotation, scale);
             if (joint->parent_index >= 0) {
-                joint_t* parent = skeleton.joints.at(joint->parent_index);
+                joint_t* parent = skeleton->joints.at(joint->parent_index);
                 joint->transform = parent->transform * joint->transform;
             }
 
             joint_matrix = joint->transform * joint->inverse_bind;
             normal_matrix = mat3_inverse_transpose(mat3_from_mat4(joint_matrix));
-            skeleton.joint_matrices.at(i) = joint_matrix;
-            skeleton.normal_matrices.at(i) = normal_matrix;
+            if (skeleton->joint_matrices.size() <= i) {
+                skeleton->joint_matrices.push_back(joint_matrix);
+                skeleton->normal_matrices.push_back(normal_matrix);
+            }
+            else {
+                skeleton->joint_matrices.at(i) = joint_matrix;
+                skeleton->normal_matrices.at(i) = normal_matrix;
+            }
         }
-        skeleton.last_time = frame_time;
+        skeleton->last_time = frame_time;
     }
 }
 
-std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t skeleton) {
-    return skeleton.joint_matrices;
+std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t* skeleton) {
+    return skeleton->joint_matrices;
 }
 
-std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t skeleton) {
-    return skeleton.normal_matrices;
+std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t* skeleton) {
+    return skeleton->normal_matrices;
 }
