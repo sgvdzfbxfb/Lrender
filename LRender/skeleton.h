@@ -15,15 +15,15 @@ typedef struct {
     int parent_index;
     glm::mat4 inverse_bind;
     /* translations */
-    int num_translations;
+    int num_translations = 0;
     std::vector<float> translation_times;
     std::vector<Vector3D> translation_values;
     /* rotations */
-    int num_rotations;
+    int num_rotations = 0;
     std::vector<float> rotation_times;
     std::vector<Vector4D> rotation_values;
     /* scales */
-    int num_scales;
+    int num_scales = 0;
     std::vector<float> scale_times;
     std::vector<Vector3D> scale_values;
     /* interpolated */
@@ -31,14 +31,14 @@ typedef struct {
 } joint_t;
 
 struct skeleton_t {
-    float min_time;
-    float max_time;
-    int num_joints;
-    std::vector<joint_t> joints;
+    float min_time = 0.0;
+    float max_time = 0.0;
+    int num_joints = 0;
+    std::vector<joint_t*> joints;
     /* cached result */
     std::vector<glm::mat4> joint_matrices;
     std::vector<glm::mat3> normal_matrices;
-    float last_time;
+    float last_time = 0.0;
 };
 
 class Skeleton {

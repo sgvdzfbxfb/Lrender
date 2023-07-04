@@ -12,9 +12,8 @@ Model::Model(QStringList paths)
 void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
-    updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
-    for(int i = 0; i < meshes.size(); i++)
-        meshes.at(i).meshRender();
+    updateModelSkeleton((float)fTimeCounter.elapsed() / 10.0);
+    for(int i = 0; i < meshes.size(); i++) meshes.at(i).meshRender();
 }
 
 void Model::updateModelSkeleton(float ft)
