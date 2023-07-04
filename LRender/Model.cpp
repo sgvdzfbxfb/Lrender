@@ -5,31 +5,27 @@ Model::Model(QStringList paths)
 {
     loadModel(paths);
     modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
-    skeleton->skeleton_load("D:/Code/renderer/assets/kgirl/kgirl.ani");
+    skeleton.skeleton_load("D:/Code/lrender/LRender/model/kgirl/kgirl.ani");
     fTimeCounter.start();
 }
 
 void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
+    updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
     for(int i = 0; i < meshes.size(); i++)
         meshes.at(i).meshRender();
-    updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
 }
 
 void Model::updateModelSkeleton(float ft)
 {
-    Skeleton* skTemp = skeleton;
-    glm::mat4* joint_matrices;
-    glm::mat3* joint_n_matrices;
-    if (skTemp) {
-        skTemp->skeleton_update_joints(skTemp->ske, ft);
-        joint_matrices = skTemp->skeleton_get_joint_matrices(skTemp->ske);
-        joint_n_matrices = skTemp->skeleton_get_normal_matrices(skTemp->ske);
-    }
-    else {
-        joint_matrices = NULL;
-        joint_n_matrices = NULL;
+    Skeleton skTemp = skeleton;
+    std::vector<glm::mat4> joint_matrices;
+    std::vector<glm::mat3> joint_n_matrices;
+    if (skTemp.ske.joints.size() != 0) {
+        skTemp.skeleton_update_joints(skTemp.ske, ft);
+        joint_matrices = skTemp.ske.joint_matrices;
+        joint_n_matrices = skTemp.ske.normal_matrices;
     }
 }
 

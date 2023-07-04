@@ -24,7 +24,7 @@ class Model
         int vertexNum{0};
         float getYRange(){return maxY - minY;}
         bool loadSuccess{ true };
-        Skeleton* skeleton;
+        Skeleton skeleton;
         QTime fTimeCounter;
     private:
         float minX{FLT_MAX};
