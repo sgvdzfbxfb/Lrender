@@ -5,27 +5,31 @@ Model::Model(QStringList paths)
 {
     loadModel(paths);
     modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
-    skeleton.skeleton_load("D:/Code/lrender/LRender/model/kgirl/kgirl.ani");
-    fTimeCounter.start();
+
+    std::string folderPath;
+    std::vector<std::string> folderSp = splitString((*(paths.begin())).toStdString(), "/");
+    for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
+    folderPath.pop_back();
+    ifModelAnimation = skeleton.skeleton_load(folderPath);
+    if (ifModelAnimation) fTimeCounter.start();
 }
 
 void Model::modelRender()
 {
     renderAPI::API().textureList = textureList;
-    updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
+    if (ifModelAnimation) updateModelSkeleton((float)fTimeCounter.elapsed() / 1000.0);
     for(int i = 0; i < meshes.size(); i++) meshes.at(i).meshRender();
 }
 
 void Model::updateModelSkeleton(float ft)
 {
     Skeleton skTemp = skeleton;
-    std::vector<glm::mat4> joint_matrices;
-    std::vector<glm::mat3> joint_n_matrices;
     if (skTemp.ske.joints.size() != 0) {
         skTemp.skeleton_update_joints(&(skTemp.ske), ft);
-        joint_matrices = skTemp.ske.joint_matrices;
-        joint_n_matrices = skTemp.ske.normal_matrices;
-        qDebug() << ft << "                                 " << joint_matrices.size() << joint_n_matrices.size();
+        renderAPI::API().shader->joint_matrices = skTemp.ske.joint_matrices;
+        renderAPI::API().shader->joint_n_matrices = skTemp.ske.normal_matrices;
+        qDebug() << ft << "                                 " << renderAPI::API().shader->joint_matrices.size() << renderAPI::API().shader->joint_n_matrices.size();
+
     }
 }
 
@@ -41,6 +45,7 @@ void Model::loadModel(QStringList paths)
         if (in.fail() || in_forCount.fail()) return;
         std::string line;
         int v_count = 0, vn_count = 0, vt_count = 0, f_count = 0;
+        int v_joint = 0, v_weight = 0;
         while (!in_forCount.eof()) {
             std::getline(in_forCount, line);
             std::istringstream iss(line.c_str());
@@ -49,7 +54,7 @@ void Model::loadModel(QStringList paths)
                 iss >> trash;
                 Vertex ver;
                 Vector3D v_p;
-                for (int i = 0; i < 3; i++) iss >> v_p[i];
+                for (int j = 0; j < 3; j++) iss >> v_p[j];
 
                 minX = std::min(minX, v_p.x);
                 minY = std::min(minY, v_p.y);
@@ -64,19 +69,35 @@ void Model::loadModel(QStringList paths)
             else if (!line.compare(0, 3, "vn ")) {
                 iss >> trash >> trash;
                 Vector3D n;
-                for (int i = 0; i < 3; i++) iss >> n[i];
+                for (int j = 0; j < 3; j++) iss >> n[j];
                 tempMesh.vertNormals.push_back(n);
                 vn_count++;
             }
             else if (!line.compare(0, 3, "vt ")) {
                 iss >> trash >> trash;
                 Coord2D uv;
-                for (int i = 0; i < 2; i++) iss >> uv[i];
+                for (int j = 0; j < 2; j++) iss >> uv[j];
                 tempMesh.vertUVs.push_back(uv);
                 vt_count++;
             }
             else if (!line.compare(0, 2, "f ")) {
                 f_count++;
+            }
+            else if (!line.compare(0, 11, "# ext.joint")) {
+                std::string t1, t2;
+                iss >> t1 >> t2;
+                VectorI4D joint;
+                for (int j = 0; j < 4; j++) iss >> joint[j];
+                tempMesh.vertJoints.push_back(joint);
+                v_joint++;
+            }
+            else if (!line.compare(0, 12, "# ext.weight")) {
+                std::string t1, t2;
+                iss >> t1 >> t2;
+                Vector4D weight;
+                for (int j = 0; j < 4; j++) iss >> weight[j];
+                tempMesh.vertWeights.push_back(weight);
+                v_weight++;
             }
         }
         while (!in.eof()) {
@@ -154,7 +175,7 @@ void Model::loadModel(QStringList paths)
         std::vector<std::string> folderSp = splitString((*(path)).toStdString(), "/");
         for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
         folderPath.pop_back();
-        getAllImageFiles(folderPath, texPaths);
+        getAllTypeFiles(folderPath, texPaths, "png");
         for (int k = 0; k < texPaths.size(); ++k) {
             if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
                 tempMesh.diffuseIds.push_back(getMeshTexture(texPaths.at(k), "diffuse"));
@@ -163,12 +184,27 @@ void Model::loadModel(QStringList paths)
         }
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
-            for (int i = 0; i < tempMesh.vertices.size(); ++i) {
+            for (int j = 0; j < tempMesh.vertices.size(); ++j) {
                 tempMesh.vertices.at(i).texUv = Coord2D(0.0f, 0.0f);
             }
         }
+        if (v_joint == v_count) {
+            for (int j = 0; j < tempMesh.faces.size(); ++j) {
+                tempMesh.faces.at(j).at(0).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(0)];
+                tempMesh.faces.at(j).at(1).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(1)];
+                tempMesh.faces.at(j).at(2).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(2)];
+
+                tempMesh.faces.at(j).at(0).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(0)];
+                tempMesh.faces.at(j).at(1).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(1)];
+                tempMesh.faces.at(j).at(2).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(2)];
+            }
+            tempMesh.ifAnimation = true;
+            ifModelAnimation = true;
+        }
         meshes.push_back(tempMesh);
-        qDebug() << "Model Id:" << i + 1 << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
+        qDebug() << "Model Id:" << i + 1 << "Model Name:" << QString::fromStdString(folderSp.at(folderSp.size() - 1));
+        qDebug() << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
+        qDebug() << "joint:" << v_joint << "weight:" << v_weight << "\n";
     }
 }
 

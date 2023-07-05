@@ -14,7 +14,7 @@ std::vector<std::string> splitString(const std::string& str, const std::string& 
 
 bool checkIsDir(const std::string& dir);
 
-void getAllImageFiles(const std::string dir, std::vector<std::string>& files);
+void getAllTypeFiles(const std::string dir, std::vector<std::string>& files, std::string type);
 
 Coord3D interpolate(float alpha, float beta, float gamma, const Coord3D& vert1, const Coord3D& vert2, const Coord3D& vert3, float weight);
 

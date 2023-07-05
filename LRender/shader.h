@@ -18,6 +18,8 @@ public:
     std::vector<Light> lightList;
     Material material;
     Coord3D eyePos;
-    virtual void vertexShader(Vertex &vertex) = 0;
+    std::vector<glm::mat4> joint_matrices;
+    std::vector<glm::mat3> joint_n_matrices;
+    virtual void vertexShader(Vertex &vertex, bool ifAnimation) = 0;
     virtual void fragmentShader(Fragment &fragment) = 0;
 };

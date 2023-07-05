@@ -45,7 +45,7 @@ class Skeleton {
   public:
     skeleton_t ske;
     /* skeleton loading/releasing */
-    void skeleton_load(std::string filename);
+    bool skeleton_load(std::string filename);
 
     /* joint updating/retrieving */
     void skeleton_update_joints(skeleton_t* skeleton, float frame_time);

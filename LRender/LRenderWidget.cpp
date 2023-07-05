@@ -168,7 +168,7 @@ void LRenderWidget::loadSkyBox(std::string skyPath)
     skyBoxModel.push_back(face32);
 
     std::vector<std::string> skyPaths;
-    getAllImageFiles(skyPath, skyPaths);
+    getAllTypeFiles(skyPath, skyPaths, "png");
 
     for (int i = 0; i < skyPaths.size(); ++i) {
         Texture texture;

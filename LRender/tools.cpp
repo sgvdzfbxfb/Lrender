@@ -31,7 +31,7 @@ bool checkIsDir(const std::string& dir) {
 }
 
 // 搜索一个目录下所有的图像文件，以 png 结尾的文件
-void getAllImageFiles(const std::string dir, std::vector<std::string>& files) {
+void getAllTypeFiles(const std::string dir, std::vector<std::string>& files, std::string type) {
     // 首先检查目录是否为空，以及是否是目录
     if (!checkIsDir(dir)) return;
     // 递归遍历所有的文件
@@ -42,12 +42,12 @@ void getAllImageFiles(const std::string dir, std::vector<std::string>& files) {
         file_path += "/"; file_path += (iter.path().filename()).string();
         // 查看是否是目录，如果是目录则循环递归
         if (checkIsDir(file_path)) {
-            getAllImageFiles(file_path, files);
+            getAllTypeFiles(file_path, files, type);
         }
         else { //不是目录则检查后缀是否是图像
             std::string extension = (iter.path().extension()).string(); // 获取文件的后缀名
             // 可以扩展成你自己想要的文件类型来进行筛选, 比如加上.gif .bmp之类的
-            if (extension == ".png") {
+            if (extension == "." + type) {
                 files.push_back(file_path);
             }
         }

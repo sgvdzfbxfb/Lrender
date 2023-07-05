@@ -14,8 +14,11 @@ struct sigMesh
     std::map<int, std::vector<int>> faceToVer;
     std::vector<Vector3D> vertNormals;
     std::vector<Coord2D> vertUVs;
+    std::vector<VectorI4D> vertJoints;
+    std::vector<Vector4D> vertWeights;
     std::vector<int> diffuseIds;
     std::vector<int> specularIds;
+    bool ifAnimation = false;
     sigMesh() = default;
     void meshRender();
 };

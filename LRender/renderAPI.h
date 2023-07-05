@@ -37,7 +37,7 @@ public:
     void clearBuffer(){ frame.clearBuffer(backgroundColor); }
     QImage& getBuffer(){ return frame.getImage(); }
     bool saveImage(QString path){ return frame.saveImage(path); }
-    void render();
+    void render(bool ifAnimation);
     void renderSkyBox();
     static void init(int w, int h)
     {
@@ -60,7 +60,7 @@ private:
     std::array<BorderPlane, 6> viewBox;
     std::array<BorderLine, 4> screenEdge;
     Frame frame;
-    void rasterization(Triangle& tri);
+    void rasterization(Triangle& tri, bool ifAnimation);
     void facesRender(Triangle& tri);
     void skyBoxFacesRender(Triangle& tri, int faceId);
     void wireframeRedner(Triangle& tri);

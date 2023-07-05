@@ -27,7 +27,7 @@
 
 #define DEFAULT_WIDTH 1000
 #define DEFAULT_HEIGHT 700
-#define FIXED_CAMERA_FAR 300.f
+#define FIXED_CAMERA_FAR 1000.f
 
 namespace Ui {
 class LRenderWidget;

@@ -39,6 +39,8 @@ struct Vertex
     float zValue = FLT_MAX;
     Vector3D normal = Vector3D(0.0, 0.0, 0.0);
     Coord2D texUv = Coord2D(0.0, 0.0);
+    VectorI4D joint = VectorI4D(0, 0, 0, 0);
+    Vector4D weight = Vector4D(0.0, 0.0, 0.0, 0.0);
 };
 
 using Triangle = std::array<Vertex, 3>;

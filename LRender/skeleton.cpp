@@ -404,10 +404,12 @@ static Vector3D get_scale(joint_t* joint, float frame_time) {
 }
 
 
-void Skeleton::skeleton_load(std::string filename) {
-    std::vector<std::string> findExt = splitString(filename, ".");
-    if (findExt.at(findExt.size() - 1) == "ani") {
-        ske = load_ani(filename);
+bool Skeleton::skeleton_load(std::string filename) {
+    std::vector<std::string> aniFile;
+    getAllTypeFiles(filename, aniFile, "ani");
+    if (aniFile.size() > 0) {
+        qDebug() << "aniFile.at(0)" << QString::fromStdString(aniFile.at(0));
+        ske = load_ani(aniFile.at(0));
     }
 }
 

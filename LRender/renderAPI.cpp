@@ -146,8 +146,8 @@ void renderAPI::facesRender(Triangle &tri)
             Vector3D baryPos = computeBarycentric(tri, CoordI2D(P.x, P.y));
             if (isInTriangle(baryPos)) {
                 float Z = 1.0 / (baryPos[0] / tri.at(0).clipPos.w + baryPos[1] / tri.at(1).clipPos.w + baryPos[2] / tri.at(2).clipPos.w);
-                P.z = baryPos[0] * tri.at(0).clipPos.z + baryPos[1] * tri.at(1).clipPos.z + baryPos[2] * tri.at(2).clipPos.z;
-                P.z *= Z / 1000.0;
+                P.z = baryPos[0] * tri.at(0).clipPos.z / tri.at(0).clipPos.w + baryPos[1] * tri.at(1).clipPos.z / tri.at(1).clipPos.w + baryPos[2] * tri.at(2).clipPos.z / tri.at(2).clipPos.w;
+                P.z *= Z;
                 if (frame.updateZbuffer(P.x, P.y, P.z))
                 {
                     frag = interpolationFragment(P.x, P.y, P.z, tri, baryPos);
@@ -338,11 +338,20 @@ std::vector<Triangle> renderAPI::faceClip(Triangle &tri)
 }
 
 // process triangle, clip triangle and choose one mode {TRIANGLE,LINE,POINT} to render.
-void renderAPI::rasterization(Triangle &tri)
+void renderAPI::rasterization(Triangle &tri, bool ifAnimation)
 {
+    //qDebug() << "1" << tri.at(0).worldPos[0] << tri.at(0).worldPos[1] << tri.at(0).worldPos[2];
+    //qDebug() << "1" << tri.at(0).joint[0] << tri.at(0).joint[1] << tri.at(0).joint[2] << tri.at(0).joint[3];
+    //qDebug() << "1" << tri.at(0).weight[0] << tri.at(0).weight[1] << tri.at(0).weight[2] << tri.at(0).weight[3];
+    //qDebug() << "2" << tri.at(1).worldPos[0] << tri.at(1).worldPos[1] << tri.at(1).worldPos[2];
+    //qDebug() << "2" << tri.at(1).joint[0] << tri.at(1).joint[1] << tri.at(1).joint[2] << tri.at(1).joint[3];
+    //qDebug() << "1" << tri.at(1).weight[0] << tri.at(1).weight[1] << tri.at(1).weight[2] << tri.at(1).weight[3];
+    //qDebug() << "3" << tri.at(2).worldPos[0] << tri.at(2).worldPos[1] << tri.at(2).worldPos[2];
+    //qDebug() << "3" << tri.at(2).joint[0] << tri.at(2).joint[1] << tri.at(2).joint[2] << tri.at(2).joint[3];
+    //qDebug() << "1" << tri.at(2).weight[0] << tri.at(2).weight[1] << tri.at(2).weight[2] << tri.at(2).weight[3];
     for (int i = 0; i < 3; i++)
     {
-        shader->vertexShader(tri.at(i));
+        shader->vertexShader(tri.at(i), ifAnimation);
     }
     std::vector<Triangle> completedTriangleList = faceClip(tri);
     for (auto &ctri : completedTriangleList)
@@ -356,7 +365,7 @@ void renderAPI::rasterization(Triangle &tri)
 }
 
 // main render function
-void renderAPI::render()
+void renderAPI::render(bool ifAnimation)
 {
     if(multiThread)
     {
@@ -364,13 +373,13 @@ void renderAPI::render()
             [&](tbb::blocked_range<size_t> r)
             {
                 for (size_t i = r.begin(); i < r.end(); i++)
-                    rasterization(faces.at(i));
+                    rasterization(faces.at(i), ifAnimation);
             });
     }
     else
     {
         for(int i = 0; i < faces.size(); i++)
-            rasterization(faces.at(i));
+            rasterization(faces.at(i), ifAnimation);
     }
 }
 

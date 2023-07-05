@@ -1,7 +1,54 @@
 #include "blinnPhongShader.h"
 
-void BlinnPhongShader::vertexShader(Vertex &vertex)
+glm::mat4 mat4_combine(glm::mat4 m[4], Vector4D weights_) {
+    glm::mat4 combined(0.0);
+    float weights[4];
+    int i, r, c;
+
+    weights[0] = weights_.x;
+    weights[1] = weights_.y;
+    weights[2] = weights_.z;
+    weights[3] = weights_.w;
+
+    for (i = 0; i < 4; i++) {
+        float weight = weights[i];
+        if (weight > 0) {
+            glm::mat4 source = m[i];
+            for (r = 0; r < 4; r++) {
+                for (c = 0; c < 4; c++) {
+                    combined[r][c] += weight * source[r][c];
+                }
+            }
+        }
+    }
+
+    return combined;
+}
+
+void BlinnPhongShader::get_model_matrix(Vertex vertex) {
+    if (joint_matrices.size()) {
+        glm::mat4 js[4];
+        js[0] = joint_matrices[vertex.joint.x];
+        js[1] = joint_matrices[vertex.joint.y];
+        js[2] = joint_matrices[vertex.joint.z];
+        js[3] = joint_matrices[vertex.joint.w];
+        model_matrix = mat4_combine(js, vertex.weight);
+
+        glm::mat4 joint_ns[4];
+        joint_ns[0] = joint_n_matrices[vertex.joint.x];
+        joint_ns[1] = joint_n_matrices[vertex.joint.y];
+        joint_ns[2] = joint_n_matrices[vertex.joint.z];
+        joint_ns[3] = joint_n_matrices[vertex.joint.w];
+        normal_matrix = mat4_combine(joint_ns, vertex.weight);
+    }
+}
+
+void BlinnPhongShader::vertexShader(Vertex &vertex, bool ifAnimation)
 {
+    if (ifAnimation) get_model_matrix(vertex);
+    vertex.worldPos = Coord3D(model_matrix * Coord4D(vertex.worldPos, 1.f));
+    vertex.normal = Coord3D(normal_matrix * Coord4D(vertex.normal, 1.f));
+
     vertex.worldPos = Coord3D(modelMat * Coord4D(vertex.worldPos, 1.f));
     vertex.clipPos = projectionMat * viewMat * Coord4D(vertex.worldPos, 1.f);
     vertex.normal = glm::mat3(glm::transpose(glm::inverse(modelMat))) * vertex.normal;
