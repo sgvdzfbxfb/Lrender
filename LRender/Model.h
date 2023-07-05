@@ -37,6 +37,8 @@ class Model
         bool ifModelAnimation = false;
         std::vector<Texture> textureList;
         QString directory;
+        std::string folderPath;
+        std::vector<std::string> meshNames;
         void loadModel(QStringList paths);
         void computeNormal(sigMesh& inMesh);
         int getMeshTexture(std::string t_ps, std::string type);

@@ -3,13 +3,21 @@
 
 Model::Model(QStringList paths)
 {
+    QList<QString>::Iterator path = paths.begin(), itend = paths.end();
+    for (int i = 0; path != itend; path++, i++) {
+        std::vector<std::string> folderSp = splitString((*(path)).toStdString(), "/");
+        if (i == 0) {
+            for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
+            folderPath.pop_back();
+        }
+        std::string meshName = folderSp.at(folderSp.size() - 1).substr(0, folderSp.at(folderSp.size() - 1).length() - 4);
+        meshNames.push_back(meshName);
+        qDebug() << "meshNames" << QString::fromStdString(meshName);
+    }
+
     loadModel(paths);
     modelCenter = {(maxX + minX) / 2.f, (maxY + minY) / 2.f, (maxZ + minZ) / 2.f};
 
-    std::string folderPath;
-    std::vector<std::string> folderSp = splitString((*(paths.begin())).toStdString(), "/");
-    for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
-    folderPath.pop_back();
     ifModelAnimation = skeleton.skeleton_load(folderPath);
     if (ifModelAnimation) fTimeCounter.start();
 }
@@ -36,8 +44,9 @@ void Model::updateModelSkeleton(float ft)
 void Model::loadModel(QStringList paths)
 {
     QList<QString>::Iterator path = paths.begin(), itend = paths.end();
-    int i = 0;
-    for (; path != itend; path++, i++) {
+    std::vector<std::string> texPaths;
+    getAllTypeFiles(folderPath, texPaths, "png");
+    for (int i = 0; path != itend; path++, i++) {
         sigMesh tempMesh;
         std::ifstream in, in_forCount;
         in.open(path->toStdString(), std::ifstream::in);
@@ -171,16 +180,14 @@ void Model::loadModel(QStringList paths)
         }
         vertexNum += tempMesh.vertices.size();
         faceNum += tempMesh.faces.size();
-        std::vector<std::string> texPaths; std::string folderPath;
-        std::vector<std::string> folderSp = splitString((*(path)).toStdString(), "/");
-        for (int k = 0; k < folderSp.size() - 1; ++k) folderPath += folderSp.at(k) + "/";
-        folderPath.pop_back();
-        getAllTypeFiles(folderPath, texPaths, "png");
+        
         for (int k = 0; k < texPaths.size(); ++k) {
-            if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
-                tempMesh.diffuseIds.push_back(getMeshTexture(texPaths.at(k), "diffuse"));
-            else if (texPaths.at(k).find("specular") > 0 && texPaths.at(k).find("specular") < texPaths.at(k).length())
-                tempMesh.specularIds.push_back(getMeshTexture(texPaths.at(k), "specular"));
+            if (texPaths.at(k).find(meshNames.at(i)) > 0 && texPaths.at(k).find(meshNames.at(i)) < texPaths.at(k).length()) {
+                if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
+                    tempMesh.diffuseIds.push_back(getMeshTexture(texPaths.at(k), "diffuse"));
+                else if (texPaths.at(k).find("specular") > 0 && texPaths.at(k).find("specular") < texPaths.at(k).length())
+                    tempMesh.specularIds.push_back(getMeshTexture(texPaths.at(k), "specular"));
+            }
         }
         if (vn_count == 0) computeNormal(tempMesh);
         if (vt_count == 0) {
@@ -202,7 +209,7 @@ void Model::loadModel(QStringList paths)
             ifModelAnimation = true;
         }
         meshes.push_back(tempMesh);
-        qDebug() << "Model Id:" << i + 1 << "Model Name:" << QString::fromStdString(folderSp.at(folderSp.size() - 1));
+        qDebug() << "Model Id:" << i + 1 << "Model Name:" << QString::fromStdString(meshNames.at(i));
         qDebug() << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
         qDebug() << "joint:" << v_joint << "weight:" << v_weight << "\n";
     }
