@@ -133,7 +133,6 @@ static void read_inverse_bind(FILE* file, joint_t* joint) {
                        &joint->inverse_bind[i][2],
                        &joint->inverse_bind[i][3]);
         assert(items == 4);
-        //qDebug() << "inverse-bind" << joint->inverse_bind[i][0] << joint->inverse_bind[i][1] << joint->inverse_bind[i][2] << joint->inverse_bind[i][3];
     }
     UNUSED_VAR(items);
 }
@@ -143,7 +142,6 @@ static void read_translations(FILE* file, joint_t* joint) {
     int i;
 
     items = fscanf(file, " translations %d:\n", &joint->num_translations);
-    //qDebug() << "t1" << items << joint->num_translations;
     assert(items == 1 && joint->num_translations >= 0);
     if (joint->num_translations > 0) {
         int time_size = sizeof(float) * joint->num_translations;
@@ -157,7 +155,6 @@ static void read_translations(FILE* file, joint_t* joint) {
                            &joint->translation_values.at(i).y,
                            &joint->translation_values.at(i).z);
             assert(items == 4);
-            //qDebug() << "translations" << joint->translation_times.at(i) << joint->translation_values.at(i).x << joint->translation_values.at(i).y << joint->translation_values.at(i).z;
         }
     }
     UNUSED_VAR(items);
@@ -167,7 +164,6 @@ static void read_rotations(FILE* file, joint_t* joint) {
     int items;
     int i;
     items = fscanf(file, " rotations %d:\n", &joint->num_rotations);
-    //qDebug() << "r1" << items << joint->num_rotations;
     assert(items == 1 && joint->num_rotations >= 0);
     if (joint->num_rotations > 0) {
         int time_size = sizeof(float) * joint->num_rotations;
@@ -182,7 +178,6 @@ static void read_rotations(FILE* file, joint_t* joint) {
                            &joint->rotation_values.at(i).z,
                            &joint->rotation_values.at(i).w);
             assert(items == 5);
-            //qDebug() << "rotations" << joint->rotation_times.at(i) << joint->rotation_values.at(i).x << joint->rotation_values.at(i).y << joint->rotation_values.at(i).z << joint->rotation_values.at(i).w;
         }
     }
     UNUSED_VAR(items);
@@ -192,7 +187,6 @@ static void read_scales(FILE* file, joint_t* joint) {
     int items;
     int i;
     items = fscanf(file, " scales %d:\n", &joint->num_scales);
-    //qDebug() << "s1" << items << joint->num_scales;
     assert(items == 1 && joint->num_scales >= 0);
     if (joint->num_scales > 0) {
         int time_size = sizeof(float) * joint->num_scales;
@@ -206,7 +200,6 @@ static void read_scales(FILE* file, joint_t* joint) {
                            &joint->scale_values.at(i).y,
                            &joint->scale_values.at(i).z);
             assert(items == 4);
-            //qDebug() << "scales" << joint->scale_times.at(i) << joint->scale_values.at(i).x << joint->scale_values.at(i).y << joint->scale_values.at(i).z;
         }
     }
     UNUSED_VAR(items);
@@ -217,10 +210,8 @@ static joint_t* load_joint(FILE* file) {
     int items;
 
     items = fscanf(file, " joint %d:\n", &joint->joint_index);
-    //qDebug() << "j1" << joint->joint_index;
     assert(items == 1);
     items = fscanf(file, " parent-index: %d\n", &joint->parent_index);
-    //qDebug() << "j2" << joint->parent_index;
     assert(items == 1);
 
     read_inverse_bind(file, joint);
@@ -355,27 +346,6 @@ bool Skeleton::skeleton_load(std::string filename) {
 
 void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
     frame_time = fmod(frame_time, skeleton->max_time);
-    qDebug() << "frame_time" << frame_time;
-    /*if (frame_time < 0.01) {
-        for (int i = 0; i < skeleton->num_joints; i++) {
-            qDebug() << i << skeleton->joints.at(i)->joint_index;
-            qDebug() << i << skeleton->joints.at(i)->parent_index;
-            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[0][0] << skeleton->joints.at(i)->inverse_bind[0][1] << skeleton->joints.at(i)->inverse_bind[0][2] << skeleton->joints.at(i)->inverse_bind[0][3];
-            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[1][0] << skeleton->joints.at(i)->inverse_bind[1][1] << skeleton->joints.at(i)->inverse_bind[1][2] << skeleton->joints.at(i)->inverse_bind[1][3];
-            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[2][0] << skeleton->joints.at(i)->inverse_bind[2][1] << skeleton->joints.at(i)->inverse_bind[2][2] << skeleton->joints.at(i)->inverse_bind[2][3];
-            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[3][0] << skeleton->joints.at(i)->inverse_bind[3][1] << skeleton->joints.at(i)->inverse_bind[3][2] << skeleton->joints.at(i)->inverse_bind[3][3];
-
-            for (int j = 0; j < skeleton->joints.at(i)->num_translations; j++) {
-                qDebug() << i << "translations" << skeleton->joints.at(i)->translation_times.at(j) << skeleton->joints.at(i)->translation_values.at(j).x << skeleton->joints.at(i)->translation_values.at(j).y << skeleton->joints.at(i)->translation_values.at(j).z;
-            }
-            for (int j = 0; j < skeleton->joints.at(i)->num_rotations; j++) {
-                qDebug() << i << "rotations" << skeleton->joints.at(i)->rotation_times.at(j) << skeleton->joints.at(i)->rotation_values.at(j).x << skeleton->joints.at(i)->rotation_values.at(j).y << skeleton->joints.at(i)->rotation_values.at(j).z << skeleton->joints.at(i)->rotation_values.at(j).w;
-            }
-            for (int j = 0; j < skeleton->joints.at(i)->num_scales; j++) {
-                qDebug() << i << "scales" << skeleton->joints.at(i)->scale_times.at(j) << skeleton->joints.at(i)->scale_values.at(j).x << skeleton->joints.at(i)->scale_values.at(j).y << skeleton->joints.at(i)->scale_values.at(j).z;
-            }
-        }
-    }*/
     if (frame_time != skeleton->last_time) {
         for (int i = 0; i < skeleton->num_joints; i++) {
             joint_t* joint = skeleton->joints.at(i);

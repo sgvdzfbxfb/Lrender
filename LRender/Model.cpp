@@ -36,8 +36,6 @@ void Model::updateModelSkeleton(float ft)
         skTemp.skeleton_update_joints(&(skTemp.ske), ft);
         renderAPI::API().shader->joint_matrices = skTemp.ske.joint_matrices;
         renderAPI::API().shader->joint_n_matrices = skTemp.ske.normal_matrices;
-        qDebug() << ft << "                                 " << renderAPI::API().shader->joint_matrices.size() << renderAPI::API().shader->joint_n_matrices.size();
-
     }
 }
 
