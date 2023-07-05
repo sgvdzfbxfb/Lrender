@@ -14,14 +14,6 @@ float float_lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
-Vector3D vec3_new(float x, float y, float z) {
-    Vector3D v;
-    v.x = x;
-    v.y = y;
-    v.z = z;
-    return v;
-}
-
 Vector4D quat_new(float x, float y, float z, float w) {
     Vector4D q;
     q.x = x;
@@ -63,7 +55,7 @@ Vector3D vec3_lerp(Vector3D a, Vector3D b, float t) {
     float x = float_lerp(a.x, b.x, t);
     float y = float_lerp(a.y, b.y, t);
     float z = float_lerp(a.z, b.z, t);
-    return vec3_new(x, y, z);
+    return Vector3D(x, y, z);
 }
 
 glm::mat4 mat4_identity(void) {
@@ -126,57 +118,6 @@ glm::mat4 mat4_from_trs(Vector3D t, Vector4D r, Vector3D s) {
     glm::mat4 scale = mat4_scale(s.x, s.y, s.z);
     //return rotation * translation * scale;
     return scale * rotation * translation;
-}
-
-static float mat3_determinant(glm::mat3 m) {
-    float a = +m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]);
-    float b = -m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]);
-    float c = +m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
-    return a + b + c;
-}
-
-static glm::mat3 mat3_adjoint(glm::mat3 m) {
-    glm::mat3 adjoint;
-    adjoint[0][0] = +(m[1][1] * m[2][2] - m[2][1] * m[1][2]);
-    adjoint[0][1] = -(m[1][0] * m[2][2] - m[2][0] * m[1][2]);
-    adjoint[0][2] = +(m[1][0] * m[2][1] - m[2][0] * m[1][1]);
-    adjoint[1][0] = -(m[0][1] * m[2][2] - m[2][1] * m[0][2]);
-    adjoint[1][1] = +(m[0][0] * m[2][2] - m[2][0] * m[0][2]);
-    adjoint[1][2] = -(m[0][0] * m[2][1] - m[2][0] * m[0][1]);
-    adjoint[2][0] = +(m[0][1] * m[1][2] - m[1][1] * m[0][2]);
-    adjoint[2][1] = -(m[0][0] * m[1][2] - m[1][0] * m[0][2]);
-    adjoint[2][2] = +(m[0][0] * m[1][1] - m[1][0] * m[0][1]);
-    return adjoint;
-}
-
-glm::mat3 mat3_inverse_transpose(glm::mat3 m) {
-    glm::mat3 adjoint, inverse_transpose;
-    float determinant, inv_determinant;
-    int i, j;
-
-    adjoint = mat3_adjoint(m);
-    determinant = mat3_determinant(m);
-    inv_determinant = 1 / determinant;
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < 3; j++) {
-            inverse_transpose[i][j] = inv_determinant * adjoint[i][j];
-        }
-    }
-    return inverse_transpose;
-}
-
-glm::mat3 mat3_from_mat4(glm::mat4 m) {
-    glm::mat3 n;
-    n[0][0] = m[0][0];
-    n[0][1] = m[0][1];
-    n[0][2] = m[0][2];
-    n[1][0] = m[1][0];
-    n[1][1] = m[1][1];
-    n[1][2] = m[1][2];
-    n[2][0] = m[2][0];
-    n[2][1] = m[2][1];
-    n[2][2] = m[2][2];
-    return n;
 }
 
 static void read_inverse_bind(FILE* file, joint_t* joint) {
@@ -325,7 +266,7 @@ static Vector3D get_translation(joint_t* joint, float frame_time) {
     std::vector<float> translation_times = joint->translation_times;
     std::vector <Vector3D> translation_values = joint->translation_values;
     if (num_translations == 0) {
-        return vec3_new(0, 0, 0);
+        return Vector3D(0.0, 0.0, 0.0);
     } else if (frame_time <= translation_times.at(0)) {
         return translation_values.at(0);
     } else if (frame_time >= translation_times.at(num_translations - 1)) {
@@ -343,7 +284,7 @@ static Vector3D get_translation(joint_t* joint, float frame_time) {
             }
         }
         assert(0);
-        return vec3_new(0, 0, 0);
+        return Vector3D(0.0, 0.0, 0.0);
     }
 }
 
@@ -381,7 +322,7 @@ static Vector3D get_scale(joint_t* joint, float frame_time) {
     std::vector <Vector3D> scale_values = joint->scale_values;
 
     if (num_scales == 0) {
-        return vec3_new(1, 1, 1);
+        return Vector3D(1.0, 1.0, 1.0);
     } else if (frame_time <= scale_times.at(0)) {
         return scale_values.at(0);
     } else if (frame_time >= scale_times.at(num_scales - 1)) {
@@ -399,7 +340,7 @@ static Vector3D get_scale(joint_t* joint, float frame_time) {
             }
         }
         assert(0);
-        return vec3_new(1, 1, 1);
+        return Vector3D(1.0, 1.0, 1.0);
     }
 }
 
@@ -449,9 +390,7 @@ void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
                 joint_t* parent = skeleton->joints.at(joint->parent_index);
                 joint->transform = joint->transform * parent->transform;
             }
-
             joint_matrix = joint->inverse_bind * joint->transform;
-            
             normal_matrix = glm::mat3(glm::transpose(glm::inverse(joint_matrix)));
             if (skeleton->joint_matrices.size() <= i) {
                 skeleton->joint_matrices.push_back(joint_matrix);

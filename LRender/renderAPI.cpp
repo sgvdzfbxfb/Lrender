@@ -351,7 +351,7 @@ void renderAPI::rasterization(Triangle &tri, bool ifAnimation)
     //qDebug() << "1" << tri.at(2).weight[0] << tri.at(2).weight[1] << tri.at(2).weight[2] << tri.at(2).weight[3];
     for (int i = 0; i < 3; i++)
     {
-        shader->vertexShader(tri.at(i), false);
+        shader->vertexShader(tri.at(i), ifAnimation);
     }
     std::vector<Triangle> completedTriangleList = faceClip(tri);
     for (auto &ctri : completedTriangleList)

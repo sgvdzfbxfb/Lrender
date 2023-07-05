@@ -34,21 +34,24 @@ void BlinnPhongShader::get_model_matrix(Vertex vertex) {
         js[3] = joint_matrices[vertex.joint.w];
         model_matrix = mat4_combine(js, vertex.weight);
 
-        glm::mat4 joint_ns[4];
+        /*glm::mat4 joint_ns[4];
         joint_ns[0] = joint_n_matrices[vertex.joint.x];
         joint_ns[1] = joint_n_matrices[vertex.joint.y];
         joint_ns[2] = joint_n_matrices[vertex.joint.z];
         joint_ns[3] = joint_n_matrices[vertex.joint.w];
-        normal_matrix = mat4_combine(joint_ns, vertex.weight);
+        normal_matrix = mat4_combine(joint_ns, vertex.weight);*/
     }
 }
 
 void BlinnPhongShader::vertexShader(Vertex &vertex, bool ifAnimation)
 {
     if (ifAnimation) get_model_matrix(vertex);
-    vertex.worldPos = Coord3D(modelMat * Coord4D(vertex.worldPos, 1.f) * model_matrix);
+    vertex.worldPos = Coord3D(Coord4D(vertex.worldPos, 1.f) * model_matrix);
+    //vertex.normal = Coord3D(Coord4D(vertex.normal, 1.f) * normal_matrix);
+
+    vertex.worldPos = Coord3D(modelMat * Coord4D(vertex.worldPos, 1.f));
     vertex.clipPos = projectionMat * viewMat * Coord4D(vertex.worldPos, 1.f);
-    vertex.normal = glm::mat3(glm::transpose(glm::inverse(modelMat))) * vertex.normal * glm::mat3(normal_matrix);
+    vertex.normal = glm::mat3(glm::transpose(glm::inverse(modelMat))) * vertex.normal;
 }
 
 void BlinnPhongShader::fragmentShader(Fragment &fragment)
