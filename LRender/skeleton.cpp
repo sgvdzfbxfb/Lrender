@@ -124,7 +124,7 @@ glm::mat4 mat4_from_trs(Vector3D t, Vector4D r, Vector3D s) {
     glm::mat4 translation = mat4_translate(t.x, t.y, t.z);
     glm::mat4 rotation = mat4_from_quat(r);
     glm::mat4 scale = mat4_scale(s.x, s.y, s.z);
-    return translation * rotation * scale;
+    return scale * rotation * translation;
 }
 
 static float mat3_determinant(glm::mat3 m) {
@@ -158,7 +158,7 @@ glm::mat3 mat3_inverse_transpose(glm::mat3 m) {
     inv_determinant = 1 / determinant;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            inverse_transpose[i][j] = adjoint[i][j] * inv_determinant;
+            inverse_transpose[i][j] = inv_determinant * adjoint[i][j];
         }
     }
     return inverse_transpose;
@@ -446,10 +446,10 @@ void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
             joint->transform = mat4_from_trs(translation, rotation, scale);
             if (joint->parent_index >= 0) {
                 joint_t* parent = skeleton->joints.at(joint->parent_index);
-                joint->transform = parent->transform * joint->transform;
+                joint->transform = joint->transform * parent->transform;
             }
 
-            joint_matrix = joint->transform * joint->inverse_bind;
+            joint_matrix = joint->inverse_bind * joint->transform;
             
             normal_matrix = glm::mat3(glm::transpose(glm::inverse(joint_matrix)));
             if (skeleton->joint_matrices.size() <= i) {
