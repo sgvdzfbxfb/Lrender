@@ -124,6 +124,7 @@ glm::mat4 mat4_from_trs(Vector3D t, Vector4D r, Vector3D s) {
     glm::mat4 translation = mat4_translate(t.x, t.y, t.z);
     glm::mat4 rotation = mat4_from_quat(r);
     glm::mat4 scale = mat4_scale(s.x, s.y, s.z);
+    //return rotation * translation * scale;
     return scale * rotation * translation;
 }
 

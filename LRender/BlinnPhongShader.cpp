@@ -46,12 +46,9 @@ void BlinnPhongShader::get_model_matrix(Vertex vertex) {
 void BlinnPhongShader::vertexShader(Vertex &vertex, bool ifAnimation)
 {
     if (ifAnimation) get_model_matrix(vertex);
-    //vertex.worldPos = Coord3D(model_matrix * Coord4D(vertex.worldPos, 1.f));
-    //vertex.normal = Coord3D(normal_matrix * Coord4D(vertex.normal, 1.f));
-
-    vertex.worldPos = Coord3D(modelMat * model_matrix * Coord4D(vertex.worldPos, 1.f));
+    vertex.worldPos = Coord3D(modelMat * Coord4D(vertex.worldPos, 1.f) * model_matrix);
     vertex.clipPos = projectionMat * viewMat * Coord4D(vertex.worldPos, 1.f);
-    vertex.normal = glm::mat3(normal_matrix) * glm::mat3(glm::transpose(glm::inverse(modelMat))) * vertex.normal;
+    vertex.normal = glm::mat3(glm::transpose(glm::inverse(modelMat))) * vertex.normal * glm::mat3(normal_matrix);
 }
 
 void BlinnPhongShader::fragmentShader(Fragment &fragment)
