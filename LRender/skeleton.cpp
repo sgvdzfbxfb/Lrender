@@ -307,7 +307,6 @@ static skeleton_t load_ani(std::string filename) {
 
     items = fscanf(file, "joint-size: %d\n", &(skeleton->num_joints));
     items = fscanf(file, "time-range: [%f, %f]\n", &(skeleton->min_time), &(skeleton->max_time));
-    //qDebug() << "00" << skeleton->num_joints << skeleton->min_time << skeleton->max_time;
     for (i = 0; i < skeleton->num_joints; i++) {
         joint_t* joint = load_joint(file);
         assert(joint->joint_index == i);
@@ -408,7 +407,6 @@ bool Skeleton::skeleton_load(std::string filename) {
     std::vector<std::string> aniFile;
     getAllTypeFiles(filename, aniFile, "ani");
     if (aniFile.size() > 0) {
-        qDebug() << "aniFile.at(0)" << QString::fromStdString(aniFile.at(0));
         ske = load_ani(aniFile.at(0));
     }
 }
@@ -416,11 +414,25 @@ bool Skeleton::skeleton_load(std::string filename) {
 void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
     frame_time = fmod(frame_time, skeleton->max_time);
     qDebug() << "frame_time" << frame_time;
-    /*qDebug() << "jn" << skeleton->joints.size() << skeleton->num_joints;
-    for (int i = 0; i < skeleton->num_joints; ++i) {
-        qDebug() << i << "tr" << skeleton->joints[i]->num_translations;
-        qDebug() << i << "ro" << skeleton->joints[i]->num_rotations;
-        qDebug() << i << "sc" << skeleton->joints[i]->num_scales;
+    /*if (frame_time < 0.01) {
+        for (int i = 0; i < skeleton->num_joints; i++) {
+            qDebug() << i << skeleton->joints.at(i)->joint_index;
+            qDebug() << i << skeleton->joints.at(i)->parent_index;
+            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[0][0] << skeleton->joints.at(i)->inverse_bind[0][1] << skeleton->joints.at(i)->inverse_bind[0][2] << skeleton->joints.at(i)->inverse_bind[0][3];
+            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[1][0] << skeleton->joints.at(i)->inverse_bind[1][1] << skeleton->joints.at(i)->inverse_bind[1][2] << skeleton->joints.at(i)->inverse_bind[1][3];
+            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[2][0] << skeleton->joints.at(i)->inverse_bind[2][1] << skeleton->joints.at(i)->inverse_bind[2][2] << skeleton->joints.at(i)->inverse_bind[2][3];
+            qDebug() << i << "inverse-bind" << skeleton->joints.at(i)->inverse_bind[3][0] << skeleton->joints.at(i)->inverse_bind[3][1] << skeleton->joints.at(i)->inverse_bind[3][2] << skeleton->joints.at(i)->inverse_bind[3][3];
+
+            for (int j = 0; j < skeleton->joints.at(i)->num_translations; j++) {
+                qDebug() << i << "translations" << skeleton->joints.at(i)->translation_times.at(j) << skeleton->joints.at(i)->translation_values.at(j).x << skeleton->joints.at(i)->translation_values.at(j).y << skeleton->joints.at(i)->translation_values.at(j).z;
+            }
+            for (int j = 0; j < skeleton->joints.at(i)->num_rotations; j++) {
+                qDebug() << i << "rotations" << skeleton->joints.at(i)->rotation_times.at(j) << skeleton->joints.at(i)->rotation_values.at(j).x << skeleton->joints.at(i)->rotation_values.at(j).y << skeleton->joints.at(i)->rotation_values.at(j).z << skeleton->joints.at(i)->rotation_values.at(j).w;
+            }
+            for (int j = 0; j < skeleton->joints.at(i)->num_scales; j++) {
+                qDebug() << i << "scales" << skeleton->joints.at(i)->scale_times.at(j) << skeleton->joints.at(i)->scale_values.at(j).x << skeleton->joints.at(i)->scale_values.at(j).y << skeleton->joints.at(i)->scale_values.at(j).z;
+            }
+        }
     }*/
     if (frame_time != skeleton->last_time) {
         for (int i = 0; i < skeleton->num_joints; i++) {
@@ -438,7 +450,8 @@ void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
             }
 
             joint_matrix = joint->transform * joint->inverse_bind;
-            normal_matrix = mat3_inverse_transpose(mat3_from_mat4(joint_matrix));
+            
+            normal_matrix = glm::mat3(glm::transpose(glm::inverse(joint_matrix)));
             if (skeleton->joint_matrices.size() <= i) {
                 skeleton->joint_matrices.push_back(joint_matrix);
                 skeleton->normal_matrices.push_back(normal_matrix);
@@ -450,12 +463,4 @@ void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
         }
         skeleton->last_time = frame_time;
     }
-}
-
-std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t* skeleton) {
-    return skeleton->joint_matrices;
-}
-
-std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t* skeleton) {
-    return skeleton->normal_matrices;
 }

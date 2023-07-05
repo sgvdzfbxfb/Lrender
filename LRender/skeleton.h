@@ -49,7 +49,5 @@ class Skeleton {
 
     /* joint updating/retrieving */
     void skeleton_update_joints(skeleton_t* skeleton, float frame_time);
-    std::vector<glm::mat4> skeleton_get_joint_matrices(skeleton_t* skeleton);
-    std::vector<glm::mat3> skeleton_get_normal_matrices(skeleton_t* skeleton);
 };
 #endif
