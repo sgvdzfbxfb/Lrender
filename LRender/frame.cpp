@@ -3,11 +3,11 @@
 #include <iostream>
 #include <QDebug>
 
-Frame::Frame(int _w, int _h):frameWidth(_w), frameHeight(_h),zBuffer(frameWidth * frameHeight),
+Frame::Frame(int _w, int _h):frameWidth(_w), frameHeight(_h), zBuffer(frameWidth * frameHeight),
     colorBuffer(frameWidth, frameHeight, QImage::Format_RGB888)
 {
     colorBuffer.fill(QColor(0.f,0.f,0.f));
-    std::fill(zBuffer.begin(), zBuffer.end(),1.f);
+    std::fill(zBuffer.begin(), zBuffer.end(), 1.f);
 }
 
 bool Frame::updateZbuffer(int x, int y, float z)
@@ -28,7 +28,7 @@ void Frame::setPixel(int x, int y, Color color)
 
 void Frame::clearBuffer(Color color)
 {
-    std::fill(zBuffer.begin(),zBuffer.end(),1.f);
+    std::fill(zBuffer.begin(), zBuffer.end(), 1.f);
     colorBuffer.fill(QColor(color.x * 255.f, color.y * 255.f, color.z * 255.f));
 }
 

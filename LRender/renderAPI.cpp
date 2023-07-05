@@ -177,12 +177,9 @@ void renderAPI::skyBoxFacesRender(Triangle& tri, int faceId)
                 float Z = 1.0 / (baryPos[0] / tri.at(0).clipPos.w + baryPos[1] / tri.at(1).clipPos.w + baryPos[2] / tri.at(2).clipPos.w);
                 P.z = baryPos[0] * tri.at(0).clipPos.z / tri.at(0).clipPos.w + baryPos[1] * tri.at(1).clipPos.z / tri.at(1).clipPos.w + baryPos[2] * tri.at(2).clipPos.z / tri.at(2).clipPos.w;
                 P.z *= Z;
-                if (frame.updateZbuffer(P.x, P.y, P.z))
-                {
-                    frag = interpolationFragment(P.x, P.y, P.z, tri, baryPos);
-                    skyShader->fragmentShader(frag, faceId);
-                    frame.setPixel(P.x, P.y, frag.fragmentColor);
-                }
+                frag = interpolationFragment(P.x, P.y, P.z, tri, baryPos);
+                skyShader->fragmentShader(frag, faceId);
+                frame.setPixel(P.x, P.y, frag.fragmentColor);
             }
         }
     }
