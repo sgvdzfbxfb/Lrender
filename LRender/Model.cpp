@@ -44,7 +44,6 @@ void Model::loadModel(QStringList paths)
     QList<QString>::Iterator path = paths.begin(), itend = paths.end();
     std::vector<std::string> texPaths;
     getAllTypeFiles(folderPath, texPaths, "png");
-    getAllTypeFiles(folderPath, texPaths, "tga");
     for (int i = 0; path != itend; path++, i++) {
         sigMesh tempMesh;
         std::ifstream in, in_forCount;
