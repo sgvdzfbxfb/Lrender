@@ -25,29 +25,24 @@ glm::mat4 mat4_combine(glm::mat4 m[4], Vector4D weights_) {
     return combined;
 }
 
-void BlinnPhongShader::get_model_matrix(Vertex vertex) {
+glm::mat4 BlinnPhongShader::get_model_matrix(Vertex vertex) {
+    glm::mat4 resMat = glm::mat4(1.0f);
     if (joint_matrices.size()) {
         glm::mat4 js[4];
         js[0] = joint_matrices[vertex.joint.x];
         js[1] = joint_matrices[vertex.joint.y];
         js[2] = joint_matrices[vertex.joint.z];
         js[3] = joint_matrices[vertex.joint.w];
-        model_matrix = mat4_combine(js, vertex.weight);
-
-        /*glm::mat4 joint_ns[4];
-        joint_ns[0] = joint_n_matrices[vertex.joint.x];
-        joint_ns[1] = joint_n_matrices[vertex.joint.y];
-        joint_ns[2] = joint_n_matrices[vertex.joint.z];
-        joint_ns[3] = joint_n_matrices[vertex.joint.w];
-        normal_matrix = mat4_combine(joint_ns, vertex.weight);*/
+        resMat = mat4_combine(js, vertex.weight);
     }
+    return resMat;
 }
 
 void BlinnPhongShader::vertexShader(Vertex &vertex, bool ifAnimation)
 {
-    if (ifAnimation) get_model_matrix(vertex);
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+    if (ifAnimation) model_matrix = get_model_matrix(vertex);
     vertex.worldPos = Coord3D(Coord4D(vertex.worldPos, 1.f) * model_matrix);
-    //vertex.normal = Coord3D(Coord4D(vertex.normal, 1.f) * normal_matrix);
 
     vertex.worldPos = Coord3D(modelMat * Coord4D(vertex.worldPos, 1.f));
     vertex.clipPos = projectionMat * viewMat * Coord4D(vertex.worldPos, 1.f);
