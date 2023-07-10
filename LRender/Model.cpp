@@ -12,7 +12,6 @@ Model::Model(QStringList paths)
         }
         std::string meshName = folderSp.at(folderSp.size() - 1).substr(0, folderSp.at(folderSp.size() - 1).length() - 4);
         meshNames.push_back(meshName);
-        qDebug() << "meshNames" << QString::fromStdString(meshName);
     }
 
     loadModel(paths);
