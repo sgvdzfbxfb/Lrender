@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include <cmath>
-#include "dataType.h"
+#include "lrenderBasicCore.h"
 #include "corecrt_math_defines.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"

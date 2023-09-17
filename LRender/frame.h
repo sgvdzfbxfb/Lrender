@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dataType.h"
+#include "lrenderBasicCore.h"
 #include <string>
 #include <cfloat>
 #include <QImage>

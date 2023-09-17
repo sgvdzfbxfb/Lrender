@@ -8,7 +8,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_for_each.h>
 #include <tbb/blocked_range2d.h>
-#include "dataType.h"
+#include "lrenderBasicCore.h"
 #include "tools.h"
 #include "frame.h"
 #include "texture.h"

@@ -2,7 +2,7 @@
 #define SKELETON_H
 
 #include <qDebug>
-#include "dataType.h"
+#include "lrenderBasicCore.h"
 #include "tools.h"
 
 #define LINE_SIZE 256

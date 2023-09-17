@@ -106,8 +106,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="blinnPhongShader.cpp" />
+    <ClCompile Include="BVH.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="frame.cpp" />
+    <ClCompile Include="lrenderBasicCore.cpp" />
     <ClCompile Include="sigMesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="renderAPI.cpp" />
@@ -125,7 +127,8 @@
     <QtMoc Include="LRenderWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dataType.h" />
+    <ClInclude Include="BVH.h" />
+    <ClInclude Include="lrenderBasicCore.h" />
     <ClInclude Include="blinnPhongShader.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="frame.h" />
