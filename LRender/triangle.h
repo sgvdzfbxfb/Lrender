@@ -46,7 +46,7 @@ public:
     bool Inside(const Vector3D& p, const Bounds3& b);
     inline const Vector3D& operator[](int i) const;
 
-    inline bool IntersectP(const Ray& ray, const Vector3D& invDir, const std::array<int, 3>& dirisNeg) const;
+    bool IntersectP(const Ray& ray, const Vector3D& invDir, const std::array<int, 3>& dirisNeg) const;
 };
 
 class BVHItem

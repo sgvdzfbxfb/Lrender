@@ -109,7 +109,6 @@
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="frame.cpp" />
-    <ClCompile Include="lrenderBasicCore.cpp" />
     <ClCompile Include="sigMesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="renderAPI.cpp" />

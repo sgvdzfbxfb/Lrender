@@ -6,7 +6,6 @@
 #include <filesystem>
 #include <bitset>
 #include <qDebug>
-#include "lrenderBasicCore.h"
 #include "triangle.h"
 
 using namespace std::filesystem;

@@ -1,28 +1,10 @@
 #include "triangle.h"
 
-Vector3D Min(const Vector3D& p1, const Vector3D& p2) {
-    return Vector3D(std::min(p1.x, p2.x), std::min(p1.y, p2.y),
-        std::min(p1.z, p2.z));
-}
-
-Vector3D Max(const Vector3D& p1, const Vector3D& p2) {
-    return Vector3D(std::max(p1.x, p2.x), std::max(p1.y, p2.y),
-        std::max(p1.z, p2.z));
-}
-
-inline Bounds3 Union(const Bounds3& b1, const Bounds3& b2)
-{
-    Bounds3 ret;
-    ret.pMin = Min(b1.pMin, b2.pMin);
-    ret.pMax = Max(b1.pMax, b2.pMax);
-    return ret;
-}
-
 inline Bounds3 Union(const Bounds3& b, const Vector3D& p)
 {
     Bounds3 ret;
-    ret.pMin = Min(b.pMin, p);
-    ret.pMax = Max(b.pMax, p);
+    ret.pMin = Vector3D(std::min(b.pMin.x, p.x), std::min(b.pMin.y, p.y), std::min(b.pMin.z, p.z));
+    ret.pMax = Vector3D(std::max(b.pMax.x, p.x), std::max(b.pMax.y, p.y), std::max(b.pMax.z, p.z));
     return ret;
 }
 
@@ -158,12 +140,8 @@ inline const Vector3D& Bounds3::operator[](int i) const
     return (i == 0) ? pMin : pMax;
 }
 
-inline bool Bounds3::IntersectP(const Ray& ray, const Vector3D& invDir,
-    const std::array<int, 3>& dirIsNeg) const
+bool Bounds3::IntersectP(const Ray& ray, const Vector3D& invDir, const std::array<int, 3>& dirIsNeg) const
 {
-    // invDir: ray direction(x,y,z), invDir=(1.0/x,1.0/y,1.0/z), use this because Multiply is faster that Division
-    // dirIsNeg: ray direction(x,y,z), dirIsNeg=[int(x>0),int(y>0),int(z>0)], use this to simplify your logic
-    // GTODO test if ray bound intersects
     float t1, t2, t_min_x, t_max_x, t_min_y, t_max_y, t_min_z, t_max_z, t_enter, t_exit;
     t1 = (pMin.x - ray.origin.x) * invDir.x; t2 = (pMax.x - ray.origin.x) * invDir.x;
     t_min_x = fminf(t1, t2); t_max_x = fmaxf(t1, t2);
