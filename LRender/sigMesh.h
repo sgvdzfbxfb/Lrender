@@ -2,7 +2,6 @@
 #define MESH_H
 
 #include <QString>
-#include "lrenderBasicCore.h"
 #include "texture.h"
 #include "renderAPI.h"
 

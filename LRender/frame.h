@@ -1,5 +1,4 @@
 #pragma once
-
 #include "lrenderBasicCore.h"
 #include <string>
 #include <cfloat>

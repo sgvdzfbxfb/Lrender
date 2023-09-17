@@ -9,7 +9,6 @@
 #include <QTime>
 #include <filesystem>
 #include <stdlib.h>
-#include "lrenderBasicCore.h"
 #include "sigMesh.h"
 #include "tools.h"
 #include "skeleton.h"

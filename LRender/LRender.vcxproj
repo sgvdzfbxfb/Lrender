@@ -117,6 +117,7 @@
     <ClCompile Include="skyBoxShader.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="tools.cpp" />
+    <ClCompile Include="triangle.cpp" />
     <QtRcc Include="LRender.qrc" />
     <QtMoc Include="LRender.h" />
     <ClCompile Include="LRender.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="skyBoxShader.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="tools.h" />
+    <ClInclude Include="triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LRender.ui" />

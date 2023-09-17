@@ -1,8 +1,6 @@
 #include "texture.h"
 #include <QDebug>
 
-Texture::Texture() {}
-
 bool Texture::getTexture(QString path)
 {
     this->path = path;

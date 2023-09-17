@@ -46,7 +46,6 @@ private:
 
 public:
     QString path;
-    Texture() = default;
     Texture(TextureType t = DIFFUSE_T, Vector3D e = Vector3D(0, 0, 0));
     bool getTexture(QString path);
     Color getColorFromUv(Coord2D coord);

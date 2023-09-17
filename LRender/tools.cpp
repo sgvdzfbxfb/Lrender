@@ -91,13 +91,21 @@ Fragment interpolationFragment(int x, int y, float z, Triangle& tri, Vector3D& b
     frag.zValue = z;
 
     Vector3D bc_corrected = { 0, 0, 0 };
-    for (int i = 0; i < 3; i++) bc_corrected[i] = barycentric[i] / tri[i].clipPos.w;
+    bc_corrected[0] = barycentric[0] / tri.v0.clipPos.w;
+    bc_corrected[1] = barycentric[1] / tri.v1.clipPos.w;
+    bc_corrected[2] = barycentric[2] / tri.v2.clipPos.w;
     float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
     for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;
 
-    for (int i = 0; i < 3; i++) frag.worldPos += tri[i].worldPos * bc_corrected[i];
-    for (int i = 0; i < 3; i++) frag.normal += tri[i].normal * bc_corrected[i];
-    for (int i = 0; i < 3; i++) frag.texUv += tri[i].texUv * bc_corrected[i];
+    frag.worldPos += tri.v0.worldPos * bc_corrected[0];
+    frag.worldPos += tri.v1.worldPos * bc_corrected[1];
+    frag.worldPos += tri.v2.worldPos * bc_corrected[2];
+    frag.normal += tri.v0.normal * bc_corrected[0];
+    frag.normal += tri.v1.normal * bc_corrected[1];
+    frag.normal += tri.v2.normal * bc_corrected[2];
+    frag.texUv += tri.v0.texUv * bc_corrected[0];
+    frag.texUv += tri.v1.texUv * bc_corrected[1];
+    frag.texUv += tri.v2.texUv * bc_corrected[2];
 
     return frag;
 }

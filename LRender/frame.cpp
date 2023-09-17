@@ -1,4 +1,3 @@
-#include "lrenderBasicCore.h"
 #include "frame.h"
 #include <iostream>
 #include <QDebug>

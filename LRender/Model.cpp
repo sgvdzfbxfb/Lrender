@@ -109,7 +109,7 @@ void Model::loadModel(QStringList paths)
         while (!in.eof()) {
             std::getline(in, line);
             if (!line.compare(0, 2, "f ")) {
-                Triangle f;
+                std::array<Vertex, 3> f;
                 int idx, vn_idx, vt_idx;
                 std::vector<std::string> frg_res = splitString(line, " ");
                 if (vn_count == 0 && vt_count == 0) {
@@ -172,7 +172,8 @@ void Model::loadModel(QStringList paths)
                     }
                     tempMesh.faceToVer[tempMesh.faces.size()] = vers;
                 }
-                tempMesh.faces.push_back(f);
+                Triangle tri_f(f.at(0), f.at(1), f.at(2));
+                tempMesh.faces.push_back(tri_f);
             }
         }
         vertexNum += tempMesh.vertices.size();
@@ -194,13 +195,13 @@ void Model::loadModel(QStringList paths)
         }
         if (v_joint == v_count) {
             for (int j = 0; j < tempMesh.faces.size(); ++j) {
-                tempMesh.faces.at(j).at(0).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(0)];
-                tempMesh.faces.at(j).at(1).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(1)];
-                tempMesh.faces.at(j).at(2).joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(2)];
+                tempMesh.faces.at(j).v0.joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(0)];
+                tempMesh.faces.at(j).v1.joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(1)];
+                tempMesh.faces.at(j).v2.joint = tempMesh.vertJoints[tempMesh.faceToVer.at(j).at(2)];
 
-                tempMesh.faces.at(j).at(0).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(0)];
-                tempMesh.faces.at(j).at(1).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(1)];
-                tempMesh.faces.at(j).at(2).weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(2)];
+                tempMesh.faces.at(j).v0.weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(0)];
+                tempMesh.faces.at(j).v1.weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(1)];
+                tempMesh.faces.at(j).v2.weight = tempMesh.vertWeights[tempMesh.faceToVer.at(j).at(2)];
             }
             tempMesh.ifAnimation = true;
             ifModelAnimation = true;
@@ -216,8 +217,8 @@ void Model::computeNormal(sigMesh& inMesh)
 {
     std::vector<Vector3D> faceNormals;
     for (int i = 0; i < inMesh.faces.size(); i++) {
-        Vector3D AB = inMesh.faces.at(i).at(1).worldPos - inMesh.faces.at(i).at(0).worldPos;
-        Vector3D AC = inMesh.faces.at(i).at(2).worldPos - inMesh.faces.at(i).at(0).worldPos;
+        Vector3D AB = inMesh.faces.at(i).v1.worldPos - inMesh.faces.at(i).v0.worldPos;
+        Vector3D AC = inMesh.faces.at(i).v2.worldPos - inMesh.faces.at(i).v0.worldPos;
         Vector3D faceN = glm::normalize(glm::cross(AB, AC));
         faceNormals.push_back(faceN);
     }
@@ -232,9 +233,9 @@ void Model::computeNormal(sigMesh& inMesh)
         inMesh.vertices.at(i).normal = verNave;
     }
     for (int i = 0; i < inMesh.faces.size(); ++i) {
-        inMesh.faces.at(i).at(0).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(0)].normal;
-        inMesh.faces.at(i).at(1).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(1)].normal;
-        inMesh.faces.at(i).at(2).normal = inMesh.vertices[inMesh.faceToVer.at(i).at(2)].normal;
+        inMesh.faces.at(i).v0.normal = inMesh.vertices[inMesh.faceToVer.at(i).at(0)].normal;
+        inMesh.faces.at(i).v1.normal = inMesh.vertices[inMesh.faceToVer.at(i).at(1)].normal;
+        inMesh.faces.at(i).v2.normal = inMesh.vertices[inMesh.faceToVer.at(i).at(2)].normal;
     }
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "lrenderBasicCore.h"
+#include "triangle.h"
 
 struct BVHBuildNode;
 // BVHAccel Forward Declarations

@@ -5,7 +5,6 @@
 #include <string>
 #include <functional>
 #include "renderAPI.h"
-#include "lrenderBasicCore.h"
 
 class renderAPI;
 
