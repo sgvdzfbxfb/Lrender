@@ -7,11 +7,6 @@
 
 class Texture
 {
-    enum
-    {
-        DIFFUSE,
-        SPECLUAR
-    };
     int imgWidth;
     int imgHeight;
     QImage texture;

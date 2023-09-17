@@ -34,8 +34,8 @@ class Model
         float maxY{FLT_MIN};
         float maxZ{FLT_MIN};
         std::vector<sigMesh> meshes;
-        bool ifModelAnimation = false;
         std::vector<Texture> textureList;
+        bool ifModelAnimation = false;
         QString directory;
         std::string folderPath;
         std::vector<std::string> meshNames;

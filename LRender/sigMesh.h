@@ -10,6 +10,7 @@ struct sigMesh
 {
     std::vector<Vertex> vertices;
     std::vector<Triangle> faces;
+    std::vector<Triangle> app_ani_faces;
     std::map<int, std::vector<int>> verToFace;
     std::map<int, std::vector<int>> faceToVer;
     std::vector<Vector3D> vertNormals;

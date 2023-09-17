@@ -341,7 +341,9 @@ bool Skeleton::skeleton_load(std::string filename) {
     getAllTypeFiles(filename, aniFile, "ani");
     if (aniFile.size() > 0) {
         ske = load_ani(aniFile.at(0));
+        return true;
     }
+    return false;
 }
 
 void Skeleton::skeleton_update_joints(skeleton_t* skeleton, float frame_time) {
