@@ -94,8 +94,6 @@ void LRenderWidget::initDevice()
     renderAPI::API().shader = std::make_unique<BlinnPhongShader>();
     renderAPI::API().skyShader = std::make_unique<SkyBoxShader>();
     renderAPI::API().shader->lightList.push_back(Light());
-    qDebug() << "pos" << renderAPI::API().shader->lightList.at(0).pos.x << renderAPI::API().shader->lightList.at(0).pos.y << renderAPI::API().shader->lightList.at(0).pos.z;
-    qDebug() << "pos" << renderAPI::API().shader->lightList.at(0).dir.x << renderAPI::API().shader->lightList.at(0).dir.y << renderAPI::API().shader->lightList.at(0).dir.z;
     loadSkyBox("D:/Code/lrender/LRender/skybox/skybox1");
     renderAPI::API().skyBoxTexture = skyBoxTexture;
     renderAPI::API().skyBoxModel = skyBoxModel;
