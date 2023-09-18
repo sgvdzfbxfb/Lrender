@@ -32,15 +32,13 @@ class Model
         float maxX{FLT_MIN};
         float maxY{FLT_MIN};
         float maxZ{FLT_MIN};
-        std::vector<sigMesh> meshes;
+        std::vector<sigMesh*> meshes;
         std::vector<Texture> textureList;
         bool ifModelAnimation = false;
         QString directory;
         std::string folderPath;
         std::vector<std::string> meshNames;
         void loadModel(QStringList paths);
-        void computeNormal(sigMesh& inMesh);
-        int getMeshTexture(std::string t_ps, std::string type);
         void updateModelSkeleton(float ft);
 };
 

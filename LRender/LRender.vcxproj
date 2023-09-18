@@ -108,6 +108,7 @@
     <ClCompile Include="blinnPhongShader.cpp" />
     <ClCompile Include="BVH.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cornellBoxScene.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="sigMesh.cpp" />
     <ClCompile Include="model.cpp" />
@@ -128,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVH.h" />
+    <ClInclude Include="cornellBoxScene.h" />
     <ClInclude Include="lrenderBasicCore.h" />
     <ClInclude Include="blinnPhongShader.h" />
     <ClInclude Include="camera.h" />

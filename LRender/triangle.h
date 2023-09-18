@@ -18,6 +18,7 @@ struct Intersection
     Vector3D coords;
     Vector3D tcoords;
     Vector3D normal;
+    Vector3D emit_I;
     double distance;
     BVHItem* obj;
     Texture* m;
