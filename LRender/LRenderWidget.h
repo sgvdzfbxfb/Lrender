@@ -22,6 +22,7 @@
 #include "renderAPI.h"
 #include "blinnPhongShader.h"
 #include "skyBoxShader.h"
+#include "cornellBoxScene.h"
 #include "model.h"
 #include "camera.h"
 
@@ -74,9 +75,11 @@ private:
     void resetCamera();
     Ui::LRenderWidget *ui;
     Model* model;
+    CornellBoxScene* cornellBoxScene;
     std::vector<Texture> skyBoxTexture;
     std::vector<Triangle> skyBoxModel;
     bool ifShowSkyBox = false;
+    bool ifOpenRayTracing = false;
 };
 
 #endif // LRENDERWIDGET_H

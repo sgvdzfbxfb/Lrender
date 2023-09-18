@@ -263,7 +263,10 @@ void LRenderWidget::processInput()
 void LRenderWidget::render()
 {
     renderAPI::API().clearBuffer();
-    //if ()
+    if (ifOpenRayTracing) {
+        if (cornellBoxScene == nullptr) cornellBoxScene = new CornellBoxScene(model);
+
+    }
     if(model == nullptr) return;
     int nowTime = QTime::currentTime().msecsSinceStartOfDay();
     if(lastFrameTime != 0)

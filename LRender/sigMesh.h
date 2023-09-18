@@ -9,7 +9,7 @@
 bool rayTriangleIntersect(const Vector3D& v0, const Vector3D& v1, const Vector3D& v2, const Vector3D& orig, const Vector3D& dir, float& tnear, float& u, float& v);
 inline Vector3D lerp(const Vector3D& a, const Vector3D& b, const float& t);
 
-class sigMesh : BVHItem {
+class sigMesh : public BVHItem {
 public:
     std::vector<Vertex> vertices;
     std::vector<Triangle> faces;

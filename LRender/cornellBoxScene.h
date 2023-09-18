@@ -1,11 +1,14 @@
 #pragma once
 #include "triangle.h"
+#include "model.h"
 #include "BVH.h"
 
 class CornellBoxScene {
 public:
+    std::vector<BVHItem*> objects;
+    std::vector<std::vector<Triangle>> input_faces;
 
-	void initCornellBox();
+    CornellBoxScene(Model* input_model);
     Intersection intersect(const Ray& ray) const;
     BVHAccel* bvh;
     void buildBVH();

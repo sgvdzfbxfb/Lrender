@@ -21,10 +21,11 @@ class Model
         Coord3D modelCenter;
         int faceNum{0};
         int vertexNum{0};
-        float getYRange(){return maxY - minY;}
+        float getYRange() { return maxY - minY; }
         bool loadSuccess{ true };
         Skeleton skeleton;
         QTime fTimeCounter;
+        std::vector<sigMesh*> getMeshes() { return meshes; };
     private:
         float minX{FLT_MAX};
         float minY{FLT_MAX};
