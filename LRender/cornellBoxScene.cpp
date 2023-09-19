@@ -54,7 +54,9 @@ void CornellBoxScene::buildBVH() {
 Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
 {
     Vector3D hitColor = this->backgroundColor;
+    qDebug() << "1";
     Intersection shader_point_inter = CornellBoxScene::intersect(ray);
+    qDebug() << "2";
     if (shader_point_inter.happened) {
 
         Vector3D p = shader_point_inter.coords;
@@ -192,9 +194,11 @@ void CornellBoxScene::cornellBoxRender() {
             Vector3D dir = normalize(Vector3D(-x, y, 1));
             Vector3D framebuffer(0.0, 0.0, 0.0);
             for (int k = 0; k < spp; k++) {
-                Vector3D color = castRay(Ray(camera.position, dir), 0);
+                Vector3D color(0.0, 0.0, 0.0);
+                qDebug() << "111";
+                color = castRay(Ray(camera.position, dir), 0);
+                qDebug() << "222";
                 color.x /= spp; color.y /= spp; color.z /= spp;
-                framebuffer +=  color;
                 framebuffer += color;
             }
             frame.setPixel(i, j, framebuffer);

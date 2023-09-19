@@ -142,17 +142,33 @@ inline const Vector3D& Bounds3::operator[](int i) const
 
 bool Bounds3::IntersectP(const Ray& ray, const Vector3D& invDir, const std::array<int, 3>& dirIsNeg) const
 {
+    qDebug() << "zz";
     float t1, t2, t_min_x, t_max_x, t_min_y, t_max_y, t_min_z, t_max_z, t_enter, t_exit;
+    qDebug() << "xx";
+    qDebug() << "1" << ray.origin.x;
+    qDebug() << "2" << invDir.x;
+    qDebug() << "3" << pMin.x;
+    qDebug() << "4" << pMax.x;
     t1 = (pMin.x - ray.origin.x) * invDir.x; t2 = (pMax.x - ray.origin.x) * invDir.x;
+    qDebug() << "cc";
     t_min_x = fminf(t1, t2); t_max_x = fmaxf(t1, t2);
+    qDebug() << "qq";
     t1 = (pMin.y - ray.origin.y) * invDir.y; t2 = (pMax.y - ray.origin.y) * invDir.y;
+    qDebug() << "ww";
     t_min_y = fminf(t1, t2); t_max_y = fmaxf(t1, t2);
+    qDebug() << "ee";
     t1 = (pMin.z - ray.origin.z) * invDir.z; t2 = (pMax.z - ray.origin.z) * invDir.z;
+    qDebug() << "rr";
     t_min_z = fminf(t1, t2); t_max_z = fmaxf(t1, t2);
 
+    qDebug() << "tt";
     t_exit = fminf(fminf(t_max_x, t_max_y), t_max_z);
+    qDebug() << "yy";
     if (t_exit < 0) return false;
+    qDebug() << "uu";
     t_enter = fmaxf(fmaxf(t_min_x, t_min_y), t_min_z);
+    qDebug() << "ii";
     if (t_enter > t_exit)return false;
+    qDebug() << "oo";
     return true;
 }
