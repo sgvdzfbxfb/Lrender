@@ -271,6 +271,7 @@ void LRenderWidget::render()
         cornellBoxScene->cornellBoxRender();
         renderAPI::API().clearBuffer();
         renderAPI::API().setFrame(cornellBoxScene->frame);
+        update();
         return;
     }
     if(model == nullptr) return;
