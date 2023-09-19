@@ -8,14 +8,12 @@ inline Bounds3 Union(const Bounds3& b1, const Bounds3& b2)
     return ret;
 }
 
-BVHAccel::BVHAccel(std::vector<BVHItem*> p, int maxPrimsInNode,
-    SplitMethod splitMethod)
+BVHAccel::BVHAccel(std::vector<BVHItem*> p, int maxPrimsInNode, SplitMethod splitMethod)
     : maxPrimsInNode(std::min(255, maxPrimsInNode)), splitMethod(splitMethod),
     primitives(std::move(p))
 {
     time_t start, stop;
     time(&start);
-    qDebug() << "sfadcasdc";
 
     if (primitives.empty()) return;
 
@@ -105,34 +103,23 @@ Intersection BVHAccel::Intersect(const Ray& ray) const
 {
     Intersection isect;
     if (!root) return isect;
-    qDebug() << "w";
     isect = BVHAccel::getIntersection(root, ray);
-    qDebug() << "e";
     return isect;
 }
 
 Intersection BVHAccel::getIntersection(BVHBuildNode* node, const Ray& ray) const
 {
-    qDebug() << "aa";
     std::array<int, 3> dirIsNeg = { (ray.direction.x > 0), (ray.direction.y > 0), (ray.direction.z > 0) };
-    qDebug() << "ss";
     Intersection isect;
-    qDebug() << "dd";
     isect.happened = node->bounds.IntersectP(ray, ray.direction_inv, dirIsNeg);
-    qDebug() << "ff";
     if (!isect.happened) return isect;
-    qDebug() << "gg";
     if (node->left == nullptr && node->right == nullptr)
         return node->object->getIntersection(ray);
-    qDebug() << "hhw";
     Intersection isect1, isect2;
-    qDebug() << "jj";
     isect1 = getIntersection(node->left, ray);
-    qDebug() << "kk";
     isect2 = getIntersection(node->right, ray);
     if (isect1.distance < isect2.distance) return isect1;
     else return isect2;
-    qDebug() << "ll";
 }
 
 

@@ -36,6 +36,7 @@ inline Vector3D lerp(const Vector3D& a, const Vector3D& b, const float& t)
 sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt) {
     area = 0;
     m = mt;
+    sigMeshName = meshName;
     std::ifstream in, in_forCount;
     in.open(filename.toStdString(), std::ifstream::in);
     in_forCount.open(filename.toStdString(), std::ifstream::in);
@@ -221,7 +222,6 @@ void sigMesh::computeBVH() {
     Vector3D min_vert(minX_sig, minY_sig, minZ_sig);
     Vector3D max_vert(maxX_sig, maxY_sig, maxZ_sig);
     bounding_box = Bounds3(min_vert, max_vert);
-    qDebug() << "1sdqafwsqaefca";
     bvh = new BVHAccel(ptrs);
 }
 

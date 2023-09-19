@@ -38,7 +38,8 @@ public:
     std::unique_ptr<Vector2D[]> stCoordinates;
 
     BVHAccel* bvh = nullptr;
-    float area;
+    float area = 0;
+    std::string sigMeshName = "";
 
     sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt = new Texture());
     sigMesh(const sigMesh&);

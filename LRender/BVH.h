@@ -17,13 +17,11 @@ public:
 
     // BVHAccel Public Methods
     BVHAccel(std::vector<BVHItem*> p, int maxPrimsInNode = 1, SplitMethod splitMethod = SplitMethod::NAIVE);
-    Bounds3 WorldBound() const;
     ~BVHAccel();
 
     Intersection Intersect(const Ray& ray) const;
     Intersection getIntersection(BVHBuildNode* node, const Ray& ray)const;
-    bool IntersectP(const Ray& ray) const;
-    BVHBuildNode* root;
+    BVHBuildNode* root = nullptr;
 
     // BVHAccel Private Methods
     BVHBuildNode* recursiveBuild(std::vector<BVHItem*>objects);
@@ -42,7 +40,7 @@ struct BVHBuildNode {
     BVHBuildNode* left;
     BVHBuildNode* right;
     BVHItem* object;
-    float area;
+    float area = 0;
 
 public:
     int splitAxis = 0, firstPrimOffset = 0, nPrimitives = 0;
