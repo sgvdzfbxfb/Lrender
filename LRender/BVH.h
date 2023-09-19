@@ -21,6 +21,7 @@ public:
 
     Intersection Intersect(const Ray& ray) const;
     Intersection getIntersection(BVHBuildNode* node, const Ray& ray)const;
+    // 导致崩溃的原因，没有初始化
     BVHBuildNode* root = nullptr;
 
     // BVHAccel Private Methods
@@ -37,8 +38,8 @@ public:
 
 struct BVHBuildNode {
     Bounds3 bounds;
-    BVHBuildNode* left;
-    BVHBuildNode* right;
+    BVHBuildNode* left = nullptr;
+    BVHBuildNode* right = nullptr;
     BVHItem* object;
     float area = 0;
 
