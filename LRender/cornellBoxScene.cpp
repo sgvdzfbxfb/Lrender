@@ -21,7 +21,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color
     teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces; teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
     teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces; teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
-	for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
+	/*for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
 	double scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
 	for (auto& mesh : input_faces) {
@@ -36,7 +36,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color
         item->computeBVH();
         boxModels.push_back(item);
         countMesh++;
-    }
+    }*/
     backgroundColor = bkColor;
     camera.setFov(40.f);
 }
@@ -51,8 +51,9 @@ void CornellBoxScene::buildBVH() {
 	this->bvh = new BVHAccel(boxModels, 1, BVHAccel::SplitMethod::NAIVE);
 }
 
-Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
+Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
 {
+    castrcount++;
     Vector3D hitColor = this->backgroundColor;
     Intersection shader_point_inter = CornellBoxScene::intersect(ray);
     if (shader_point_inter.happened) {
@@ -60,7 +61,7 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
         Vector3D p = shader_point_inter.coords;
         Vector3D N = shader_point_inter.normal;
         Vector3D wo = ray.direction;
-        Vector3D L_dir(0), L_indir(0);
+        Vector3D L_dir(0.0, 0.0, 0.0), L_indir(0.0, 0.0, 0.0);
 
         Intersection light_point_inter;
         float pdf_light;
@@ -75,9 +76,22 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
         Ray ray_pTox(p_deviation, ws);
 
         Intersection block_point_inter = CornellBoxScene::intersect(ray_pTox);
-        if (abs(distance_pTox - block_point_inter.distance < 0.01)) {
+        if (castrcount == 16477185) qDebug() << "111";
+        if (castrcount == 16477185) qDebug() << "wsdqa" << distance_pTox;
+        if (castrcount == 16477185) qDebug() << "sasc" << block_point_inter.distance;
+        if (castrcount == 16477185) qDebug() << "qwe" << emit_I.x << emit_I.y << emit_I.z;
+        if (castrcount == 16477185) qDebug() << "1" << wo.x << wo.y << wo.z;
+        if (castrcount == 16477185) qDebug() << "2" << ws.x << ws.y << ws.z;
+        if (castrcount == 16477185) qDebug() << "3" << N.x << N.y << N.z;
+        if (castrcount == 16477185) qDebug() << "qwe" << shader_point_inter.m->eval(wo, ws, N).x << shader_point_inter.m->eval(wo, ws, N).y << shader_point_inter.m->eval(wo, ws, N).z;
+        if (castrcount == 16477185) qDebug() << "qwe" << glm::dot(ws, N);
+        if (castrcount == 16477185) qDebug() << "qwe" << glm::dot(-ws, NN);
+        if (castrcount == 16477185) qDebug() << "qwe" << distance_pTox;
+        if (castrcount == 16477185) qDebug() << "qwe" << pdf_light;
+        if (abs(distance_pTox - block_point_inter.distance) < 0.01) {
             L_dir = emit_I * shader_point_inter.m->eval(wo, ws, N) * glm::dot(ws, N) * glm::dot(-ws, NN) / (distance_pTox * distance_pTox * pdf_light);
         }
+        if (castrcount == 16477185) qDebug() << "222";
         float ksi = get_random_float();
         if (ksi < RussianRoulette) {
             Vector3D wi = normalize(shader_point_inter.m->sample(wo, N));

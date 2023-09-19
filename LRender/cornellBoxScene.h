@@ -17,10 +17,12 @@ public:
     Frame frame;
     BVHAccel* bvh = nullptr;
 
+    int castrcount = 0;
+
     CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color bkColor);
     Intersection intersect(const Ray& ray) const;
     void buildBVH();
-    Vector3D castRay(const Ray& ray, int depth) const;
+    Vector3D castRay(const Ray& ray, int depth);
     void sampleLight(Intersection& pos, float& pdf) const;
     bool trace(const Ray& ray, const std::vector<BVHItem*>& objects, float& tNear, uint32_t& index, BVHItem** hitObject);
     void cornellBoxRender();
