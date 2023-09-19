@@ -33,7 +33,8 @@ public:
     Color pointColor = Color(0.0, 0.0, 0.0);
     Color lineColor = Color(0.0, 0.0, 0.0);
     renderAPI(int _w,int _h);
-    void clearBuffer(){ frame.clearBuffer(backgroundColor); }
+    void clearBuffer() { frame.clearBuffer(backgroundColor); }
+    void setFrame(Frame f) { frame = f; }
     QImage& getBuffer(){ return frame.getImage(); }
     bool saveImage(QString path){ return frame.saveImage(path); }
     void render(bool ifAnimation);

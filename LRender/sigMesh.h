@@ -23,7 +23,9 @@ public:
     std::vector<int> diffuseIds;
     std::vector<int> specularIds;
     bool ifAnimation = false;
+
     std::vector<Texture> tList;
+    Texture* m;
 
     float minX_sig{ FLT_MAX };
     float minY_sig{ FLT_MAX };
@@ -37,8 +39,6 @@ public:
 
     BVHAccel* bvh = nullptr;
     float area;
-
-    Texture* m;
 
     sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt = new Texture());
     sigMesh(const sigMesh&);
@@ -71,9 +71,7 @@ public:
 
     Bounds3 getBounds() { return bounding_box; }
 
-    void getSurfaceProperties(const Vector3D& P, const Vector3D& I,
-        const uint32_t& index, const Vector2D& uv,
-        Vector3D& N, Vector2D& st) const
+    void getSurfaceProperties(const Vector3D& P, const Vector3D& I, const uint32_t& index, const Vector2D& uv, Vector3D& N, Vector2D& st) const
     {
         const Vector3D& v0 = vertices[vertexIndex[index * 3]].worldPos;
         const Vector3D& v1 = vertices[vertexIndex[index * 3 + 1]].worldPos;

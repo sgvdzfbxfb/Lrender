@@ -8,17 +8,17 @@
 
 class CornellBoxScene {
 public:
-    std::vector<BVHItem*> objects;
+    std::vector<BVHItem*> boxModels;
     std::vector<std::vector<Triangle>> input_faces;
     float RussianRoulette = 0.8;
     Vector3D backgroundColor = Vector3D(0.0, 0.0, 0.0);
     int width_cornellBox, height_cornellBox;
     Camera camera;
     Frame frame;
+    BVHAccel* bvh = nullptr;
 
     CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color bkColor);
     Intersection intersect(const Ray& ray) const;
-    BVHAccel* bvh = nullptr;
     void buildBVH();
     Vector3D castRay(const Ray& ray, int depth) const;
     void sampleLight(Intersection& pos, float& pdf) const;

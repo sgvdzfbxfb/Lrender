@@ -262,10 +262,13 @@ void LRenderWidget::processInput()
 
 void LRenderWidget::render()
 {
+    if (ifOpenRayTracing && rayTracingProcess == 2) return;
     renderAPI::API().clearBuffer();
-    if (ifOpenRayTracing) {
+    if (ifOpenRayTracing && rayTracingProcess == 1) {
+        rayTracingProcess = 2;
         if (cornellBoxScene == nullptr) cornellBoxScene = new CornellBoxScene(model, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f));
-
+        cornellBoxScene->cornellBoxRender();
+        renderAPI::API().setFrame(cornellBoxScene->frame);
         return;
     }
     if(model == nullptr) return;
@@ -296,4 +299,5 @@ void LRenderWidget::render()
     renderAPI::API().shader->material.shininess = 150.f;
     model->modelRender();
     update();
+    if (rayTracingProcess == 0) rayTracingProcess = 1;
 }

@@ -11,8 +11,8 @@ enum TextureType { DIFFUSE_T, MICROFACET_T, MIRROR_T };
 class Texture
 {
 private:
-    int imgWidth;
-    int imgHeight;
+    int imgWidth = 0;
+    int imgHeight = 0;
     QImage texture;
 
     // Compute reflection direction
@@ -53,9 +53,10 @@ public:
     TextureType m_type;
     //Vector3D m_color;
     Vector3D m_emission;
-    float ior;
-    Vector3D Kd, Ks;
-    float specularExponent;
+    float ior = 0.0;
+    Vector3D Kd = Vector3D(0.725f, 0.71f, 0.68f);
+    Vector3D Ks = Vector3D(0.f, 0.f, 0.f);
+    float specularExponent = 0.0;
     //Texture tex;
 
     inline TextureType getType();

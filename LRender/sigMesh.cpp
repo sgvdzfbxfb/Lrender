@@ -194,6 +194,7 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
         }
         ifAnimation = true;
     }
+    if (diffuseIds.size() > 0) *m = tList.at(diffuseIds.at(0));
     qDebug() << "Model Name:" << QString::fromStdString(meshName);
     qDebug() << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
     qDebug() << "joint:" << v_joint << "weight:" << v_weight << "\n";

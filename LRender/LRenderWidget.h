@@ -79,7 +79,8 @@ private:
     std::vector<Texture> skyBoxTexture;
     std::vector<Triangle> skyBoxModel;
     bool ifShowSkyBox = false;
-    bool ifOpenRayTracing = false;
+    bool ifOpenRayTracing = true;
+    int rayTracingProcess = 0;
 };
 
 #endif // LRENDERWIDGET_H

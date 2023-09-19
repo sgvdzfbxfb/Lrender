@@ -5,7 +5,22 @@ CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color
 	QString prePath = "./cornellbox/";
 	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj", prePath + "shortbox.obj", prePath + "tallbox.obj" };
 	Model* cornellSceneModel = new Model(cornellPath);
-	for (auto& item : cornellSceneModel->getMeshes()) objects.push_back(item);
+
+    Texture* red = new Texture(DIFFUSE_T, Vector3D(0.0f));
+    red->Kd = Vector3D(0.63f, 0.065f, 0.05f);
+    Texture* green = new Texture(DIFFUSE_T, Vector3D(0.0f));
+    green->Kd = Vector3D(0.14f, 0.45f, 0.091f);
+    Texture* white = new Texture(DIFFUSE_T, Vector3D(0.0f));
+    white->Kd = Vector3D(0.725f, 0.71f, 0.68f);
+    Texture* light = new Texture(DIFFUSE_T, (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
+    light->Kd = Vector3D(0.65f);
+
+    std::vector<sigMesh*> teMeshes = cornellSceneModel->getMeshes();
+    teMeshes.at(0)->m = white; teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
+    teMeshes.at(1)->m = red;   teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
+    teMeshes.at(2)->m = green; teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
+    teMeshes.at(3)->m = light; teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
+
 	for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
 	double scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
@@ -15,6 +30,13 @@ CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color
 			tri.v0.worldPos += moveVec; tri.v1.worldPos += moveVec; tri.v1.worldPos += moveVec;
 		}
 	}
+    int countMesh = 0;
+    for (auto& item : input_model->getMeshes()) {
+        item->app_ani_faces = input_faces.at(countMesh);
+        item->computeBVH();
+        boxModels.push_back(item);
+        countMesh++;
+    }
     backgroundColor = bkColor;
     camera.setFov(40.f);
 }
@@ -26,7 +48,7 @@ Intersection CornellBoxScene::intersect(const Ray& ray) const
 
 void CornellBoxScene::buildBVH() {
 	printf(" - Generating BVH...\n\n");
-	this->bvh = new BVHAccel(objects, 1, BVHAccel::SplitMethod::NAIVE);
+	this->bvh = new BVHAccel(boxModels, 1, BVHAccel::SplitMethod::NAIVE);
 }
 
 Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
@@ -79,18 +101,18 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth) const
 void CornellBoxScene::sampleLight(Intersection& pos, float& pdf) const
 {
     float emit_area_sum = 0;
-    for (uint32_t k = 0; k < objects.size(); ++k) {
-        if (objects[k]->hasEmit()) {
-            emit_area_sum += objects[k]->getArea();
+    for (uint32_t k = 0; k < boxModels.size(); ++k) {
+        if (boxModels[k]->hasEmit()) {
+            emit_area_sum += boxModels[k]->getArea();
         }
     }
     float p = get_random_float() * emit_area_sum;
     emit_area_sum = 0;
-    for (uint32_t k = 0; k < objects.size(); ++k) {
-        if (objects[k]->hasEmit()) {
-            emit_area_sum += objects[k]->getArea();
+    for (uint32_t k = 0; k < boxModels.size(); ++k) {
+        if (boxModels[k]->hasEmit()) {
+            emit_area_sum += boxModels[k]->getArea();
             if (p <= emit_area_sum) {
-                objects[k]->Sample(pos, pdf);
+                boxModels[k]->Sample(pos, pdf);
                 break;
             }
         }
@@ -142,7 +164,7 @@ void CornellBoxScene::cornellBoxRender() {
     //            // generate primary ray direction
     //            float x = (2 * (i + 0.5) / (float)scene.width - 1) * imageAspectRatio * scale;
     //            float y = (1 - 2 * (j + 0.5) / (float)height_cornellBox) * scale;
-    //            Vector3f dir = normalize(Vector3f(-x, y, 1));
+    //            Vector3D dir = normalize(Vector3D(-x, y, 1));
     //            for (int k = 0; k < spp; k++) {
     //                framebuffer[j * scene.width + i] += scene.castRay(Ray(eye_pos, dir), 0) / spp;
     //            }
