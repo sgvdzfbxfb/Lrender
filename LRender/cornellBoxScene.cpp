@@ -16,10 +16,10 @@ CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color
     light->Kd = Vector3D(0.65f);
 
     std::vector<sigMesh*> teMeshes = cornellSceneModel->getMeshes();
-    teMeshes.at(0)->m = white; teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
-    teMeshes.at(1)->m = red;   teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
-    teMeshes.at(2)->m = green; teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
-    teMeshes.at(3)->m = light; teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
+    teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces; teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
+    teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces; teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
+    teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces; teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
+    teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces; teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
 	for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
