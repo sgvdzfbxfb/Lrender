@@ -264,8 +264,9 @@ void LRenderWidget::render()
 {
     renderAPI::API().clearBuffer();
     if (ifOpenRayTracing) {
-        if (cornellBoxScene == nullptr) cornellBoxScene = new CornellBoxScene(model);
+        if (cornellBoxScene == nullptr) cornellBoxScene = new CornellBoxScene(model, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f));
 
+        return;
     }
     if(model == nullptr) return;
     int nowTime = QTime::currentTime().msecsSinceStartOfDay();

@@ -25,6 +25,8 @@ public:
     void setModel(Coord3D modelCenter, float yRange);
     void setPositon(Vector3D new_p);
     Vector3D getPositon();
+    void setFov(float new_fov) { fov = new_fov; };
+    float getFov() { return fov; };
     glm::mat4 getViewMatrix();
     glm::mat4 getProjectionMatrix();
 };

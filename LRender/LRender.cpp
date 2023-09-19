@@ -100,7 +100,7 @@ void LRender::on_actionsave_image_triggered()
 
 void LRender::initUI()
 {
-    setFixedSize(1382, 751);
+    setFixedSize(1655, 1011);
 #if 0
     // light background
     ui->RenderWidget->setFigureColor({ 1.00f, 1.00f, 1.00f }, BACKGROUND);

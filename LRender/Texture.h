@@ -61,15 +61,15 @@ public:
     inline TextureType getType();
     //inline Vector3D getColor();
     inline Vector3D getColorAt(double u, double v);
-    inline Vector3D getEmission();
-    inline bool hasEmission();
+    Vector3D getEmission();
+    bool hasEmission();
 
     // sample a ray by Texture properties
-    inline Vector3D sample(const Vector3D& wi, const Vector3D& N);
+    Vector3D sample(const Vector3D& wi, const Vector3D& N);
     // given a ray, calculate the PdF of this ray
-    inline float pdf(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
+    float pdf(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
     // given a ray, calculate the contribution of this ray
-    inline Vector3D eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
+    Vector3D eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
 };
 
 #endif // TEXTURE_H

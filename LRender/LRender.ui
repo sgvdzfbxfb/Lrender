@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1356</width>
-    <height>751</height>
+    <width>1649</width>
+    <height>1011</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,8 +26,8 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>2000</width>
-     <height>712</height>
+     <width>16777215</width>
+     <height>16777215</height>
     </size>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -36,13 +36,13 @@
       <property name="minimumSize">
        <size>
         <width>340</width>
-        <height>700</height>
+        <height>960</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>340</width>
-        <height>700</height>
+        <width>400</width>
+        <height>960</height>
        </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -583,14 +583,14 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>1000</width>
-        <height>700</height>
+        <width>1280</width>
+        <height>960</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>1000</width>
-        <height>700</height>
+        <width>16777215</width>
+        <height>16777215</height>
        </size>
       </property>
      </widget>
@@ -602,7 +602,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1356</width>
+     <width>1649</width>
      <height>17</height>
     </rect>
    </property>
