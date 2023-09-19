@@ -15,8 +15,9 @@ BVHAccel::BVHAccel(std::vector<BVHItem*> p, int maxPrimsInNode,
 {
     time_t start, stop;
     time(&start);
-    if (primitives.empty())
-        return;
+    qDebug() << "sfadcasdc";
+
+    if (primitives.empty()) return;
 
     root = recursiveBuild(primitives);
 
@@ -26,9 +27,7 @@ BVHAccel::BVHAccel(std::vector<BVHItem*> p, int maxPrimsInNode,
     int mins = ((int)diff / 60) - (hrs * 60);
     int secs = (int)diff - (hrs * 3600) - (mins * 60);
 
-    printf(
-        "\rBVH Generation complete: \nTime Taken: %i hrs, %i mins, %i secs\n\n",
-        hrs, mins, secs);
+    printf("\rBVH Generation complete: \nTime Taken: %i hrs, %i mins, %i secs\n\n", hrs, mins, secs);
 }
 
 BVHBuildNode* BVHAccel::recursiveBuild(std::vector<BVHItem*> objects)

@@ -147,6 +147,7 @@ bool Bounds3::IntersectP(const Ray& ray, const Vector3D& invDir, const std::arra
     qDebug() << "xx";
     qDebug() << "1" << ray.origin.x;
     qDebug() << "2" << invDir.x;
+    qDebug() << "2" << pMin.length();
     qDebug() << "3" << pMin.x;
     qDebug() << "4" << pMax.x;
     t1 = (pMin.x - ray.origin.x) * invDir.x; t2 = (pMax.x - ray.origin.x) * invDir.x;

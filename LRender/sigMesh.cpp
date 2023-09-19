@@ -221,6 +221,7 @@ void sigMesh::computeBVH() {
     Vector3D min_vert(minX_sig, minY_sig, minZ_sig);
     Vector3D max_vert(maxX_sig, maxY_sig, maxZ_sig);
     bounding_box = Bounds3(min_vert, max_vert);
+    qDebug() << "1sdqafwsqaefca";
     bvh = new BVHAccel(ptrs);
 }
 

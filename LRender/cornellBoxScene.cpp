@@ -3,7 +3,7 @@
 CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color bkColor)
     :width_cornellBox(wid_p), height_cornellBox(hei_p), camera((float)wid_p / hei_p, 100.f), frame(width_cornellBox, height_cornellBox) {
 	QString prePath = "./cornellbox/";
-	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj", prePath + "shortbox.obj", prePath + "tallbox.obj" };
+	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj" };
 	Model* cornellSceneModel = new Model(cornellPath);
 
     Texture* red = new Texture(DIFFUSE_T, Vector3D(0.0f));
