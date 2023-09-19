@@ -71,8 +71,8 @@ bool Triangle::hasEmit() {
 
 Bounds3::Bounds3()
 {
-    double minNum = std::numeric_limits<double>::lowest();
-    double maxNum = std::numeric_limits<double>::max();
+    double minNum = -FLT_MAX;
+    double maxNum = FLT_MAX;
     pMax = Vector3D(minNum, minNum, minNum);
     pMin = Vector3D(maxNum, maxNum, maxNum);
 }

@@ -21,8 +21,7 @@ bool Frame::updateZbuffer(int x, int y, float z)
 
 void Frame::setPixel(int x, int y, Color color)
 {
-    colorBuffer.setPixelColor(x, frameHeight - 1 - y
-                ,QColor(color.r * 255.f, color.g * 255.f, color.b * 255.f));
+    colorBuffer.setPixelColor(x, frameHeight - 1 - y, QColor(color.r * 255.f, color.g * 255.f, color.b * 255.f));
 }
 
 void Frame::clearBuffer(Color color)

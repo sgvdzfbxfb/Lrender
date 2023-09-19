@@ -27,7 +27,8 @@ struct Intersection
 class Bounds3
 {
 public:
-    Vector3D pMin, pMax; // two points to specify the bounding box
+    Vector3D pMin = Vector3D(0.0, 0.0, 0.0);
+    Vector3D pMax = Vector3D(0.0, 0.0, 0.0);// two points to specify the bounding box
     Bounds3();
     Bounds3(const Vector3D p);
     Bounds3(const Vector3D p1, const Vector3D p2);

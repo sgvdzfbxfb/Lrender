@@ -195,6 +195,7 @@ void CornellBoxScene::cornellBoxRender() {
                 Vector3D color = castRay(Ray(camera.position, dir), 0);
                 color.x /= spp; color.y /= spp; color.z /= spp;
                 framebuffer +=  color;
+                framebuffer += color;
             }
             frame.setPixel(i, j, framebuffer);
             m++;

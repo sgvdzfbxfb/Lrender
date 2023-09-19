@@ -266,8 +266,10 @@ void LRenderWidget::render()
     renderAPI::API().clearBuffer();
     if (ifOpenRayTracing && rayTracingProcess == 1) {
         rayTracingProcess = 2;
-        if (cornellBoxScene == nullptr) cornellBoxScene = new CornellBoxScene(model, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f));
+        cornellBoxScene = new CornellBoxScene(model, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f));
+        cornellBoxScene->buildBVH();
         cornellBoxScene->cornellBoxRender();
+        renderAPI::API().clearBuffer();
         renderAPI::API().setFrame(cornellBoxScene->frame);
         return;
     }
