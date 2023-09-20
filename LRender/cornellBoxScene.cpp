@@ -26,7 +26,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
-	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.25;
+	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.4;
     float toIn = (cornellSceneModel->getZRange() - (input_model->getZRange() * scaleNum)) * 0.25;
     toIn = toIn < 0.0 ? 0.0 : toIn;
     moveVec -= Vector3D(0.0, (cornellSceneModel->getYRange() - (input_model->getYRange() * scaleNum)) * 0.5, -toIn);
@@ -152,7 +152,7 @@ void CornellBoxScene::cornellBoxRender() {
     int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 25;
+    int spp = 100;
     int thread_num = 6;
     int thread_height = height_cornellBox / thread_num;
     std::vector<std::thread> threads(thread_num);
