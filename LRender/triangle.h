@@ -15,6 +15,7 @@ struct Intersection
         m = nullptr;
     }
     bool happened;
+    Color interPointColor = Vector3D(-1.0, -1.0, -1.0);
     Vector3D coords;
     Vector3D tcoords = Vector3D(0.0, 0.0, 0.0);
     Vector3D normal;

@@ -8,6 +8,13 @@ inline Bounds3 Union(const Bounds3& b, const Vector3D& p)
     return ret;
 }
 
+Vector3D getBarycentric(Vector3D v0, Vector3D v1, Vector3D v2, Vector3D loc) {
+    float alpha = glm::length(glm::cross(loc - v0, loc - v1)) * 0.5;
+    float beta  = glm::length(glm::cross(loc - v1, loc - v2)) * 0.5;
+    float gmma  = glm::length(glm::cross(loc - v2, loc - v0)) * 0.5;
+    return glm::normalize(Vector3D(alpha, beta, gmma));
+}
+
 Triangle::Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Texture* _m) : v0(_v0), v1(_v1), v2(_v2), m(_m) {
     e1 = v1.worldPos - v0.worldPos;
     e2 = v2.worldPos - v0.worldPos;
@@ -40,6 +47,18 @@ Intersection Triangle::getIntersection(Ray ray) {
 
     inter.happened = true;
     inter.coords = ray(t_tmp);
+    if (this->m->haveUvImage()) {
+        Vector3D barPos = getBarycentric(this->v0.worldPos, this->v1.worldPos, this->v2.worldPos, inter.coords);
+        Coord2D texUv(0.0, 0.0);
+        /*Vector3D bc_corrected = { 0, 0, 0 };
+        bc_corrected[0] = barPos[0] / this->v0.clipPos.w;
+        bc_corrected[1] = barPos[1] / this->v1.clipPos.w;
+        bc_corrected[2] = barPos[2] / this->v2.clipPos.w;
+        float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
+        for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;*/
+        texUv += this->v0.texUv * barPos[0]; texUv += this->v1.texUv * barPos[1]; texUv += this->v2.texUv * barPos[2];
+        inter.interPointColor = this->m->getColorFromUv(texUv);
+    }
     inter.normal = normal;
     inter.distance = t_tmp;
     inter.obj = this;

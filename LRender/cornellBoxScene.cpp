@@ -25,9 +25,10 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
     teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
-	/*for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
+	for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
 	double scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
+    qDebug() << "dasd" << scaleNum;
 	for (auto& mesh : input_faces) {
 		for (auto& tri : mesh) {
 			tri.v0.worldPos *= scaleNum; tri.v1.worldPos *= scaleNum; tri.v2.worldPos *= scaleNum;
@@ -40,7 +41,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
         item->computeBVH();
         boxModels.push_back(item);
         countMesh++;
-    }*/
+    }
     backgroundColor = bkColor;
     camera.setFov(40.f);
 }
@@ -81,7 +82,7 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
 
         Intersection block_point_inter = CornellBoxScene::intersect(ray_pTox);
         if (abs(distance_pTox - block_point_inter.distance) < 0.01) {
-            L_dir = emit_I * shader_point_inter.m->eval(wo, ws, N) * glm::dot(ws, N) * glm::dot(-ws, NN) / (distance_pTox * distance_pTox * pdf_light);
+            L_dir = emit_I * shader_point_inter.m->eval(wo, ws, N, shader_point_inter.interPointColor) * glm::dot(ws, N) * glm::dot(-ws, NN) / (distance_pTox * distance_pTox * pdf_light);
         }
         float ksi = get_random_float();
         if (ksi < RussianRoulette) {
@@ -91,7 +92,7 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
             if (bounce_point_inter.happened && !bounce_point_inter.m->hasEmission()) {
                 float pdf = shader_point_inter.m->pdf(wo, wi, N);
                 if (pdf > EPSILON)
-                    L_indir = castRay(ray_pTowi, depth + 1) * shader_point_inter.m->eval(wo, wi, N) * glm::dot(wi, N) / (pdf * RussianRoulette);
+                    L_indir = castRay(ray_pTowi, depth + 1) * shader_point_inter.m->eval(wo, wi, N, shader_point_inter.interPointColor) * glm::dot(wi, N) / (pdf * RussianRoulette);
             }
         }
         hitColor = shader_point_inter.m->m_emission + L_dir + L_indir;
@@ -149,7 +150,7 @@ void CornellBoxScene::cornellBoxRender() {
     int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 512;
+    int spp = 25;
     int thread_num = 6;
     int thread_height = height_cornellBox / thread_num;
     std::vector<std::thread> threads(thread_num);

@@ -48,6 +48,7 @@ public:
     QString path;
     Texture(TextureType t = DIFFUSE_T, Vector3D e = Vector3D(0, 0, 0));
     bool getTexture(QString path);
+    bool haveUvImage() { return imgWidth != 0 && imgHeight != 0; };
     Color getColorFromUv(Coord2D coord);
 
     TextureType m_type;
@@ -70,7 +71,7 @@ public:
     // given a ray, calculate the PdF of this ray
     float pdf(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
     // given a ray, calculate the contribution of this ray
-    Vector3D eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N);
+    Vector3D eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N, const Color& tpColor);
 };
 
 #endif // TEXTURE_H

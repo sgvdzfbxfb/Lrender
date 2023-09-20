@@ -158,14 +158,16 @@ float Texture::pdf(const Vector3D& wi, const Vector3D& wo, const Vector3D& N) {
     }
 }
 
-Vector3D Texture::eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N) {
+Vector3D Texture::eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N, const Color& tpColor) {
+    Vector3D Kd_c = Kd;
+    if (tpColor.x >= 0 && tpColor.y >= 0 && tpColor.z >= 0) Kd_c = tpColor;
     switch (m_type) {
     case DIFFUSE_T:
     {
         // calculate the contribution of diffuse   model
         float cosalpha = glm::dot(N, wo);
         if (cosalpha > 0.0f) {
-            Vector3D diffuse(Kd.x / M_PI, Kd.y / M_PI, Kd.z / M_PI);
+            Vector3D diffuse(Kd_c.x / M_PI, Kd_c.y / M_PI, Kd_c.z / M_PI);
             return diffuse;
         }
         else
@@ -216,7 +218,7 @@ Vector3D Texture::eval(const Vector3D& wi, const Vector3D& wo, const Vector3D& N
             Vector3D h = normalize(-wi + wo);
             D = D_func(Roughness, h, N);
 
-            Vector3D diffuse = (Vector3D(1.f) - F) * Vector3D(Kd.x / M_PI, Kd.y / M_PI, Kd.z / M_PI);
+            Vector3D diffuse = (Vector3D(1.f) - F) * Vector3D(Kd_c.x / M_PI, Kd_c.y / M_PI, Kd_c.z / M_PI);
             Vector3D specular;
             float divisor = ((4 * (glm::dot(N, -wi)) * (glm::dot(N, wo))));
             if (divisor < 0.001) specular = Vector3D(1);
