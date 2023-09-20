@@ -42,7 +42,7 @@ public:
     std::string sigMeshName = "";
 
     sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt = new Texture());
-    sigMesh(const sigMesh&);
+    sigMesh(const sigMesh& mesh);
     void computeNormal();
     void computeBVH();
     int getMeshTexture(std::string t_ps);

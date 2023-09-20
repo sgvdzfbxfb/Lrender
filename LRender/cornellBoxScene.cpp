@@ -1,6 +1,6 @@
 #include "cornellBoxScene.h"
 
-CornellBoxScene::CornellBoxScene(Model* input_model, int wid_p, int hei_p, Color bkColor)
+CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, int hei_p)
     :width_cornellBox(wid_p), height_cornellBox(hei_p), camera((float)wid_p / hei_p, 100.f), frame(width_cornellBox, height_cornellBox) {
 	QString prePath = "./cornellbox/";
 	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj" };
@@ -76,22 +76,9 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
         Ray ray_pTox(p_deviation, ws);
 
         Intersection block_point_inter = CornellBoxScene::intersect(ray_pTox);
-        if (castrcount == 16477185) qDebug() << "111";
-        if (castrcount == 16477185) qDebug() << "wsdqa" << distance_pTox;
-        if (castrcount == 16477185) qDebug() << "sasc" << block_point_inter.distance;
-        if (castrcount == 16477185) qDebug() << "qwe" << emit_I.x << emit_I.y << emit_I.z;
-        if (castrcount == 16477185) qDebug() << "1" << wo.x << wo.y << wo.z;
-        if (castrcount == 16477185) qDebug() << "2" << ws.x << ws.y << ws.z;
-        if (castrcount == 16477185) qDebug() << "3" << N.x << N.y << N.z;
-        if (castrcount == 16477185) qDebug() << "qwe" << shader_point_inter.m->eval(wo, ws, N).x << shader_point_inter.m->eval(wo, ws, N).y << shader_point_inter.m->eval(wo, ws, N).z;
-        if (castrcount == 16477185) qDebug() << "qwe" << glm::dot(ws, N);
-        if (castrcount == 16477185) qDebug() << "qwe" << glm::dot(-ws, NN);
-        if (castrcount == 16477185) qDebug() << "qwe" << distance_pTox;
-        if (castrcount == 16477185) qDebug() << "qwe" << pdf_light;
         if (abs(distance_pTox - block_point_inter.distance) < 0.01) {
             L_dir = emit_I * shader_point_inter.m->eval(wo, ws, N) * glm::dot(ws, N) * glm::dot(-ws, NN) / (distance_pTox * distance_pTox * pdf_light);
         }
-        if (castrcount == 16477185) qDebug() << "222";
         float ksi = get_random_float();
         if (ksi < RussianRoulette) {
             Vector3D wi = normalize(shader_point_inter.m->sample(wo, N));

@@ -164,7 +164,7 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
                 }
                 faceToVer[faces.size()] = vers;
             }
-            Triangle tri_f(f.at(0), f.at(1), f.at(2));
+            Triangle tri_f(f.at(0), f.at(1), f.at(2), mt);
             faces.push_back(tri_f);
         }
     }
@@ -200,7 +200,7 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
     qDebug() << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
     qDebug() << "joint:" << v_joint << "weight:" << v_weight << "\n";
 }
-sigMesh::sigMesh(const sigMesh&) {}
+sigMesh::sigMesh(const sigMesh& mesh): m(mesh.m) {}
 
 void sigMesh::computeBVH() {
     minX_sig = FLT_MAX; minY_sig = FLT_MAX; minZ_sig = FLT_MAX;

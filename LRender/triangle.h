@@ -16,9 +16,9 @@ struct Intersection
     }
     bool happened;
     Vector3D coords;
-    Vector3D tcoords;
+    Vector3D tcoords = Vector3D(0.0, 0.0, 0.0);
     Vector3D normal;
-    Vector3D emit_I;
+    Vector3D emit_I = Vector3D(0.0, 0.0, 0.0);
     double distance;
     BVHItem* obj;
     Texture* m;
