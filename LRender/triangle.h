@@ -86,6 +86,7 @@ public:
     Vector3D evalDiffuseColor(const Vector2D&) const override;
     Bounds3 getBounds() override;
     void Sample(Intersection& pos, float& pdf);
+    void updateTrangle();
     float getArea();
     bool hasEmit();
 };

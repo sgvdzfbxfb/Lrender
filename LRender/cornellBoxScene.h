@@ -9,7 +9,6 @@
 class CornellBoxScene {
 public:
     std::vector<BVHItem*> boxModels;
-    std::vector<std::vector<Triangle>> input_faces;
     float RussianRoulette = 0.8;
     Vector3D backgroundColor = Vector3D(0.0, 0.0, 0.0);
     int width_cornellBox, height_cornellBox;

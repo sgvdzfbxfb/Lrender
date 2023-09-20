@@ -3,7 +3,7 @@
 CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, int hei_p)
     :width_cornellBox(wid_p), height_cornellBox(hei_p), camera((float)wid_p / hei_p, 100.f), frame(width_cornellBox, height_cornellBox) {
 	QString prePath = "./cornellbox/";
-	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj" };
+	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj", prePath + "shortbox.obj", prePath + "tallbox.obj" };
 	Model* cornellSceneModel = new Model(cornellPath);
 
     Texture* red = new Texture(DIFFUSE_T, Vector3D(0.0f));
@@ -25,22 +25,21 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
     teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
-	for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
-	double scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
-    qDebug() << "dasd" << scaleNum;
-	for (auto& mesh : input_faces) {
-		for (auto& tri : mesh) {
-			tri.v0.worldPos *= scaleNum; tri.v1.worldPos *= scaleNum; tri.v2.worldPos *= scaleNum;
-			tri.v0.worldPos += moveVec; tri.v1.worldPos += moveVec; tri.v1.worldPos += moveVec;
-		}
-	}
-    int countMesh = 0;
+	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
+
+    glm::mat4 meshTransform = glm::mat4(1.0f);
+    //meshTransform = glm::scale(meshTransform, Vector3D(10.0, 10.0, 10.0));
+    meshTransform = glm::translate(meshTransform, moveVec);
     for (auto& item : input_model->getMeshes()) {
-        item->app_ani_faces = input_faces.at(countMesh);
-        item->computeBVH();
-        boxModels.push_back(item);
-        countMesh++;
+        for (auto& tri : item->app_ani_faces) {
+            tri.v0.worldPos -= input_model->modelCenter; tri.v1.worldPos -= input_model->modelCenter; tri.v2.worldPos -= input_model->modelCenter;
+            tri.v0.worldPos *= scaleNum; tri.v1.worldPos *= scaleNum; tri.v2.worldPos *= scaleNum;
+            tri.v0.worldPos += input_model->modelCenter; tri.v1.worldPos += input_model->modelCenter; tri.v2.worldPos += input_model->modelCenter;
+            tri.v0.worldPos += moveVec; tri.v1.worldPos += moveVec; tri.v2.worldPos += moveVec;
+            tri.updateTrangle();
+        }
+        item->computeBVH(); boxModels.push_back(item);
     }
     backgroundColor = bkColor;
     camera.setFov(40.f);
@@ -176,7 +175,7 @@ void CornellBoxScene::cornellBoxRender() {
                     color.x /= spp; color.y /= spp; color.z /= spp;
                     framebuffer += color;
                 }
-                frame.setPixel(i, j, framebuffer);
+                frame.setPixel(i, height_cornellBox - 1 - j, framebuffer);
             }
             mtx.lock();
             process = process + Reciprocal_Scene_height;

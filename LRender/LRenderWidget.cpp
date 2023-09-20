@@ -270,7 +270,8 @@ void LRenderWidget::render()
         cornellBoxScene->buildBVH();
         QTime tracingRenderTime; tracingRenderTime.start();
         cornellBoxScene->cornellBoxRender();
-        qDebug() << "Ray Tracing Render Time: " << tracingRenderTime.elapsed() / 1000 / 60 << "mins";
+        double fixTime = tracingRenderTime.elapsed() / 1000.0 / 60.0;
+        qDebug() << "\n" << "Ray Tracing Render Time: " << fixTime << "mins";
         renderAPI::API().clearBuffer();
         renderAPI::API().setFrame(cornellBoxScene->frame);
         update();

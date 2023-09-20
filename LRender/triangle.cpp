@@ -16,6 +16,9 @@ Vector3D getBarycentric(Vector3D v0, Vector3D v1, Vector3D v2, Vector3D loc) {
 }
 
 Triangle::Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Texture* _m) : v0(_v0), v1(_v1), v2(_v2), m(_m) {
+    updateTrangle();
+}
+void Triangle::updateTrangle() {
     e1 = v1.worldPos - v0.worldPos;
     e2 = v2.worldPos - v0.worldPos;
     normal = normalize(glm::cross(e1, e2));
@@ -47,7 +50,7 @@ Intersection Triangle::getIntersection(Ray ray) {
 
     inter.happened = true;
     inter.coords = ray(t_tmp);
-    if (this->m->haveUvImage()) {
+    if (0) {
         Vector3D barPos = getBarycentric(this->v0.worldPos, this->v1.worldPos, this->v2.worldPos, inter.coords);
         Coord2D texUv(0.0, 0.0);
         /*Vector3D bc_corrected = { 0, 0, 0 };
