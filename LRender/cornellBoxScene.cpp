@@ -26,15 +26,17 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
-	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
-
-    glm::mat4 meshTransform = glm::mat4(1.0f);
-    //meshTransform = glm::scale(meshTransform, Vector3D(10.0, 10.0, 10.0));
-    meshTransform = glm::translate(meshTransform, moveVec);
+	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.25;
+    float toIn = (cornellSceneModel->getZRange() - (input_model->getZRange() * scaleNum)) * 0.25;
+    toIn = toIn < 0.0 ? 0.0 : toIn;
+    moveVec -= Vector3D(0.0, (cornellSceneModel->getYRange() - (input_model->getYRange() * scaleNum)) * 0.5, -toIn);
+    glm::mat4 rotateMat = glm::mat4(1.0f);
+    rotateMat = glm::rotate(rotateMat, glm::radians(10.f), glm::vec3(0.0f, 1.0f, 0.0f));
     for (auto& item : input_model->getMeshes()) {
         for (auto& tri : item->app_ani_faces) {
             tri.v0.worldPos -= input_model->modelCenter; tri.v1.worldPos -= input_model->modelCenter; tri.v2.worldPos -= input_model->modelCenter;
             tri.v0.worldPos *= scaleNum; tri.v1.worldPos *= scaleNum; tri.v2.worldPos *= scaleNum;
+            tri.v0.worldPos = Coord3D(Coord4D(tri.v0.worldPos, 1.f) * rotateMat); tri.v1.worldPos = Coord3D(Coord4D(tri.v1.worldPos, 1.f) * rotateMat); tri.v2.worldPos = Coord3D(Coord4D(tri.v2.worldPos, 1.f) * rotateMat);
             tri.v0.worldPos += input_model->modelCenter; tri.v1.worldPos += input_model->modelCenter; tri.v2.worldPos += input_model->modelCenter;
             tri.v0.worldPos += moveVec; tri.v1.worldPos += moveVec; tri.v2.worldPos += moveVec;
             tri.updateTrangle();

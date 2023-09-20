@@ -21,7 +21,9 @@ class Model
         Coord3D modelCenter;
         int faceNum{0};
         int vertexNum{0};
+        float getXRange() { return maxX - minX; }
         float getYRange() { return maxY - minY; }
+        float getZRange() { return maxZ - minZ; }
         bool loadSuccess{ true };
         Skeleton skeleton;
         QTime fTimeCounter;
