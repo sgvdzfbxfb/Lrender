@@ -31,7 +31,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     toIn = toIn < 0.0 ? 0.0 : toIn;
     moveVec -= Vector3D(0.0, (cornellSceneModel->getYRange() - (input_model->getYRange() * scaleNum)) * 0.5, -toIn);
     glm::mat4 rotateMat = glm::mat4(1.0f);
-    rotateMat = glm::rotate(rotateMat, glm::radians(10.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotateMat = glm::rotate(rotateMat, glm::radians(30.f), glm::vec3(0.0f, 1.0f, 0.0f));
     for (auto& item : input_model->getMeshes()) {
         for (auto& tri : item->app_ani_faces) {
             tri.v0.worldPos -= input_model->modelCenter; tri.v1.worldPos -= input_model->modelCenter; tri.v2.worldPos -= input_model->modelCenter;
@@ -39,6 +39,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
             tri.v0.worldPos = Coord3D(Coord4D(tri.v0.worldPos, 1.f) * rotateMat); tri.v1.worldPos = Coord3D(Coord4D(tri.v1.worldPos, 1.f) * rotateMat); tri.v2.worldPos = Coord3D(Coord4D(tri.v2.worldPos, 1.f) * rotateMat);
             tri.v0.worldPos += input_model->modelCenter; tri.v1.worldPos += input_model->modelCenter; tri.v2.worldPos += input_model->modelCenter;
             tri.v0.worldPos += moveVec; tri.v1.worldPos += moveVec; tri.v2.worldPos += moveVec;
+            tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f);
             tri.updateTrangle();
         }
         item->computeBVH(); boxModels.push_back(item);

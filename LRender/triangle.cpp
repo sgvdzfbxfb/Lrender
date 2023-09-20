@@ -9,10 +9,21 @@ inline Bounds3 Union(const Bounds3& b, const Vector3D& p)
 }
 
 Vector3D getBarycentric(Vector3D v0, Vector3D v1, Vector3D v2, Vector3D loc) {
-    float alpha = glm::length(glm::cross(loc - v0, loc - v1)) * 0.5;
-    float beta  = glm::length(glm::cross(loc - v1, loc - v2)) * 0.5;
-    float gmma  = glm::length(glm::cross(loc - v2, loc - v0)) * 0.5;
-    return glm::normalize(Vector3D(alpha, beta, gmma));
+    Vector3D ray_p(278, 273, -800);
+    auto getScreenPos = [&](Vector3D pos, float& s_x, float& x_y) {
+        Vector3D ray_v = pos - ray_p; ray_v = glm::normalize(ray_v);
+        float para = (1.0 - ray_p.z) / ray_v.z;
+        s_x = ray_p.x + para * ray_v.x; x_y = ray_p.y + para * ray_v.y;
+    };
+    float v0_s_x = 0.0, v0_s_y = 0.0; getScreenPos(v0, v0_s_x, v0_s_y);
+    float v1_s_x = 0.0, v1_s_y = 0.0; getScreenPos(v1, v1_s_x, v1_s_y);
+    float v2_s_x = 0.0, v2_s_y = 0.0; getScreenPos(v2, v2_s_x, v2_s_y);
+    float loc_s_x = 0.0, loc_s_y = 0.0; getScreenPos(loc, loc_s_x, loc_s_y);
+    Vector3D u1(v2_s_x - v0_s_x, v1_s_x -  v0_s_x,  v0_s_x - loc_s_x);
+    Vector3D u2(v2_s_y - v0_s_y, v1_s_y -  v0_s_y,  v0_s_y - loc_s_y);
+    Vector3D u = glm::cross(u1, u2);
+    if (std::abs(u.z) < 1) return Vector3D(-1, 1, 1);
+    return Vector3D(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
 }
 
 Triangle::Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Texture* _m) : v0(_v0), v1(_v1), v2(_v2), m(_m) {
@@ -59,6 +70,7 @@ Intersection Triangle::getIntersection(Ray ray) {
         bc_corrected[2] = barPos[2] / this->v2.clipPos.w;
         float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
         for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;
+        //texUv += this->v0.texUv * barPos[0]; texUv += this->v1.texUv * barPos[1]; texUv += this->v2.texUv * barPos[2];
         texUv += this->v0.texUv * bc_corrected[0]; texUv += this->v1.texUv * bc_corrected[1]; texUv += this->v2.texUv * bc_corrected[2];
         inter.interPointColor = this->m->getColorFromUv(texUv);
     }
