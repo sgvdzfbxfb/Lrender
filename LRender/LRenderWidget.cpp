@@ -268,7 +268,9 @@ void LRenderWidget::render()
         rayTracingProcess = 2;
         cornellBoxScene = new CornellBoxScene(model, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f), DEFAULT_WIDTH, DEFAULT_HEIGHT);
         cornellBoxScene->buildBVH();
+        QTime tracingRenderTime; tracingRenderTime.start();
         cornellBoxScene->cornellBoxRender();
+        qDebug() << "Ray Tracing Render Time: " << tracingRenderTime.elapsed() / 1000 / 60 << "mins";
         renderAPI::API().clearBuffer();
         renderAPI::API().setFrame(cornellBoxScene->frame);
         update();

@@ -16,10 +16,14 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     light->Kd = Vector3D(0.65f);
 
     std::vector<sigMesh*> teMeshes = cornellSceneModel->getMeshes();
-    teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces; teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
-    teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces; teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
-    teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces; teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
-    teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces; teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
+    teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces; for (auto& tri : teMeshes.at(0)->app_ani_faces) tri.m = white;
+    teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces; for (auto& tri : teMeshes.at(1)->app_ani_faces) tri.m = red;  
+    teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces; for (auto& tri : teMeshes.at(2)->app_ani_faces) tri.m = green;
+    teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces; for (auto& tri : teMeshes.at(3)->app_ani_faces) tri.m = light;
+    teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
+    teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
+    teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
+    teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
 
 	/*for (auto& item : input_model->getMeshes()) input_faces.push_back(item->app_ani_faces);
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
@@ -84,7 +88,6 @@ Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
             Vector3D wi = normalize(shader_point_inter.m->sample(wo, N));
             Ray ray_pTowi(p_deviation, wi);
             Intersection bounce_point_inter = CornellBoxScene::intersect(ray_pTowi);
-
             if (bounce_point_inter.happened && !bounce_point_inter.m->hasEmission()) {
                 float pdf = shader_point_inter.m->pdf(wo, wi, N);
                 if (pdf > EPSILON)
@@ -157,34 +160,34 @@ void CornellBoxScene::cornellBoxRender() {
     float Reciprocal_Scene_height = 1.f / (float)height_cornellBox;
 
     // muti-thread
-
-    //auto castRay = [&](int thread_index) {
-    //    int height = thread_height * (thread_index + 1);
-    //    for (uint32_t j = height - thread_height; j < height; j++) {
-    //        for (uint32_t i = 0; i < scene.width; ++i) {
-    //            // generate primary ray direction
-    //            float x = (2 * (i + 0.5) / (float)scene.width - 1) * imageAspectRatio * scale;
-    //            float y = (1 - 2 * (j + 0.5) / (float)height_cornellBox) * scale;
-    //            Vector3D dir = normalize(Vector3D(-x, y, 1));
-    //            for (int k = 0; k < spp; k++) {
-    //                framebuffer[j * scene.width + i] += scene.castRay(Ray(eye_pos, dir), 0) / spp;
-    //            }
-    //        }
-    //        mtx.lock();
-    //        process = process + Reciprocal_Scene_height;
-    //        UpdateProgress(process);
-    //        mtx.unlock();
-    //    }
-    //};
-    //for (int k = 0; k < thread_num; k++) {
-    //    threads[k] = std::thread(castRay, k);
-    //}
-    //for (int k = 0; k < thread_num; k++) {
-    //    threads[k].join();
-    //}
-
+#if 1
+    auto castRay_m = [&](int thread_index) {
+        int height = thread_height * (thread_index + 1);
+        for (uint32_t j = height - thread_height; j < height; j++) {
+            for (uint32_t i = 0; i < width_cornellBox; ++i) {
+                // generate primary ray direction
+                float x = (2 * (i + 0.5) / (float)width_cornellBox - 1) * imageAspectRatio * scale;
+                float y = (1 - 2 * (j + 0.5) / (float)height_cornellBox) * scale;
+                Vector3D dir = normalize(Vector3D(-x, y, 1));
+                Vector3D framebuffer(0.0, 0.0, 0.0);
+                for (int k = 0; k < spp; k++) {
+                    Vector3D color = castRay(Ray(camera.position, dir), 0);
+                    color.x /= spp; color.y /= spp; color.z /= spp;
+                    framebuffer += color;
+                }
+                frame.setPixel(i, j, framebuffer);
+            }
+            mtx.lock();
+            process = process + Reciprocal_Scene_height;
+            UpdateProgress(process);
+            mtx.unlock();
+        }
+    };
+    for (int k = 0; k < thread_num; k++) threads[k] = std::thread(castRay_m, k);
+    for (int k = 0; k < thread_num; k++) threads[k].join();
+#endif
     // no muti-thread
-
+#if 0
     for (uint32_t j = 0; j < height_cornellBox; ++j) {
         for (uint32_t i = 0; i < width_cornellBox; ++i) {
             // generate primary ray direction
@@ -193,8 +196,7 @@ void CornellBoxScene::cornellBoxRender() {
             Vector3D dir = normalize(Vector3D(-x, y, 1));
             Vector3D framebuffer(0.0, 0.0, 0.0);
             for (int k = 0; k < spp; k++) {
-                Vector3D color(0.0, 0.0, 0.0);
-                color = castRay(Ray(camera.position, dir), 0);
+                Vector3D color = castRay(Ray(camera.position, dir), 0);
                 color.x /= spp; color.y /= spp; color.z /= spp;
                 framebuffer += color;
             }
@@ -203,6 +205,7 @@ void CornellBoxScene::cornellBoxRender() {
         }
         UpdateProgress(j / (float)height_cornellBox);
     }
+#endif
 
     UpdateProgress(1.f);
 }

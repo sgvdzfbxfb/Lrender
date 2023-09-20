@@ -37,6 +37,17 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
     area = 0;
     m = mt;
     sigMeshName = meshName;
+
+    for (int k = 0; k < texPaths.size(); ++k) {
+        if (texPaths.at(k).find(meshName) > 0 && texPaths.at(k).find(meshName) < texPaths.at(k).length()) {
+            if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
+                diffuseIds.push_back(getMeshTexture(texPaths.at(k)));
+            else if (texPaths.at(k).find("specular") > 0 && texPaths.at(k).find("specular") < texPaths.at(k).length())
+                specularIds.push_back(getMeshTexture(texPaths.at(k)));
+        }
+    }
+    if (diffuseIds.size() > 0) *m = tList.at(diffuseIds.at(0));
+
     std::ifstream in, in_forCount;
     in.open(filename.toStdString(), std::ifstream::in);
     in_forCount.open(filename.toStdString(), std::ifstream::in);
@@ -164,17 +175,8 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
                 }
                 faceToVer[faces.size()] = vers;
             }
-            Triangle tri_f(f.at(0), f.at(1), f.at(2), mt);
+            Triangle tri_f(f.at(0), f.at(1), f.at(2), m);
             faces.push_back(tri_f);
-        }
-    }
-
-    for (int k = 0; k < texPaths.size(); ++k) {
-        if (texPaths.at(k).find(meshName) > 0 && texPaths.at(k).find(meshName) < texPaths.at(k).length()) {
-            if (texPaths.at(k).find("diffuse") > 0 && texPaths.at(k).find("diffuse") < texPaths.at(k).length())
-                diffuseIds.push_back(getMeshTexture(texPaths.at(k)));
-            else if (texPaths.at(k).find("specular") > 0 && texPaths.at(k).find("specular") < texPaths.at(k).length())
-                specularIds.push_back(getMeshTexture(texPaths.at(k)));
         }
     }
     if (vn_count == 0) computeNormal();
@@ -195,7 +197,6 @@ sigMesh::sigMesh(const QString& filename, std::vector<std::string>& texPaths, st
         }
         ifAnimation = true;
     }
-    if (diffuseIds.size() > 0) *m = tList.at(diffuseIds.at(0));
     qDebug() << "Model Name:" << QString::fromStdString(meshName);
     qDebug() << "vertex:" << v_count << "normal:" << vn_count << "texture:" << vt_count << "face:" << f_count;
     qDebug() << "joint:" << v_joint << "weight:" << v_weight << "\n";
