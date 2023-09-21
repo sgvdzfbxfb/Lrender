@@ -61,20 +61,22 @@ Intersection Triangle::getIntersection(Ray ray) {
 
     inter.happened = true;
     inter.coords = ray(t_tmp);
+    Vector3D bc_corrected = { 0, 0, 0 };
+    Vector3D barPos = getBarycentric(this->v0.worldPos, this->v1.worldPos, this->v2.worldPos, inter.coords);
+    bc_corrected[0] = barPos[0] / this->v0.clipPos.w;
+    bc_corrected[1] = barPos[1] / this->v1.clipPos.w;
+    bc_corrected[2] = barPos[2] / this->v2.clipPos.w;
+    float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
+    for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;
     if (this->m->haveUvImage()) {
-        Vector3D barPos = getBarycentric(this->v0.worldPos, this->v1.worldPos, this->v2.worldPos, inter.coords);
         Coord2D texUv(0.0, 0.0);
-        Vector3D bc_corrected = { 0, 0, 0 };
-        bc_corrected[0] = barPos[0] / this->v0.clipPos.w;
-        bc_corrected[1] = barPos[1] / this->v1.clipPos.w;
-        bc_corrected[2] = barPos[2] / this->v2.clipPos.w;
-        float Z_n = 1. / (bc_corrected[0] + bc_corrected[1] + bc_corrected[2]);
-        for (int i = 0; i < 3; i++) bc_corrected[i] *= Z_n;
-        //texUv += this->v0.texUv * barPos[0]; texUv += this->v1.texUv * barPos[1]; texUv += this->v2.texUv * barPos[2];
         texUv += this->v0.texUv * bc_corrected[0]; texUv += this->v1.texUv * bc_corrected[1]; texUv += this->v2.texUv * bc_corrected[2];
         inter.interPointColor = this->m->getColorFromUv(texUv);
     }
-    inter.normal = normal;
+    Coord3D normal_t(0.0, 0.0, 0.0);
+    normal_t += this->v0.normal * bc_corrected[0]; normal_t += this->v1.normal * bc_corrected[1]; normal_t += this->v2.normal * bc_corrected[2];
+    inter.normal = glm::normalize(normal_t);
+    //inter.normal = normal;
     inter.distance = t_tmp;
     inter.obj = this;
     inter.m = this->m;

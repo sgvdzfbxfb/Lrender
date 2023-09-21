@@ -16,10 +16,14 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     light->Kd = Vector3D(0.65f);
 
     std::vector<sigMesh*> teMeshes = cornellSceneModel->getMeshes();
-    teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces; for (auto& tri : teMeshes.at(0)->app_ani_faces) tri.m = white;
-    teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces; for (auto& tri : teMeshes.at(1)->app_ani_faces) tri.m = red;  
-    teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces; for (auto& tri : teMeshes.at(2)->app_ani_faces) tri.m = green;
-    teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces; for (auto& tri : teMeshes.at(3)->app_ani_faces) tri.m = light;
+    teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces;
+    teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces;
+    teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces;
+    teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces;
+    for (auto& tri : teMeshes.at(0)->app_ani_faces) { tri.m = white; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
+    for (auto& tri : teMeshes.at(1)->app_ani_faces) { tri.m = red;   tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
+    for (auto& tri : teMeshes.at(2)->app_ani_faces) { tri.m = green; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
+    for (auto& tri : teMeshes.at(3)->app_ani_faces) { tri.m = light; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
     teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
     teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
     teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
