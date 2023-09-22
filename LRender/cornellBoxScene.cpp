@@ -3,7 +3,7 @@
 CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, int hei_p)
     :width_cornellBox(wid_p), height_cornellBox(hei_p), camera((float)wid_p / hei_p, 100.f), frame(width_cornellBox, height_cornellBox) {
 	QString prePath = "./cornellbox/";
-	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj", prePath + "shortbox.obj", prePath + "tallbox.obj" };
+	QStringList cornellPath = { prePath + "floor.obj", prePath + "left.obj", prePath + "right.obj", prePath + "light.obj", prePath + "light_add.obj", prePath + "shortbox.obj", prePath + "tallbox.obj" };
 	Model* cornellSceneModel = new Model(cornellPath);
 
     Texture* red = new Texture(DIFFUSE_T, Vector3D(0.0f));
@@ -14,23 +14,28 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     white->Kd = Vector3D(0.725f, 0.71f, 0.68f);
     Texture* light = new Texture(DIFFUSE_T, 1.5f * (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
     light->Kd = Vector3D(0.65f);
+    Texture* light_add = new Texture(DIFFUSE_T, 0.05f * (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
+    light_add->Kd = Vector3D(0.65f);
 
     std::vector<sigMesh*> teMeshes = cornellSceneModel->getMeshes();
     teMeshes.at(0)->m = white; teMeshes.at(0)->app_ani_faces = teMeshes.at(0)->faces;
     teMeshes.at(1)->m = red;   teMeshes.at(1)->app_ani_faces = teMeshes.at(1)->faces;
     teMeshes.at(2)->m = green; teMeshes.at(2)->app_ani_faces = teMeshes.at(2)->faces;
     teMeshes.at(3)->m = light; teMeshes.at(3)->app_ani_faces = teMeshes.at(3)->faces;
+    //teMeshes.at(4)->m = light_add; teMeshes.at(4)->app_ani_faces = teMeshes.at(4)->faces;
     for (auto& tri : teMeshes.at(0)->app_ani_faces) { tri.m = white; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
     for (auto& tri : teMeshes.at(1)->app_ani_faces) { tri.m = red;   tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
     for (auto& tri : teMeshes.at(2)->app_ani_faces) { tri.m = green; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
     for (auto& tri : teMeshes.at(3)->app_ani_faces) { tri.m = light; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
+    //for (auto& tri : teMeshes.at(4)->app_ani_faces) { tri.m = light_add; tri.v0.clipPos = Coord4D(tri.v0.worldPos, 1.f); tri.v1.clipPos = Coord4D(tri.v1.worldPos, 1.f); tri.v2.clipPos = Coord4D(tri.v2.worldPos, 1.f); }
     teMeshes.at(0)->computeBVH(); boxModels.push_back(teMeshes.at(0));
     teMeshes.at(1)->computeBVH(); boxModels.push_back(teMeshes.at(1));
     teMeshes.at(2)->computeBVH(); boxModels.push_back(teMeshes.at(2));
     teMeshes.at(3)->computeBVH(); boxModels.push_back(teMeshes.at(3));
+    //teMeshes.at(4)->computeBVH(); boxModels.push_back(teMeshes.at(4));
 
 	Vector3D moveVec = cornellSceneModel->modelCenter - input_model->modelCenter;
-	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.7;
+	float scaleNum = cornellSceneModel->getYRange() / input_model->getYRange() * 0.5;
     float toIn = (cornellSceneModel->getZRange() - (input_model->getZRange() * scaleNum)) * 0.25;
     toIn = toIn < 0.0 ? 0.0 : toIn;
     moveVec -= Vector3D(0.0, (cornellSceneModel->getYRange() - (input_model->getYRange() * scaleNum)) * 0.5, -toIn);
@@ -64,7 +69,6 @@ void CornellBoxScene::buildBVH() {
 
 Vector3D CornellBoxScene::castRay(const Ray& ray, int depth)
 {
-    castrcount++;
     Vector3D hitColor = this->backgroundColor;
     Intersection shader_point_inter = CornellBoxScene::intersect(ray);
     if (shader_point_inter.happened) {
@@ -156,7 +160,7 @@ void CornellBoxScene::cornellBoxRender() {
     int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 512;
+    int spp = 100;
     int thread_num = 6;
     int thread_height = height_cornellBox / thread_num;
     std::vector<std::thread> threads(thread_num);

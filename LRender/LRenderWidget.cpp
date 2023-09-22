@@ -262,10 +262,10 @@ void LRenderWidget::processInput()
 
 void LRenderWidget::render()
 {
-    if (ifOpenRayTracing && rayTracingProcess == 51) return;
+    if (ifOpenRayTracing && rayTracingProcess > 1500.0) return;
     renderAPI::API().clearBuffer();
-    if (ifOpenRayTracing && rayTracingProcess == 50) {
-        rayTracingProcess++;
+    if (ifOpenRayTracing && rayTracingProcess >= 1000.0) {
+        rayTracingProcess += 1e5;
         cornellBoxScene = new CornellBoxScene(model, Color(9.f / 255.f, 12.f / 255.f, 25.f / 255.f), DEFAULT_WIDTH, DEFAULT_HEIGHT);
         cornellBoxScene->buildBVH();
         QTime tracingRenderTime; tracingRenderTime.start();
@@ -305,5 +305,5 @@ void LRenderWidget::render()
     renderAPI::API().shader->material.shininess = 150.f;
     model->modelRender();
     update();
-    if (rayTracingProcess < 50) rayTracingProcess++;
+    if (rayTracingProcess < 1000.0) rayTracingProcess += deltaTime;
 }

@@ -80,7 +80,7 @@ private:
     std::vector<Triangle> skyBoxModel;
     bool ifShowSkyBox = false;
     bool ifOpenRayTracing = true;
-    int rayTracingProcess = 0;
+    double rayTracingProcess = 0;
 };
 
 #endif // LRENDERWIDGET_H

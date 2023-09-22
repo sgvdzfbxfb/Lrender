@@ -205,7 +205,7 @@ sigMesh::sigMesh(const sigMesh& mesh): m(mesh.m) {}
 
 void sigMesh::computeBVH() {
     minX_sig = FLT_MAX; minY_sig = FLT_MAX; minZ_sig = FLT_MAX;
-    maxX_sig = FLT_MIN; maxY_sig = FLT_MIN; maxZ_sig = FLT_MIN;
+    maxX_sig = -FLT_MAX; maxY_sig = -FLT_MAX; maxZ_sig = -FLT_MAX;
     std::vector<BVHItem*> ptrs;
     for (auto& tri : app_ani_faces) {
         minX_sig = std::min(minX_sig, tri.v0.worldPos.x); minY_sig = std::min(minY_sig, tri.v0.worldPos.y); minZ_sig = std::min(minZ_sig, tri.v0.worldPos.z);
