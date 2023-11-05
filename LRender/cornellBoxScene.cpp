@@ -12,7 +12,7 @@ CornellBoxScene::CornellBoxScene(Model* input_model, Color bkColor, int wid_p, i
     green->Kd = Vector3D(0.14f, 0.45f, 0.091f);
     Texture* white = new Texture(DIFFUSE_T, Vector3D(0.0f));
     white->Kd = Vector3D(0.725f, 0.71f, 0.68f);
-    Texture* light = new Texture(DIFFUSE_T, 1.5f * (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
+    Texture* light = new Texture(DIFFUSE_T, 1.2f * (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
     light->Kd = Vector3D(0.65f);
     Texture* light_add = new Texture(DIFFUSE_T, 0.05f * (8.0f * Vector3D(0.747f + 0.058f, 0.747f + 0.258f, 0.747f) + 15.6f * Vector3D(0.740f + 0.287f, 0.740f + 0.160f, 0.740f) + 18.4f * Vector3D(0.737f + 0.642f, 0.737f + 0.159f, 0.737f)));
     light_add->Kd = Vector3D(0.65f);
@@ -160,7 +160,7 @@ void CornellBoxScene::cornellBoxRender() {
     int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 10;
+    int spp = 512;
     int thread_num = 6;
     int thread_height = height_cornellBox / thread_num;
     std::vector<std::thread> threads(thread_num);

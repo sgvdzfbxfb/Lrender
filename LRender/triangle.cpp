@@ -83,7 +83,7 @@ Intersection Triangle::getIntersection(Ray ray) {
     Coord3D normal_t(0.0, 0.0, 0.0);
     normal_t += this->v0.normal * bc_corrected[0]; normal_t += this->v1.normal * bc_corrected[1]; normal_t += this->v2.normal * bc_corrected[2];
     inter.normal = normalize(normal_t);
-    inter.normal = normal;
+    //inter.normal = normal;
     inter.distance = t_tmp;
     inter.obj = this;
     inter.m = this->m;
