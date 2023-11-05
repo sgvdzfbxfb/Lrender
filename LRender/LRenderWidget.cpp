@@ -275,8 +275,10 @@ void LRenderWidget::render()
         renderAPI::API().clearBuffer();
         renderAPI::API().setFrame(cornellBoxScene->frame);
         update();
+        cornellBoxScene->~CornellBoxScene();
         return;
     }
+    if (!ifOpenRayTracing) rayTracingProcess = 0.0;
     if(model == nullptr) return;
     int nowTime = QTime::currentTime().msecsSinceStartOfDay();
     if(lastFrameTime != 0)

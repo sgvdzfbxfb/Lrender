@@ -24,6 +24,13 @@ Vector3D getBarycentric(Vector3D v0, Vector3D v1, Vector3D v2, Vector3D loc) {
     Vector3D u = glm::cross(u1, u2);
     if (std::abs(u.z) < 1) return Vector3D(-1, 1, 1);
     return Vector3D(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
+
+    //Vector2D v_0(v0_s_x, v0_s_y); Vector2D v_1(v1_s_x, v1_s_y); Vector2D v_2(v2_s_x, v2_s_y); Vector2D pos(loc_s_x, loc_s_y);
+    //glm::mat2 m(v_1 - v_0, v_2 - v_0);
+    ////if (fabs(m[0][0] * m[1][1] - m[1][0] * m[0][1]) == 0.0) return normalize(glm::cross(v1 - v0, v2 - v0));
+    //m = glm::inverse(m);
+    //glm::vec2 x = m * (pos - v_0);
+    //return Vector3D(1 - x.x - x.y, x.x, x.y);
 }
 
 Triangle::Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Texture* _m) : v0(_v0), v1(_v1), v2(_v2), m(_m) {
@@ -76,7 +83,7 @@ Intersection Triangle::getIntersection(Ray ray) {
     Coord3D normal_t(0.0, 0.0, 0.0);
     normal_t += this->v0.normal * bc_corrected[0]; normal_t += this->v1.normal * bc_corrected[1]; normal_t += this->v2.normal * bc_corrected[2];
     inter.normal = normalize(normal_t);
-    //inter.normal = normal;
+    inter.normal = normal;
     inter.distance = t_tmp;
     inter.obj = this;
     inter.m = this->m;

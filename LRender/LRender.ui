@@ -660,6 +660,7 @@
     <addaction name="actionMultiThread"/>
     <addaction name="actionFaceCulling"/>
     <addaction name="actionSkyBox"/>
+    <addaction name="actionRayTracing"/>
    </widget>
    <addaction name="menuSetting"/>
    <addaction name="menuFile"/>
@@ -723,6 +724,14 @@
    </property>
    <property name="text">
     <string>SkyBox</string>
+   </property>
+  </action>
+  <action name="actionRayTracing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RayTracing</string>
    </property>
   </action>
  </widget>

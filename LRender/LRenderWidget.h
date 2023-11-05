@@ -45,9 +45,10 @@ public:
     void setLightColor(Color color, lightColorType type);
     void setLightDir(Vector4D dir){renderAPI::API().shader->lightList.at(0).dir = dir;}
     void setRenderMode(renderMode mode){renderAPI::API().renderMode = mode;}
-    void setFaceCulling(bool val){renderAPI::API().faceCulling = val;}
+    void setFaceCulling(bool val) {renderAPI::API().faceCulling = val;}
     void setMultiThread(bool val) { renderAPI::API().multiThread = val; }
-    void setSkyBox(bool val){ ifShowSkyBox = val; }
+    void setSkyBox(bool val) { ifShowSkyBox = val; }
+    void setRayTracing(bool val) { ifOpenRayTracing = val; }
     void saveImage(QString path){renderAPI::API().saveImage(path);}
     void loadModel(QStringList paths);
     void initDevice();
@@ -79,8 +80,8 @@ private:
     std::vector<Texture> skyBoxTexture;
     std::vector<Triangle> skyBoxModel;
     bool ifShowSkyBox = false;
-    bool ifOpenRayTracing = true;
-    double rayTracingProcess = 0;
+    bool ifOpenRayTracing = false;
+    double rayTracingProcess = 0.0;
 };
 
 #endif // LRENDERWIDGET_H

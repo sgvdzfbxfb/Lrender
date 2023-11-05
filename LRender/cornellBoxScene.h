@@ -19,6 +19,7 @@ public:
     int castrcount = 0;
 
     CornellBoxScene(Model* input_model, Color bkColor, int wid_p, int hei_p);
+    CornellBoxScene::~CornellBoxScene() {}
     Intersection intersect(const Ray& ray) const;
     void buildBVH();
     Vector3D castRay(const Ray& ray, int depth);

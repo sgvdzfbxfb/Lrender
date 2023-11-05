@@ -160,7 +160,7 @@ void CornellBoxScene::cornellBoxRender() {
     int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 100;
+    int spp = 10;
     int thread_num = 6;
     int thread_height = height_cornellBox / thread_num;
     std::vector<std::thread> threads(thread_num);

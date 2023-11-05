@@ -32,10 +32,15 @@ void LRender::setOption(Option option, bool val)
         ui->actionFaceCulling->setChecked(val);
         ui->RenderWidget->setFaceCulling(val);
     }
-    else
+    else if (option == SKYBOX)
     {
         ui->actionSkyBox->setChecked(val);
         ui->RenderWidget->setSkyBox(val);
+    }
+    else if (option == RAYTRACING)
+    {
+        ui->actionRayTracing->setChecked(val);
+        ui->RenderWidget->setRayTracing(val);
     }
 }
 void LRender::setLightColor(lightColorType type, QColor color)
@@ -118,6 +123,7 @@ void LRender::initUI()
     setOption(MUTITHREAD, true);
     setOption(FACECULLING, true);
     setOption(SKYBOX, false);
+    setOption(RAYTRACING, false);
     setCameraPara(FOV, 60.f);
     setCameraPara(NEAR, 1.0f);
     setLightColor(SPECULAR, QColor(255, 255, 255));
@@ -180,6 +186,11 @@ void LRender::on_actionFaceCulling_triggered()
 void LRender::on_actionSkyBox_triggered()
 {
     setOption(SKYBOX, ui->actionSkyBox->isChecked());
+}
+
+void LRender::on_actionRayTracing_triggered()
+{
+    setOption(RAYTRACING, ui->actionRayTracing->isChecked());
 }
 
 void LRender::on_FovSilder_valueChanged(int value)
