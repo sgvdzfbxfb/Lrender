@@ -19,8 +19,8 @@ Vector3D getBarycentric(Vector3D v0, Vector3D v1, Vector3D v2, Vector3D loc) {
     float v1_s_x = 0.0, v1_s_y = 0.0; getScreenPos(v1, v1_s_x, v1_s_y);
     float v2_s_x = 0.0, v2_s_y = 0.0; getScreenPos(v2, v2_s_x, v2_s_y);
     float loc_s_x = 0.0, loc_s_y = 0.0; getScreenPos(loc, loc_s_x, loc_s_y);
-    Vector3D u1(v2_s_x - v0_s_x, v1_s_x -  v0_s_x,  v0_s_x - loc_s_x);
-    Vector3D u2(v2_s_y - v0_s_y, v1_s_y -  v0_s_y,  v0_s_y - loc_s_y);
+    Vector3D u1(v2_s_x - v0_s_x, v1_s_x - v0_s_x, v0_s_x - loc_s_x);
+    Vector3D u2(v2_s_y - v0_s_y, v1_s_y - v0_s_y, v0_s_y - loc_s_y);
     Vector3D u = glm::cross(u1, u2);
     if (std::abs(u.z) < 1) return Vector3D(-1, 1, 1);
     return Vector3D(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);

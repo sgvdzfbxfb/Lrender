@@ -41,7 +41,7 @@ public:
     float area = 0;
     std::string sigMeshName = "";
 
-    sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt = new Texture());
+    sigMesh(const QString& filename, std::vector<std::string>& texPaths, std::string& meshName, Texture* mt = new Texture(DIFFUSE_T, Vector3D(0.0f)));
     sigMesh(const sigMesh& mesh);
     void computeNormal();
     void computeBVH();
