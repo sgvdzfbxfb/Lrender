@@ -18,13 +18,15 @@ Ray tracing can render object materials and animations.
 
 ![](LRender/img/3.png)
 
-![](LRender/img/Weixin%20Image_20240304200307.png)
+![](LRender/img/101010.png)
 
 ![](LRender/img/888.png)
 
 ![](LRender/img/666.png)
 
 ![](LRender/img/9.png)
+
+![](LRender/img/2.png)
 
 #### reference
 
